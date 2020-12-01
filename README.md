@@ -14,4 +14,4 @@
 
 ### link para o relatório:
 
-https://docs.google.com/document/d/1Af_r418LNgigEB2g1XdCrRuQbWzGK7ZDH9mrDSDqgFw/edit?usp=sharing
+shorturl.at/pwzBQ
