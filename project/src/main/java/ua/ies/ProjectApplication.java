@@ -1,4 +1,4 @@
-package ua.ies.project;
+package ua.ies;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

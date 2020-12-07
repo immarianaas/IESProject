@@ -1,4 +1,4 @@
-package ua.ies.project;
+package ua.ies;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

@@ -1,4 +1,4 @@
-package ua.ies.project.model;
+package ua.ies.model;
 
 import java.sql.Time;
 
