@@ -41,7 +41,7 @@ def main():
 		if randint(0,1):
 			channel.basic_publish(
 				exchange='', 
-				routing_key='queue_co2', 
+				routing_key=random_queue, 
 				body=random_generator
 			)
 
