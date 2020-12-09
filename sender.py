@@ -12,7 +12,7 @@ def main():
 
 	# in case there's only one queue, comment lines 18-24 and uncomment this:
 	# channel.queue_declare(queue='queue')
-	# generators = [getattr(gen,"fake_co2"),getattr(gen,"fake_body_temp"),getattr(gen,"fake_people_counter")]
+	# generators = [gen.fake_co2, gen.fake_body_temp, gen.fake_people_counter]
 	
 	# every queue name must start with queue!
 	queues=['queue_co2', 'queue_body_temp', 'queue_people_counter']
@@ -22,27 +22,18 @@ def main():
 	queue2gen = dict()
 	for q in queues:
 		queue2gen[q]=getattr(gen, "fake"+q[5:])
-
-	# in case there's only one queue, comment the iteration below and uncomment this:
-	'''
+		
 	while True:
-		channel.basic_publish(
-			exchange='', 
-			routing_key='queue', 
-			body=[gen.fake_co2(), gen.fake_body_temp(), gen.fake_people_counter()][randint(len(queues))]
-		)
-
-		sleep(random(0,5))
-	'''
-	while True:
-		random_queue = queues[randint(len(queues))]
+		
+		# comment these 2 lines if only one queue is used:
+		random_queue = queues[randint(0,len(queues))]
 		random_generator = queue2gen[random_queue]
 
 		if randint(0,1):
 			channel.basic_publish(
 				exchange='', 
-				routing_key=random_queue, 
-				body=random_generator
+				routing_key=random_queue, # or 'queue', if there's only one queue
+				body=random_generator # or generators[randint(0, len(generators))], if there's only one queue 
 			)
 
 		sleep(random(0,5))
