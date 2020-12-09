@@ -1,4 +1,6 @@
 import numpy as np
+import datetime
+import yaml
 
 # np.random.normal(loc=0.0, scale=1.0, size=None)
 # loc : float
@@ -10,23 +12,56 @@ import numpy as np
 # size : tuple of ints
 #		Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
 
+
+def proper_round(num, dec=0):
+     num = str(num)[:str(num).index('.')+dec+2]
+     if num[-1]>='5':
+         return float(num[:-2-(not dec)]+str(int(num[-2-(not dec)])+1))
+     return float(num[:-1])
+
 def fake_co2(precision=3):
-	return f"{np.random.normal(loc=700, scale=0.4):.{precision}f}"
+	co2 = dict()
+
+	# in case there is only one queue:
+	# co2["data_type"] = "co2"
+	co2["data"] = proper_round(np.random.normal(loc=700, scale=0.4), 3)
+	co2["timestamp"] = datetime.datetime.now()
+	co2["sensor_location"] = "Building A Room A"
+
+	return co2
 	
 def fake_body_temp(precision=3):
-	return f"{np.random.normal(loc=36.8, scale=0.4):.{precision}f}"
+	body_temp = dict()
+
+	# in case there is only one queue:
+	# co2["data_type"] = "body_temp"
+	body_temp["data"] = proper_round(np.random.normal(loc=36.8, scale=0.4), 3)
+	body_temp["timestamp"] = datetime.datetime.now()
+	body_temp["sensor_location"] = "Building A Room B"
+
+	return body_temp
 
 def fake_people_counter(area_range=1):
-	return f"{int(np.random.normal(loc=5, scale=0.4) * area_range)}"
+	people_counter = dict()
 
-def main():	
+	# in case there is only one queue:
+	# co2["data_type"] = "people_counter"
+	people_counter["data"] = int(f"{proper_round(np.random.normal(loc=5, scale=0.4) * area_range)}"[:-2])
+	people_counter["timestamp"] = datetime.datetime.now()
+	people_counter["sensor_location"] = "Building A Room B"
 
-	# testing data generators...
+	return people_counter
 
-	print(f'CO2: {fake_co2()}')
-	print(f'Body temperature: {fake_body_temp()}')
-	print(f'Number of people: {fake_people_counter()}')
+def main():
 
+	# testing timestamp....
+
+	co2 = fake_co2()
+	co2_2 = fake_co2()
+	print(type(co2["timestamp"]))
+	print(yaml.dump(co2_2,default_flow_style=False))
+	print(co2["timestamp"]<co2_2["timestamp"])
+	
 
 if __name__=="__main__":
 	main()

@@ -1,0 +1,280 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- BOOTSTRAP STYLES-->
+    <link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <!--CUSTOM BASIC STYLES-->
+    <link href="assets/css/basic.css" rel="stylesheet" />
+    <!--CUSTOM MAIN STYLES-->
+    <link href="assets/css/custom.css" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">SMART BUILDING</a>
+            </div>
+
+            <div class="header-right">
+
+             
+                <a href="index.html" class="btn btn-danger" title="Logout"><i class="fa fa-exclamation-circle fa-2x"></i></a>
+
+
+            </div>
+        </nav>
+        <!-- /. NAV TOP  -->
+        <nav class="navbar-default navbar-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+                    <li>
+                        <div class="user-img-div">
+                            <img src="assets/img/user.png" class="img-thumbnail" />
+
+                            <div class="inner-text">
+                                John Jobs
+                            <br />
+                                <small>Last Login : 2 Weeks Ago </small>
+                            </div>
+                        </div>
+
+                    </li>
+
+
+                    <li>
+                        <a  href="dashboard.html"><i class="fa fa-dashboard "></i>Dashboard</a>
+                    </li>
+                    
+                    <li>
+                        <a href="air_control.html"><i class="fa fa-send-o "></i>Air-Control </a>
+                        
+                    </li>
+
+                      <li>
+                        <a href="people_counter.html"><i class="fa fa-edit"></i>People Counter</a>
+                    </li>
+ 
+                   
+                    <li>
+                        <a class="active-menu" href="body_temp_control.html"><i class="fa fa-plus-square "></i>Body Temperature Control</a>
+                    </li>
+                    
+                   
+                    
+                </ul>
+            </div>
+
+        </nav>
+
+
+        <div id="page-wrapper">
+            <div id="page-inner">
+                
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="page-head-line">Body Temperature Control</h1>
+                        <h1 class="page-subhead-line">All Temperatures Detected</h1>
+
+                    </div>
+                </div>
+                <!-- /. ROW  -->
+                <div class="alert alert-danger">
+                    <a href="#" class="close" data-dismiss="alert">&times;</a>
+                    <strong>Alert:    </strong> Temperatures above 37.6 °C were detected
+                </div>
+                <div class="row">
+
+                    <div class="col-md-8">
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover">
+                                    <h4><strong>Last Temperature Detected</strong></h4>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Date (today)</th>
+                                            <th>Hour</th>
+                                            <th>Temperature(°C)</th>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td><p id="date"></p></td>
+                                            <td><p id="hour"></p></td>
+                                            <td><span class="label label-danger">39.1</span></td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </di>
+
+
+
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover">
+                                <h4><strong>History</strong></h4>
+
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Date</th>
+                                        <th>Hour</th>
+                                        <th>Temperature(°C)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>20/11/2020</td>
+                                        <td>10:40</td>
+                                        <td>36.7</td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>20/11/2020</td>
+                                        <td>13:40</td>
+                                        <td><span class="label label-danger">38.3</span></td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>21/11/2020</td>
+                                        <td>15:40</td>
+                                        <td>37.2</td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>20/11/2020</td>
+                                        <td>10:40</td>
+                                        <td>36.9</td>
+                                        
+                                    </tr>
+
+                                    <tr>
+                                        <td>1</td>
+                                        <td>20/11/2020</td>
+                                        <td>10:40</td>
+                                        <td>36.1</td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td>25/11/2020</td>
+                                        <td>14:52</td>
+                                        <td><span class="label label-danger">38.6</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>20/11/2020</td>
+                                        <td>10:40</td>
+                                        <td>36.5</td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>20/11/2020</td>
+                                        <td>10:40</td>
+                                        <td>36.7</td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>20/11/2020</td>
+                                        <td>10:40</td>
+                                        <td>36.7</td>
+                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                       
+                     </div>
+         
+                </div>
+        </div>
+                <!------------------------------------------------------------------------------------------------->
+           
+            </div>
+            <!-- /. PAGE INNER  -->
+        </div>
+        <!-- /. PAGE WRAPPER  -->
+    </div>
+        
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+            <!-- /. PAGE INNER  -->
+        </div>
+        <!-- /. PAGE WRAPPER  -->
+    </div>
+    <!-- /. WRAPPER  -->
+    <div id="footer-sec">
+        &copy; 2020 IES 
+    </div>
+    <!-- /. FOOTER  -->
+    <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
+    <!-- JQUERY SCRIPTS -->
+    <script src="assets/js/jquery-1.10.2.js"></script>
+    <!-- BOOTSTRAP SCRIPTS -->
+    <script src="assets/js/bootstrap.js"></script>
+    <!-- METISMENU SCRIPTS -->
+    <script src="assets/js/jquery.metisMenu.js"></script>
+    <!-- CUSTOM SCRIPTS -->
+    <script src="assets/js/custom.js"></script>
+
+    <script>
+        n =  new Date();
+        y = n.getFullYear();
+        m = n.getMonth() + 1;
+        d = n.getDate();
+        document.getElementById("date").innerHTML = d + "/" + m + "/" + y;
+    </script>
+    <p id="demo"></p>
+
+    <script>
+        var d = new Date();
+        var h = d.getHours();
+        var m = d.getMinutes();
+        document.getElementById("hour").innerHTML = h + ":" + m ;
+        
+    </script>
+
+</body>
+</html>
