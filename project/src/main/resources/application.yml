@@ -1,0 +1,19 @@
+
+# spring.datasource.url=jdbc:mysql://127.0.0.1:3306/demo
+# spring.datasource.username=demo
+# spring.datasource.password=password
+# spring.jpa.database-platform=org.hibernate.dialect.MySQL5InnoDBDialect
+# 
+# spring.jpa.hibernate.ddl-auto = update
+
+spring:
+  profiles:
+    active: tut1,usage_message,receiver,sender
+
+logging:
+  level:
+    org: ERROR
+
+tutorial:
+  client:
+    duration: 10000

@@ -10,6 +10,8 @@ public class Co2 {
     private long id;
     private Time timestamp;
     private int value;
+    private String local;
+    private int sensor_id;
 
     public Co2() {}
     public Co2(Time ts, int value) {

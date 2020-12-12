@@ -11,7 +11,7 @@ def main():
 
     queue_names = ['co2', 'body_temperature', 'people_counter']
     for q in queue_names:
-        channel.queue_declare(q)
+        channel.queue_declare(q, False, False, False)
 
     while True:
 
