@@ -10,6 +10,7 @@ def main():
 	connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 	channel = connection.channel()
 
+	
 	# in case there's only one queue, comment lines 18-24 and uncomment this:
 	# channel.queue_declare(queue='queue')
 	# generators = [gen.fake_co2, gen.fake_body_temp, gen.fake_people_counter]
@@ -37,7 +38,7 @@ def main():
 			)
 
 		sleep(random(0,5))
-
+	
 	connection.close()
 	
 
