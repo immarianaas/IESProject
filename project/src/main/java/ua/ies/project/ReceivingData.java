@@ -1,4 +1,5 @@
-package ua.ies;
+/*
+package ua.ies.project;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -24,3 +25,4 @@ public class ReceivingData {
         channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> { });
     }
 }
+*/
