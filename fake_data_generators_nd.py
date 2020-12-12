@@ -24,10 +24,11 @@ def fake_co2(precision=3):
 
 	# in case there is only one queue:
 	# co2["data_type"] = "co2"
-	co2["data"] = proper_round(np.random.normal(loc=700, scale=0.4), 3)
+	co2["value"] = proper_round(np.random.normal(loc=700, scale=0.4), 3)
 	co2["timestamp"] = datetime.datetime.now().isoformat()
-	co2["sensor_location"] = "Building A Room A"
-	co2["type"] = "co2"
+	co2["local"] = "Building A Room A"
+	co2["sensorId"] = 1
+	# co2["type"] = "co2"
 
 	return co2
 	
@@ -39,7 +40,7 @@ def fake_body_temp(precision=3):
 	body_temp["data"] = proper_round(np.random.normal(loc=36.8, scale=0.4), 3)
 	body_temp["timestamp"] = datetime.datetime.now().isoformat()
 	body_temp["sensor_location"] = "Building A Room B"
-	body_temp["type"] = "body_temperature"
+	# body_temp["type"] = "body_temperature"
 
 	return body_temp
 
@@ -51,7 +52,7 @@ def fake_people_counter(area_range=1):
 	people_counter["data"] = int(f"{proper_round(np.random.normal(loc=5, scale=0.4) * area_range)}"[:-2])
 	people_counter["timestamp"] = datetime.datetime.now().isoformat()
 	people_counter["sensor_location"] = "Building A Room B"
-	people_counter["type"] = "people_counter"
+	#people_counter["type"] = "people_counter"
 
 	return people_counter
 
