@@ -28,14 +28,17 @@
                 <a class="navbar-brand" href="index.html">SMART BUILDING</a>
             </div>
 
-            <form id="logoutForm" method="POST" th:action="@{/logout}">
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            </form>
-            <div class="header-right">
-                <a onclick="document.forms['logoutForm'].submit()" class="btn btn-danger"><i class="fa fa-exclamation-circle fa-2x"></i></a>
-              
+        
 
+            <div sec:authorize="isAuthenticated()">
+                <form id="logoutForm" method="POST" th:action="@{/logout}">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </form>
+
+                <h2> <a  class="header-right" onclick="document.forms['logoutForm'].submit()"><i class="fa fa-sign-out fa-2x"></i></a></h2>
             </div>
+
+
         </nav>
         <!-- /. NAV TOP  -->
         <nav class="navbar-default navbar-side" role="navigation">

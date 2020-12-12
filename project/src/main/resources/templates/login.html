@@ -12,53 +12,44 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 
 </head>
-
-<body style="background-image: url(/img/g.jpg);   background-repeat: no-repeat;
-background-size: 530px 320px; background-position: 720px 330px;">
+  <body>
     <div class="container">
-        <div class="row text-center " style="padding-top:100px;">
+        <div class="row text-center " style="padding-top:200px;">
             <h1> <strong>SMART BUILDING LOGIN </strong></h1>
+            <br/>
         </div>
-         <div class="row ">
-               
+           <div class="row ">
                 <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1" >
-                           
-                            <div class="panel-body" >
-                                <form role="form" method="POST" th:action="@{/login}">
-                                    <hr />
-                                   
-                                     <div class="form-group input-group">
-                                        <span th:text="${message}"></span>
 
-                                            <span class="input-group-addon"><i class="fa fa-tag"  ></i></span>
-                                            <input type="username" class="form-control" placeholder="UserName " />
-                                        </div>
-                                            <div class="form-group input-group">
-                                            <span class="input-group-addon"><i class="fa fa-lock"  ></i></span>
-                                            <input name="password" type="text" class="form-control"  placeholder="Password" />
-                                            <span class="has-error" th:text="${error}"></span>
+                    <form class="form-signin" method="POST" th:action="@{/login}">
 
-                                        </div>
-                                    <div class="form-group">
-                                          
-                                      
-                                        </div>
-                                        <span class="has-error" th:text="${error}"></span>
+                        <div class="form-group ">
+                            <span th:text="${message}"></span>
+                            <input name="username" type="text" class="form-control" placeholder="Username"/>
 
-                                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                            <input name="password" type="password" class="form-control" placeholder="Password"/>
 
-                                        <button class="btn btn-primary" type="submit">Log In</button>                                            
-                                        <h5 class="text"><a href="/registration">Create an account</a></h5>
-                                        
-                                    </form>
-                            </div>
-                           
+                            
+                            <span class="has-error" th:text="${error}"></span>
+
+
+
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                            <br/>
+
+
+                            <button class="btn btn-primary right" type="submit">Log In</button>
+                            
+                            
+                            <h4 class="text"><a href="/registration">Create an account</a></h4>
+                        </div>
+                    </form>
                 </div>
-                
-                
-        </div>
+            </div>
     </div>
- 
-</body>
+
+
+  </body>
+
 
 </html>
