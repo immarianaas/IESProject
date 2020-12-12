@@ -10,7 +10,6 @@ def main():
 	connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 	channel = connection.channel()
 
-	
 	# in case there's only one queue, comment lines 18-24 and uncomment this:
 	# channel.queue_declare(queue='queue')
 	# generators = [gen.fake_co2, gen.fake_body_temp, gen.fake_people_counter]
@@ -23,22 +22,22 @@ def main():
 	queue2gen = dict()
 	for q in queues:
 		queue2gen[q]=getattr(gen, "fake"+q[5:])
-		
+
 	while True:
-		
-		# comment these 2 lines if only one queue is used:
-		random_queue = queues[randint(0,len(queues))]
-		random_generator = queue2gen[random_queue]
 
 		if randint(0,1):
+			# comment these 2 lines if only one queue is used:
+			random_queue = queues[randint(0,len(queues)-1)]
+			random_generator = queue2gen[random_queue]
+			
 			channel.basic_publish(
 				exchange='', 
 				routing_key=random_queue, # or 'queue', if there's only one queue
-				body=random_generator # or generators[randint(0, len(generators))], if there's only one queue 
+				body=random_generator() # or generators[randint(0, len(generators))], if there's only one queue
 			)
+			
+		sleep(random()*5)
 
-		sleep(randomint(0,5))
-	
 	connection.close()
 	
 
