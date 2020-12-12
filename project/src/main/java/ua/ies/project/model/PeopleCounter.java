@@ -15,26 +15,23 @@ import javax.swing.text.DateFormatter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-@Table(name = "co2")
-public class Co2 {
+@Table(name = "peoplecounter")
+public class PeopleCounter {
     private long id;
     private Date timestamp;
     private double value;
     private String local;
     private int sensorId;
 
-    public Co2() {
+    public PeopleCounter() {
     }
 
-    public Co2(String timestamp, int value, String local, int sensorId) {
+    public PeopleCounter(String timestamp, int value, String local, int sensorId) {
         //this.timestamp = timestamp;
         this.value = value;
         this.local = local;
         this.sensorId = sensorId;
-
-
         this.timestamp = this.parseDate(timestamp);
-
     }
 
     private Date parseDate(String date) {
@@ -79,7 +76,7 @@ public class Co2 {
 
     @Override
     public String toString() {
-        return "[ co2 entry id= " + id + ": timestamp= " + timestamp.toString() + "; local= " + local + "; sensorId= " + sensorId + "; VALUE= " + value + " ]" ;
+        return "[ peoplecounter entry id= " + id + ": timestamp= " + timestamp.toString() + "; local= " + local + "; sensorId= " + sensorId + "; VALUE= " + value + " ]" ;
     }
     
     /* https://www.javaguides.net/2018/09/spring-boot-2-jpa-mysql-crud-example.html */
