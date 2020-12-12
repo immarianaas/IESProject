@@ -37,7 +37,7 @@ def main():
 				body=random_generator # or generators[randint(0, len(generators))], if there's only one queue 
 			)
 
-		sleep(random(0,5))
+		sleep(randomint(0,5))
 	
 	connection.close()
 	
