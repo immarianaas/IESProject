@@ -12,6 +12,7 @@ import java.util.TimeZone;
 import javax.persistence.*;
 import javax.swing.text.DateFormatter;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -32,6 +33,13 @@ public class PeopleCounter {
         this.local = local;
         this.sensorId = sensorId;
         this.timestamp = this.parseDate(timestamp);
+    }
+
+    public PeopleCounter(Date timestamp, int value, String local, int sensorId) {
+        this.timestamp = timestamp;
+        this.value = value;
+        this.local = local;
+        this.sensorId = sensorId;
     }
 
     private Date parseDate(String date) {
@@ -56,8 +64,9 @@ public class PeopleCounter {
 
     @Column(name="timestamp")
     public Date getTimestamp() { return timestamp; }
-    public void setTimestamp(String ts) { 
-        this.timestamp = this.parseDate(ts); }
+    @JsonProperty
+    public void setTimestamp(String ts) {  this.timestamp = this.parseDate(ts); }
+    public void setTimestamp(Date ts) { this.timestamp = ts; }
 
     @Column(name="value")
     public Double getValue() { return value; }

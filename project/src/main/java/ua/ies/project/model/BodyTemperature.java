@@ -12,6 +12,7 @@ import java.util.TimeZone;
 import javax.persistence.*;
 import javax.swing.text.DateFormatter;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -31,23 +32,24 @@ public class BodyTemperature {
         this.value = value;
         this.local = local;
         this.sensorId = sensorId;
-
-
         this.timestamp = this.parseDate(timestamp);
-
     }
 
-    private Date parseDate(String date) {
+    public BodyTemperature(Date timestamp, int value, String local, int sensorId) {
+        this.timestamp = timestamp;
+        this.value = value;
+        this.local = local;
+        this.sensorId = sensorId;
+    }
 
+
+    private Date parseDate(String date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmmmmm");
-        
         try {
             Date d = formatter.parse(date);
             //System.out.println(d);
             return d;
-        } catch( Exception e) {
-            e.printStackTrace();
-        }
+        } catch( Exception e) { e.printStackTrace(); }
         return null;
       }
 
@@ -59,8 +61,12 @@ public class BodyTemperature {
 
     @Column(name="timestamp")
     public Date getTimestamp() { return timestamp; }
+    @JsonProperty
     public void setTimestamp(String ts) { 
         this.timestamp = this.parseDate(ts); }
+
+    public void setTimestamp(Date ts) { this.timestamp = ts; }
+    
 
     @Column(name="value")
     public Double getValue() { return value; }

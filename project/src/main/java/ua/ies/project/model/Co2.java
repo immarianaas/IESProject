@@ -12,6 +12,8 @@ import java.util.TimeZone;
 import javax.persistence.*;
 import javax.swing.text.DateFormatter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -34,7 +36,16 @@ public class Co2 {
 
 
         this.timestamp = this.parseDate(timestamp);
+    }
 
+    public Co2(Date timestamp, int value, String local, int sensorId) {
+        //this.timestamp = timestamp;
+        this.value = value;
+        this.local = local;
+        this.sensorId = sensorId;
+
+
+        this.timestamp = timestamp;
     }
 
     private Date parseDate(String date) {
@@ -59,8 +70,14 @@ public class Co2 {
 
     @Column(name="timestamp")
     public Date getTimestamp() { return timestamp; }
+    @JsonProperty
     public void setTimestamp(String ts) { 
-        this.timestamp = this.parseDate(ts); }
+        this.timestamp = this.parseDate(ts); 
+        //System.out.println("\n\n\n\n ts: " +this.timestamp);
+    }
+    public void setTimestamp(Date ts) { 
+        this.timestamp = ts; 
+    }
 
     @Column(name="value")
     public Double getValue() { return value; }
@@ -79,7 +96,7 @@ public class Co2 {
 
     @Override
     public String toString() {
-        return "[ co2 entry id= " + id + ": timestamp= " + timestamp.toString() + "; local= " + local + "; sensorId= " + sensorId + "; VALUE= " + value + " ]" ;
+        return "[ co2 entry id= " + id + ": timestamp= " + timestamp + "; local= " + local + "; sensorId= " + sensorId + "; VALUE= " + value + " ]" ;
     }
     
     /* https://www.javaguides.net/2018/09/spring-boot-2-jpa-mysql-crud-example.html */

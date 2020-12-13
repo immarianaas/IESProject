@@ -33,6 +33,16 @@ public class Receiver {
         return new Queue("co2", false);
     }
 
+    @Bean
+    public Queue body_temperature() {
+        return new Queue("body_temperature", false);
+    }
+
+    @Bean
+    public Queue people_counter() {
+        return new Queue("people_counter", false);
+    }
+
     /*
      * @RabbitListener(queues= {"co2", "body_temperature", "people_counter"}) public
      * void listen(String in) { System.out.println("\n pls work msg: " + in); }
@@ -49,6 +59,7 @@ public class Receiver {
             input = mapper.readValue(in, Co2.class);
             co2Repository.save(input);
             System.out.println("Co2 object saved to database!!");
+            System.out.println(input);
         } catch (Exception e) {
             System.err.println("Error parsing JSON to Co2 object.");
             //e.printStackTrace();
