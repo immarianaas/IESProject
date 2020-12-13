@@ -9,7 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import ua.ies.project.model.BodyTemperature;
 import ua.ies.project.model.Co2;
+import ua.ies.project.model.PeopleCounter;
 import ua.ies.project.repository.BodyTemperatureRepository;
 import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.PeopleCounterRepository;
@@ -38,7 +40,25 @@ public class WebController {
         co2_data.put("location", co2.getLocal());
         co2_data.put("sensor_id", "" + co2.getSensorId());
         co2_data.put("value", "" + ""+co2.getValue());
-        model.addAttribute("data", co2_data);
+        model.addAttribute("co2_data", co2_data);
+
+        BodyTemperature bt = bodytemprep.findTopByOrderByIdDesc();
+        Map<String, String> bodytemp_data = new HashMap<String, String>();
+        co2_data.put("id", "" + bt.getId());
+        co2_data.put("timestamp", bt.getTimestamp().toString());
+        co2_data.put("location", bt.getLocal());
+        co2_data.put("sensor_id", "" + bt.getSensorId());
+        co2_data.put("value", "" + ""+bt.getValue());
+        model.addAttribute("bodytemp_data", bodytemp_data);
+
+        PeopleCounter pc = peoplecountrep.findTopByOrderByIdDesc();
+        Map<String, String> peoplecounter_data = new HashMap<String, String>();
+        co2_data.put("id", "" + pc.getId());
+        co2_data.put("timestamp", pc.getTimestamp().toString());
+        co2_data.put("location", pc.getLocal());
+        co2_data.put("sensor_id", "" + pc.getSensorId());
+        co2_data.put("value", "" + ""+pc.getValue());
+        model.addAttribute("peoplecounter_data", peoplecounter_data);
 
         return "dashboard";
     }
