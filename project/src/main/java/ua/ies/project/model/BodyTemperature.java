@@ -44,10 +44,13 @@ public class BodyTemperature {
 
 
     private Date parseDate(String date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmmmmm");
+        //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmmmmm");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
+        //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd'T'HH:MM:SS.fffzzz");
         try {
+            //System.out.println("\n\ndate inicial: " + date);
             Date d = formatter.parse(date);
-            //System.out.println(d);
+            //System.out.println("date final" +d + "\n\n ");
             return d;
         } catch( Exception e) { e.printStackTrace(); }
         return null;

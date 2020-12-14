@@ -36,35 +36,11 @@ public class WebController {
         BodyTemperature bt = bodytemprep.findTopByOrderByIdDesc();
         //System.out.println(data);
         PeopleCounter pc = peoplecountrep.findTopByOrderByIdDesc();
-        
-        /*
-        Map<String, String> co2_data = new HashMap<String, String>();
-        co2_data.put("id", "" + co2.getId());
-        co2_data.put("timestamp", co2.getTimestamp().toString());
-        co2_data.put("location", co2.getLocal());
-        co2_data.put("sensor_id", "" + co2.getSensorId());
-        co2_data.put("value", "" + ""+co2.getValue());
-        model.addAttribute("co2_data", co2_data);
 
-        Map<String, String> bodytemp_data = new HashMap<String, String>();
-        co2_data.put("id", "" + bt.getId());
-        co2_data.put("timestamp", bt.getTimestamp().toString());
-        co2_data.put("location", bt.getLocal());
-        co2_data.put("sensor_id", "" + bt.getSensorId());
-        co2_data.put("value", "" + ""+bt.getValue());
-        model.addAttribute("bodytemp_data", bodytemp_data);
-        
-        Map<String, String> peoplecounter_data = new HashMap<String, String>();
-        co2_data.put("id", "" + pc.getId());
-        co2_data.put("timestamp", pc.getTimestamp().toString());
-        co2_data.put("location", pc.getLocal());
-        co2_data.put("sensor_id", "" + pc.getSensorId());
-        co2_data.put("value", "" + ""+pc.getValue());
-        model.addAttribute("peoplecounter_data", peoplecounter_data);
-	*/
-	model.addAttribute("co2_data", co2);
-	model.addAttribute("bodytemp_data", bt);
-	model.addAttribute("peoplecounter_data", pc);
+        model.addAttribute("co2_data", co2);
+        //System.out.println("\n\n\n"+co2+"\n\n\n");
+	    model.addAttribute("bodytemp_data", bt);
+	    model.addAttribute("peoplecounter_data", pc);
         return "dashboard";
     }
     
