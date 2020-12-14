@@ -79,6 +79,8 @@
             </div>
 
         </nav>
+
+        
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper">
             <div id="page-inner">
@@ -116,9 +118,114 @@
                         </div>
                     </div>
 
+
+               
+
+
+                    <div class="col-md-11">
+                        <img src="https://www.mafiadomarketing.com.br/wp-content/uploads/2018/12/live-marketing.png" style="width:60px;height:40px;" alt="live">
+                    <br/>
+                    <br/>
+                        <div class="table-responsive">
+                            <table style="table-layout: fixed ; width: 100%;" class="table table-striped table-bordered table-hover">
+                                <h4><strong>Co2</strong></h4>
+
+                               
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>C02 (%)</th>
+                                        <th>Local</th>
+                                        <th>Sensor ID</th>
+                                        <th>Time</th>
+
+                                    </tr>
+                                </thead>
+                               <tbody>
+                                <tr width="80px" th:each="co2 : ${co2_data}">
+                                    <td width="80px" th:text="${co2.getId}"></td>
+                                    <td width="80px" th:text="${co2.getValue}"></td>
+                                    <td width="80px" th:text="${co2.getLocal}"></td>
+                                    <td width="80px" th:text="${co2.getSensorId}"></td>
+                                    <td width="80px" th:text="${co2.getTimestamp}"></td>
+                                    
+                                </tr>
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <br/>
+                    <div class="col-md-11">
+                        <div class="table-responsive">
+                            <table style="table-layout: fixed ; width: 100%;" class="table table-striped table-bordered table-hover">
+                                <h4><strong>People Inside</strong></h4>
+
+                               
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>People Inside (%)</th>
+                                        <th>Local</th>
+                                        <th>Sensor ID</th>
+                                        <th>Time</th>
+
+                                    </tr>
+                                </thead>
+                               <tbody>
+                                <tr width="80px" th:each="pC : ${peoplecounter_data}">
+                                    <td width="80px" th:text="${pC.getId}"></td>
+                                    <td width="80px" th:text="${pC.getValue}"></td>
+                                    <td width="80px" th:text="${pC.getLocal}"></td>
+                                    <td width="80px" th:text="${pC.getSensorId}"></td>
+                                    <td width="80px" th:text="${pC.getTimestamp}"></td>
+                                    
+                                </tr>
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <br/>
+                    <div class="col-md-11">
+                        <div class="table-responsive">
+                            <table style="table-layout: fixed ; width: 100%;" class="table table-striped table-bordered table-hover">
+                                <h4><strong>Body Temperature</strong></h4>
+
+                               
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Body Temperature (ºC)</th>
+                                        <th>Local</th>
+                                        <th>Sensor ID</th>
+                                        <th>Time</th>
+
+                                    </tr>
+                                </thead>
+                               <tbody>
+                                <tr th:each="bt : ${bodytemp_data}">
+                                    <td width="80px" th:text="${bt.getId}"></td>
+                                    <td width="80px" th:text="${bt.getValue}"></td>
+                                    <td width="80px" th:text="${bt.getLocal}"></td>
+                                    <td width="80px" th:text="${bt.getSensorId}"></td>
+                                    <td width="80px" th:text="${bt.getTimestamp}"></td>
+                                    
+                                </tr>
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+
+
+
                 </div>
                 <!-- /. ROW  -->
 
+               
         
                 
                 <!--/.Row-->
@@ -131,6 +238,8 @@
             </div>
             <!-- /. PAGE INNER  -->
         </div>
+
+
         <!-- /. PAGE WRAPPER  -->
     </div>
     <!-- /. WRAPPER  -->
@@ -150,8 +259,14 @@
     <script src="assets/js/jquery.metisMenu.js"></script>
        <!-- CUSTOM SCRIPTS -->
     <script src="assets/js/custom.js"></script>
-    
-
+    <script>   
+        window.setTimeout(
+        function(){
+            location.reload(true)
+        },
+        2000
+        );
+    </script>
 
 </body>
 </html>
