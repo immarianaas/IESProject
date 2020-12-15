@@ -25,7 +25,8 @@ def fake_co2(precision=3):
 	# in case there is only one queue:
 	# co2["data_type"] = "co2"
 	co2["value"] = proper_round(np.random.normal(loc=700, scale=0.4), 3)
-	co2["timestamp"] = datetime.datetime.now().isoformat()
+	co2["timestamp"] = datetime.datetime.now().isoformat() #.replace(microsecond=0)
+	print(co2['timestamp'])
 	co2["local"] = "Building A Room A"
 	co2["sensorId"] = 1
 	# co2["type"] = "co2"

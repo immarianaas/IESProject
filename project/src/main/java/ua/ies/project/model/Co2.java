@@ -1,5 +1,6 @@
 package ua.ies.project.model;
 
+
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -12,7 +13,6 @@ import java.util.TimeZone;
 import javax.persistence.*;
 import javax.swing.text.DateFormatter;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -25,36 +25,32 @@ public class Co2 {
     private String local;
     private int sensorId;
 
-    public Co2() {
-    }
+    public Co2() { }
 
     public Co2(String timestamp, int value, String local, int sensorId) {
         //this.timestamp = timestamp;
         this.value = value;
         this.local = local;
         this.sensorId = sensorId;
-
-
         this.timestamp = this.parseDate(timestamp);
     }
 
     public Co2(Date timestamp, int value, String local, int sensorId) {
-        //this.timestamp = timestamp;
+        this.timestamp = timestamp;
         this.value = value;
         this.local = local;
         this.sensorId = sensorId;
-
-
-        this.timestamp = timestamp;
     }
 
     private Date parseDate(String date) {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmmmmm");
+        //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmmmmm");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
         
         try {
+            System.out.println("\n\n\nbefore: "+date);
             Date d = formatter.parse(date);
-            //System.out.println(d);
+            System.out.println("after: "+ d + "\n\n\n");
             return d;
         } catch( Exception e) {
             e.printStackTrace();
@@ -73,10 +69,13 @@ public class Co2 {
     @JsonProperty
     public void setTimestamp(String ts) { 
         this.timestamp = this.parseDate(ts); 
-        //System.out.println("\n\n\n\n ts: " +this.timestamp);
+        System.out.println("\n\n\n\nhere a ser guardado; ts: "+this.timestamp+"\n\n\n\n");
+
+        //System.out.println("\n\n\n\nco2 ts: " +this.timestamp);
     }
-    public void setTimestamp(Date ts) { 
-        this.timestamp = ts; 
+    public void setTimestamp(Date ts) { this.timestamp = ts; 
+        System.out.println("\n\n\n\nhere; ts: "+ts+"\n\n\n\n");
+     
     }
 
     @Column(name="value")

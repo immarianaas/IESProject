@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 import ua.ies.project.model.PeopleCounter;
 
 @Repository
-public interface PeopleCounterRepository extends JpaRepository<PeopleCounter, Long> { }
+public interface PeopleCounterRepository extends JpaRepository<PeopleCounter, Long> { 
+    PeopleCounter findTopByOrderByIdDesc();
+
+}

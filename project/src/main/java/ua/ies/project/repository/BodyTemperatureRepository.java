@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 import ua.ies.project.model.BodyTemperature;
 
 @Repository
-public interface BodyTemperatureRepository extends JpaRepository<BodyTemperature, Long> { }
+public interface BodyTemperatureRepository extends JpaRepository<BodyTemperature, Long> { 
+    BodyTemperature findTopByOrderByIdDesc();
+
+}
