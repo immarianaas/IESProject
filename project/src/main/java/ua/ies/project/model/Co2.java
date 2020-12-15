@@ -25,8 +25,7 @@ public class Co2 {
     private String local;
     private int sensorId;
 
-    public Co2() {
-    }
+    public Co2() { }
 
     public Co2(String timestamp, int value, String local, int sensorId) {
         //this.timestamp = timestamp;
