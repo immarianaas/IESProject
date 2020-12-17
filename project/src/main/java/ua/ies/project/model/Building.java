@@ -13,22 +13,25 @@ public class Building {
     private long buildingID;
 
     @Column(name = "buildingName", nullable = false)
-    private int buildingName;
+    private String buildingName;
 
     @Column(name = "localization", nullable = false)
-    private int localization;
+    private String localization;
 
-    @ManyToMany(mappedBy = "buildings")
+    @OneToMany(mappedBy = "buildings")
     private Set<User> users;
+
+    @OneToMany(mappedBy = "buildings")
+    private Set<Room> rooms;
+
 
     public Building() {
     }
 
-    public Building(long buildingID, String buildingName, String localization, Set<User> users) {
+    public Building(long buildingID, String buildingName) {
         this.buildingID = buildingID;
         this.buildingName = buildingName;
-        this.localization = localization;
-        this.users = users;
+      
     }
     
 }

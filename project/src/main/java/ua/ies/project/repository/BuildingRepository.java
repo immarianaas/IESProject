@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import ua.ies.project.model.PeopleCounter;
 
 @Repository
-public interface BuildingRepository extends JpaRepository<PeopleCounter, Long> { 
-    PeopleCounter find_Building();
+public interface BuildingRepository extends JpaRepository<Building, Long> { 
 
 }
