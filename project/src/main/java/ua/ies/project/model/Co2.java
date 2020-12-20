@@ -18,84 +18,32 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "co2")
-public class Co2 {
-    private long id;
-    private Date timestamp;
+public class Co2 extends Sensor{
+
     private double value;
-    private String local;
-    private int sensorId;
 
-    public Co2() { }
 
-    public Co2(String timestamp, int value, String local, int sensorId) {
-        //this.timestamp = timestamp;
+    public Co2() { 
+        super();
+    }
+
+    public Co2( double value) {
+        super();
         this.value = value;
-        this.local = local;
-        this.sensorId = sensorId;
-        this.timestamp = this.parseDate(timestamp);
+ 
     }
 
-    public Co2(Date timestamp, int value, String local, int sensorId) {
-        this.timestamp = timestamp;
-        this.value = value;
-        this.local = local;
-        this.sensorId = sensorId;
-    }
-
-    private Date parseDate(String date) {
-
-        //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.mmmmmm");
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
-        
-        try {
-            System.out.println("\n\n\nbefore: "+date);
-            Date d = formatter.parse(date);
-            System.out.println("after: "+ d + "\n\n\n");
-            return d;
-        } catch( Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-      }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
-
-
-    @Column(name="timestamp")
-    public Date getTimestamp() { return timestamp; }
-    @JsonProperty
-    public void setTimestamp(String ts) { 
-        this.timestamp = this.parseDate(ts); 
-        System.out.println("\n\n\n\nhere a ser guardado; ts: "+this.timestamp+"\n\n\n\n");
-
-        //System.out.println("\n\n\n\nco2 ts: " +this.timestamp);
-    }
-    public void setTimestamp(Date ts) { this.timestamp = ts; 
-        System.out.println("\n\n\n\nhere; ts: "+ts+"\n\n\n\n");
-     
-    }
 
     @Column(name="value")
-    public Double getValue() { return value; }
+    public double getValue() { return value; }
     public void setValue(double val) {
          value = val; }
 
-    @Column(name="local")
-    public String getLocal() { return local; }
-    public void setLocal(String local) { 
-        this.local = local; }
-
-    @Column(name="sensorId")
-    public int getSensorId() { return sensorId; }
-    public void setSensorId(int id) { 
-        sensorId = id; }
+    
 
     @Override
     public String toString() {
-        return "[ co2 entry id= " + id + ": timestamp= " + timestamp + "; local= " + local + "; sensorId= " + sensorId + "; VALUE= " + value + " ]" ;
+        return "[ co2 entry id= " + super.getId() + ": timestamp= " + super.getTimestamp() +  "; sensorId= " + super.getSensorId() + "; VALUE= " + value + " ]" ;
     }
     
     /* https://www.javaguides.net/2018/09/spring-boot-2-jpa-mysql-crud-example.html */

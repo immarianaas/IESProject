@@ -8,28 +8,65 @@ import java.util.Set;
 @Table(name = "building")
 
 public class Building {
+    private long id;
+
     @Id
-    @Column(name = "buildingID", nullable = false)
-    private long buildingID;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
+
 
     @Column(name = "buildingName", nullable = false)
     private String buildingName;
+    
+    public String getBuildingName() { return buildingName; }
+    public void setBuildingName(String buildingName) { this.buildingName = buildingName; }
 
-    @Column(name = "localization", nullable = false)
-    private String localization;
+    @Column(name = "country", nullable = false)
+    private String country;
+    public String getCountry() { return country; }
+    public void setCountry(String country) { this.country = country; }
 
-    @OneToMany(mappedBy = "buildings")
+
+    
+    @Column(name = "city", nullable = false)
+    private String city;
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+
+
+    @Column(name = "street", nullable = false)
+    private String street;
+    public String getStreet() { return street; }
+    public void setStreet(String street) { this.street = street; }
+
+
+    @Column(name = "door_number", nullable = false)
+    private int door_number;
+    public int getDoor_number() { return door_number; }
+    public void setDoor_number(int door_number) { this.door_number = door_number; }
+
+    
+
+    @OneToMany(mappedBy = "users")
     private Set<User> users;
+    public Set<User> getUsers() { return users; }
+    public void setUsers(Set<User> users) { this.users = users; }
 
-    @OneToMany(mappedBy = "buildings")
+    /*
+    @OneToMany(mappedBy = "rooms")
     private Set<Room> rooms;
+    public Set<Room> getRooms() { return rooms; }
+    public void setRoom(Set<Room> rooms) { this.rooms = rooms; }
+    */
+
 
 
     public Building() {
     }
 
-    public Building(long buildingID, String buildingName) {
-        this.buildingID = buildingID;
+    public Building(long id, String buildingName) {
+        this.id = id;
         this.buildingName = buildingName;
       
     }
