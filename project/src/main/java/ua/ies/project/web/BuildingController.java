@@ -20,12 +20,13 @@ public class BuildingController {
 
 	@Autowired
 	private BuildingService employeeService;
-	
+	/*
 	// display list of employees
 	@GetMapping("/")
 	public String viewHomePage(Model model) {
 		return findPaginated(1, "firstName", "asc", model);		
 	}
+	*/
 	
 	@GetMapping("/showNewEmployeeForm")
 	public String showNewEmployeeForm(Model model) {

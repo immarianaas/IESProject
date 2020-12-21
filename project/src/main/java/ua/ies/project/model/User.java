@@ -17,7 +17,7 @@ public class User {
     @Transient
     private String passwordConfirm;
 
-    @ManyToMany
+    @ManyToMany()
     private Set<Role> roles;
 
     public Long getId() {
@@ -59,4 +59,11 @@ public class User {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
+    @ManyToOne
+    @JoinColumn(name="building_id")
+    private Building building;
+
 }
+
+

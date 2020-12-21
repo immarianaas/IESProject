@@ -8,10 +8,11 @@ import java.util.Set;
 @Table(name = "building")
 
 public class Building {
-    private long id;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
 
@@ -48,7 +49,7 @@ public class Building {
 
     
 
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "building")
     private Set<User> users;
     public Set<User> getUsers() { return users; }
     public void setUsers(Set<User> users) { this.users = users; }
@@ -59,6 +60,12 @@ public class Building {
     public Set<Room> getRooms() { return rooms; }
     public void setRoom(Set<Room> rooms) { this.rooms = rooms; }
     */
+
+    @OneToMany(mappedBy = "building")
+    private Set<Room> rooms;
+
+
+    
 
 
 

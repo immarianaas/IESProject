@@ -8,10 +8,11 @@ import javax.persistence.*;
 @Entity
 @Table(name = "room")
 public class Room {
-    private long id;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
     public long getId() { return id; }
     public void setId(long id) { this.id = id; }
 
@@ -33,19 +34,32 @@ public class Room {
     public int getMaxOccupation() { return maxOccupation; }
     public void setMaxOccupation(int maxOccupation) { this.maxOccupation = maxOccupation; }
 
+    @Column(name = "maxLevelCo2", nullable = true)
+    private double maxLevelCo2;
+    public double getMaxLevelCo2() { return maxLevelCo2; }
+    public void setMaxLevelCo2(double maxLevelCo2) { this.maxLevelCo2 = maxLevelCo2; }
+
+    @Column(name = "maxTemperature", nullable = true)
+    private double maxTemperature;
+    public double getMaxTemperature() { return maxTemperature; }
+    public void setMaxTemperature(double maxTemperature) { this.maxTemperature = maxTemperature; }
+
+
+
     @ManyToOne
     //@JoinColumn(name(mappedBy ="building")
-    @JoinColumn(name = "building", nullable = false)
-    private Building Building;
-    public Building getBuilding() { return Building; }
-    public void setBuilding(Building Building) { this.Building = Building; }
+    //@JoinColumn(name = "building", nullable = false)
+    private Building building;
+    public Building getBuilding() { return building; }
+    public void setBuilding(Building building) { this.building = building; }
 
-
-    @OneToMany(mappedBy = "users")
+    /*
+    @OneToMany(mappedBy = "room")
     private Set<User> users;
     public Set<User> getUsers() { return users; }
     public void setUsers(Set<User> users) { this.users = users; }
-    
+    */
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Co2 address;
@@ -54,11 +68,11 @@ public class Room {
     public Room() {
     }
 
-    public Room(int room_number, int floorNumber, int maxOccupation, Building Building) {
+    public Room(int room_number, int floorNumber, int maxOccupation, Building building) {
         this.room_number = room_number;
         this.floorNumber = floorNumber;
         this.maxOccupation = maxOccupation;
-        this.Building = Building;
+        this.building = building;
     }
 
     
