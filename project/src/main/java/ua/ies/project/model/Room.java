@@ -1,8 +1,9 @@
 package ua.ies.project.model;
 
+import java.util.Set;
+
 import javax.persistence.*;
 
-import org.hibernate.annotations.ForeignKey;
 
 @Entity
 @Table(name = "room")
@@ -32,19 +33,29 @@ public class Room {
     public int getMaxOccupation() { return maxOccupation; }
     public void setMaxOccupation(int maxOccupation) { this.maxOccupation = maxOccupation; }
 
-
-    @ForeignKey(name = "building")
-    @Column(name = "building", nullable = false)
+    @ManyToOne
+    //@JoinColumn(name(mappedBy ="building")
+    @JoinColumn(name = "building", nullable = false)
     private Building Building;
     public Building getBuilding() { return Building; }
     public void setBuilding(Building Building) { this.Building = Building; }
 
 
+    @OneToMany(mappedBy = "users")
+    private Set<User> users;
+    public Set<User> getUsers() { return users; }
+    public void setUsers(Set<User> users) { this.users = users; }
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Co2 address;
+
+
     public Room() {
     }
 
-    public Room(long roomID, int floorNumber, int maxOccupation, Building Building) {
-        this.roomID = roomID;
+    public Room(int room_number, int floorNumber, int maxOccupation, Building Building) {
+        this.room_number = room_number;
         this.floorNumber = floorNumber;
         this.maxOccupation = maxOccupation;
         this.Building = Building;

@@ -27,8 +27,8 @@ public class Co2 extends Sensor{
         super();
     }
 
-    public Co2( double value) {
-        super();
+    public Co2( double value, String timestamp, long sensorId) {
+        super(timestamp,  sensorId);
         this.value = value;
  
     }

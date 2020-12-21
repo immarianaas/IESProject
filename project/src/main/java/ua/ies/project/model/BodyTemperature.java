@@ -1,20 +1,6 @@
 package ua.ies.project.model;
 
-
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.TimeZone;
-
 import javax.persistence.*;
-import javax.swing.text.DateFormatter;
-
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "bodyTemperature")
@@ -27,8 +13,8 @@ public class BodyTemperature extends Sensor{
         super();
     }
 
-    public BodyTemperature( int value) {
-        super();
+    public BodyTemperature( double value, String timestamp, long sensorId) {
+        super( timestamp,  sensorId);
         this.value = value;
  
     }
