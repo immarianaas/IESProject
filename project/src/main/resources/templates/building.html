@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="ISO-8859-1">
-<title>Employee Management System</title>
+<title>Building Management System</title>
 
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
@@ -13,35 +13,46 @@
 <body>
 
 	<div class="container my-2">
-	<h1>Employees List</h1>
+	<h1>Buildings List</h1>
 	
-	<a th:href = "@{/showNewEmployeeForm}" class="btn btn-primary btn-sm mb-3"> Add Employee </a>
+	<a th:href = "@{/newBuildingForm}" class="btn btn-primary btn-sm mb-3"> Add Building </a>
 	
 		<table border="1" class = "table table-striped table-responsive-md">
 			<thead>
 				<tr>
 					<th>
-						<a th:href="@{'/page/' + ${currentPage} + '?sortField=firstName&sortDir=' + ${reverseSortDir}}">
-							Employee First Name</a>
+						<a th:href="@{'/page/' + ${currentPage} + '?sortField=buildingName&sortDir=' + ${reverseSortDir}}">
+							Building Name</a>
 					</th>
 					<th>
-					<a th:href="@{'/page/' + ${currentPage} + '?sortField=lastName&sortDir=' + ${reverseSortDir}}">
-							Employee Last Name</a>
+					<a th:href="@{'/page/' + ${currentPage} + '?sortField=country&sortDir=' + ${reverseSortDir}}">
+							Country</a>
 					</th>
 					<th>
-					<a th:href="@{'/page/' + ${currentPage} + '?sortField=email&sortDir=' + ${reverseSortDir}}">
-							Employee Email</a>
+					<a th:href="@{'/page/' + ${currentPage} + '?sortField=city&sortDir=' + ${reverseSortDir}}">
+							City</a>
+					</th>
+					<th>
+					<a th:href="@{'/page/' + ${currentPage} + '?sortField=street&sortDir=' + ${reverseSortDir}}">
+							Street</a>
+					</th>
+					<th>
+					<a th:href="@{'/page/' + ${currentPage} + '?sortField=doorNumber&sortDir=' + ${reverseSortDir}}">
+							doorNumber</a>
 					</th>
 					<th> Actions </th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="employee : ${listEmployees}">
-					<td th:text="${employee.firstName}"></td>
-					<td th:text="${employee.lastName}"></td>
-					<td th:text="${employee.email}"></td>
-					<td> <a th:href="@{/showFormForUpdate/{id}(id=${employee.id})}" class="btn btn-primary">Update</a>
-					    <a th:href="@{/deleteEmployee/{id}(id=${employee.id})}" class="btn btn-danger">Delete</a>
+				<tr th:each="building : ${listBuildings}">
+					<td th:text="${building.buildingName}"></td>
+					<td th:text="${building.country}"></td>
+					<td th:text="${building.city}"></td>
+					<td th:text="${building.street}"></td>
+					<td th:text="${building.door_number}"></td>
+
+					<td> <a th:href="@{/showFormForUpdate/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
+					    <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
 					</td>
 				</tr>
 			</tbody>

@@ -118,6 +118,92 @@
                         </div>
                     </div>
 
+                    <!-- ---------------------------------------------!-->
+                    
+
+                     <div class="col-md-11">
+                        <div class="table-responsive">
+                        <h3>Buildings List</h3>
+                        
+                       
+                        
+                            <table  style="table-layout: fixed ; width: 100%;" class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            
+                                                Building Name
+                                        </th>
+                                        <th>
+                                       
+                                                Country
+                                        </th>
+                                        <th>
+                                      
+                                                City
+                                        </th>
+                                        <th>
+                                                Street
+                                        </th>
+                                        <th>
+                                                Door Number
+                                        </th>
+                                        <th> Actions </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="building : ${listBuildings}">
+                                        <td th:text="${building.buildingName}"></td>
+                                        <td th:text="${building.country}"></td>
+                                        <td th:text="${building.city}"></td>
+                                        <td th:text="${building.street}"></td>
+                                        <td th:text="${building.door_number}"></td>
+
+                                        <td> <a th:href="@{/showFormForUpdate/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
+                                            <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <a th:href = "@{/newBuildingForm}" class="btn btn-primary btn-sm mb-3"> Add Building </a>
+
+                            <div th:if = "${totalPages > 1}">
+                                <div class = "row col-sm-10">
+                                    <div class = "col-sm-2">
+
+                                    </div>
+
+                                    <div class = "col-sm-2">
+                                        Total Buildings: [[${totalItems}]] 
+                                    </div>
+                                    <div class = "col-sm-1">
+                                        <span th:each="i: ${#numbers.sequence(1, totalPages)}">
+                                            <a th:if="${currentPage != i}" th:href="@{'/page/' + ${i}+ '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
+                                            <span th:unless="${currentPage != i}">[[${i}]]</span>  &nbsp; &nbsp;
+                                        </span>
+                                    </div>
+                                    <div class = "col-sm-1">
+                                        <a th:if="${currentPage < totalPages}" th:href="@{'/page/' + ${currentPage + 1}+ '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
+                                        <span th:unless="${currentPage < totalPages}">Next</span>
+                                    </div>
+                                    
+                                    <div class="col-sm-1">
+                                        <a th:if="${currentPage < totalPages}" th:href="@{'/page/' + ${totalPages}+ '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
+                                        <span th:unless="${currentPage < totalPages}">Last</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+
+                        </div>
+                        <br/>
+                      <br/>
+                       <br/>
+                    </div>
+                     
+
+                    <!-- ---------------------------------------------!-->
+
 
                
 
@@ -186,7 +272,12 @@
                         </div>
                     </div>
 
+                    <!-- ---------------------------------------------!-->
+
+
+
                     <br/>
+                    
                     <div class="col-md-11">
                         <div class="table-responsive">
                             <table style="table-layout: fixed ; width: 100%;" class="table table-striped table-bordered table-hover">
@@ -216,16 +307,14 @@
                             </table>
                         </div>
                     </div>
-                     <div class="col-md-11">
-                        <div class="table-responsive">
-                            <table style="table-layout: fixed ; width: 100%;" class="table table-striped table-bordered table-hover">
-                                <h4><strong>TESTAR</strong></h4>
-                                <a th:href="@{users}">Users</a>
 
-                            </tbody>
-                            </table>
-                        </div>
-                    </div>
+
+
+
+
+
+
+
 
 
 
@@ -269,14 +358,15 @@
     <script src="assets/js/jquery.metisMenu.js"></script>
        <!-- CUSTOM SCRIPTS -->
     <script src="assets/js/custom.js"></script>
+    <!--
     <script>   
         window.setTimeout(
         function(){
             location.reload(true)
         },
-        2000
+        
         );
-    </script>
+    </script>-->
 
 </body>
 </html>

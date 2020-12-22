@@ -5,9 +5,11 @@ import org.springframework.data.domain.Page;
 import ua.ies.project.model.Building;
 
 public interface BuildingService {
-	List<Building> getAllEmployees();
-	void saveEmployee(Building employee);
-	Building getEmployeeById(long id);
-	void deleteEmployeeById(long id);
+	List<Building> getAllBuildings();
+	void saveBuilding(Building buil);
+	Building getBuildingById(long id);
+	void deleteBuildingById(long id);
 	Page<Building> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection);
+	//Page<Building> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection);
+
 }

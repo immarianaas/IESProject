@@ -16,41 +16,46 @@ import ua.ies.project.repository.BuildingRepository;
 public class BuildingServiceImpl implements BuildingService {
 
 	@Autowired
-	private BuildingRepository employeeRepository;
+	private BuildingRepository buildingRepository;
 
+	//obter todos os buildings
 	@Override
-	public List<Building> getAllEmployees() {
-		return employeeRepository.findAll();
+	public List<Building> getAllBuildings() {
+		return buildingRepository.findAll();
 	}
 
+	//guardar o building
 	@Override
-	public void saveEmployee(Building employee) {
-		this.employeeRepository.save(employee);
+	public void saveBuilding(Building building) {
+		this.buildingRepository.save(building);
 	}
 
+	//obter o building por ID
 	@Override
-	public Building getEmployeeById(long id) {
-		Optional<Building> optional = employeeRepository.findById(id);
-		Building employee = null;
+	public Building getBuildingById(long id) {
+		Optional<Building> optional = buildingRepository.findById(id);
+		Building building = null;
 		if (optional.isPresent()) {
-			employee = optional.get();
+			building = optional.get();
 		} else {
-			throw new RuntimeException(" Employee not found for id :: " + id);
+			throw new RuntimeException(" Building not found ->  " + id);
 		}
-		return employee;
+		return building;
 	}
 
+	//eliminar o building
 	@Override
-	public void deleteEmployeeById(long id) {
-		this.employeeRepository.deleteById(id);
+	public void deleteBuildingById(long id) {
+		this.buildingRepository.deleteById(id);
 	}
 
+	//encontar a pagina; existe ordem de paginacao
 	@Override
 	public Page<Building> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection) {
 		Sort sort = sortDirection.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortField).ascending() :
 			Sort.by(sortField).descending();
 		
 		Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
-		return this.employeeRepository.findAll(pageable);
+		return this.buildingRepository.findAll(pageable);
 	}
 }

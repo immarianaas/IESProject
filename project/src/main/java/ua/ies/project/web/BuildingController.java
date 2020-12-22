@@ -19,47 +19,40 @@ import ua.ies.project.service.BuildingService;
 public class BuildingController {
 
 	@Autowired
-	private BuildingService employeeService;
-	/*
-	// display list of employees
-	@GetMapping("/")
+	private BuildingService buildingService;
+	
+
+	@GetMapping("/allBuildings")
 	public String viewHomePage(Model model) {
-		return findPaginated(1, "firstName", "asc", model);		
-	}
-	*/
-	
-	@GetMapping("/showNewEmployeeForm")
-	public String showNewEmployeeForm(Model model) {
-		// create model attribute to bind form data
-		Building employee = new Building();
-		model.addAttribute("employee", employee);
-		return "new_employee";
+		return findPaginated(1, "buildingName", "asc", model);		
 	}
 	
-	@PostMapping("/saveEmployee")
-	public String saveEmployee(@ModelAttribute("employee") Building employee) {
-		// save employee to database
-		employeeService.saveEmployee(employee);
+	
+	
+	@GetMapping("/newBuildingForm")
+	public String shownewBuildingForm(Model model) {
+		Building building = new Building();
+		model.addAttribute("building", building);
+		return "newBuilding";
+	}
+	
+	@PostMapping("/saveBuilding")
+	public String saveBuilding(@ModelAttribute("building") Building building) {
+		buildingService.saveBuilding(building);
 		return "redirect:/";
 	}
 	
 	@GetMapping("/showFormForUpdate/{id}")
 	public String showFormForUpdate(@PathVariable ( value = "id") long id, Model model) {
-		
-		// get employee from the service
-		Building employee = employeeService.getEmployeeById(id);
-		
-		// set employee as a model attribute to pre-populate the form
-		model.addAttribute("employee", employee);
-		return "update_employee";
+		Building building = buildingService.getBuildingById(id);
+		model.addAttribute("building", building);
+		return "updateBuilding";
 	}
 	
-	@GetMapping("/deleteEmployee/{id}")
-	public String deleteEmployee(@PathVariable (value = "id") long id) {
-		
-		// call delete employee method 
-		this.employeeService.deleteEmployeeById(id);
-		return "redirect:/";
+	@GetMapping("/deleteBuilding/{id}")
+	public String deleteBuilding(@PathVariable (value = "id") long id) {
+		this.buildingService.deleteBuildingById(id);
+		return "redirect:/dashboard";
 	}
 	
 	
@@ -68,10 +61,10 @@ public class BuildingController {
 			@RequestParam("sortField") String sortField,
 			@RequestParam("sortDir") String sortDir,
 			Model model) {
-		int pageSize = 5;
+		int pageSize = 4;
 		
-		Page<Building> page = employeeService.findPaginated(pageNo, pageSize, sortField, sortDir);
-		List<Building> listEmployees = page.getContent();
+		Page<Building> page = buildingService.findPaginated(pageNo, pageSize, sortField, sortDir);
+		List<Building> listBuildings = page.getContent();
 		
 		model.addAttribute("currentPage", pageNo);
 		model.addAttribute("totalPages", page.getTotalPages());
@@ -81,7 +74,7 @@ public class BuildingController {
 		model.addAttribute("sortDir", sortDir);
 		model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
 		
-		model.addAttribute("listEmployees", listEmployees);
-		return "index";
+		model.addAttribute("listBuildings", listBuildings);
+		return "dashboard";
 	}
 }
