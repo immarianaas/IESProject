@@ -21,7 +21,10 @@ public class BuildingController {
 	@Autowired
 	private BuildingService buildingService;
 	
-
+	//TODO: Quando se grava um building ao fazer save deve estar th:href="@{/allBuildings}" e n como esta. 
+	//quando se carrega na dash tmb n atualiza
+	//apenas problemas de redirecionamento pq de resto funciona
+	
 	@GetMapping("/allBuildings")
 	public String viewHomePage(Model model) {
 		return findPaginated(1, "buildingName", "asc", model);		
@@ -39,7 +42,7 @@ public class BuildingController {
 	@PostMapping("/saveBuilding")
 	public String saveBuilding(@ModelAttribute("building") Building building) {
 		buildingService.saveBuilding(building);
-		return "redirect:/";
+		return "redirect:/dashboard";
 	}
 	
 	@GetMapping("/showFormForUpdate/{id}")

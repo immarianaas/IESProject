@@ -28,7 +28,7 @@ public class WebController {
     @Autowired
     PeopleCounterRepository peoplecountrep;
     
-    @GetMapping({"/", "/dashboard"})
+    @GetMapping("/dashboard")
     public String dashboard(Model model) {
         // TODO alterar isto pq assim aparece de todas as casas!!
         // (neste momento tá a dar o ultimo de todos e n o ultimo de todos para o edificio X)
@@ -43,5 +43,20 @@ public class WebController {
 	    model.addAttribute("peoplecounter_data", pc);
         return "dashboard";
     }
-    
+
+    @GetMapping("/air_quality")
+    public String getAir_quality(Model model){
+        return "air_quality";
+    }
+
+
+    @GetMapping("/body_temp_control")
+    public String getBody_Temp_Control(Model model){
+        return "body_temp_control";
+    }
+
+    @GetMapping("/people_counter")
+    public String getPeople_counter(Model model){
+        return "people_counter";
+    }
 }

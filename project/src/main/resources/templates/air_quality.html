@@ -1,17 +1,17 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymleaf.org">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- BOOTSTRAP STYLES-->
-    <link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="/css/bootstrap.css" rel="stylesheet" />
     <!-- FONTAWESOME STYLES-->
-    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="/css/font-awesome.css" rel="stylesheet" />
     <!--CUSTOM BASIC STYLES-->
-    <link href="assets/css/basic.css" rel="stylesheet" />
+    <link href="/css/basic.css" rel="stylesheet" />
     <!--CUSTOM MAIN STYLES-->
-    <link href="assets/css/custom.css" rel="stylesheet" />
+    <link href="/css/custom.css" rel="stylesheet" />
     <!-- GOOGLE FONTS-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 </head>
@@ -25,18 +25,22 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="air_control.html">SMART BUILDING</a>
+                <a class="navbar-brand" th:href="@{/dashboard}">SMART BUILDING</a>
             </div>
 
-            <div class="header-right">
+            <div sec:authorize="isAuthenticated()">
+                <form id="logoutForm" method="POST" th:action="@{/logout}">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </form>
 
-             
-                <a href="index.html" class="btn btn-danger" title="Logout"><i class="fa fa-exclamation-circle fa-2x"></i></a>
-
-
+                <h2> <a  class="header-right" onclick="document.forms['logoutForm'].submit()"><i class="fa fa-sign-out fa-2x"></i></a></h2>
             </div>
+
         </nav>
-        <!-- /. NAV TOP  -->
+
+       <!-- <div th:replace="~{fragments/navigation :: navigation}"</div>  -->
+       
+
         <nav class="navbar-default navbar-side" role="navigation">
             <div class="sidebar-collapse">
                 <ul class="nav" id="main-menu">
@@ -44,10 +48,9 @@
                         <div class="user-img-div">
                             <img src="assets/img/user.png" class="img-thumbnail" />
 
-                            <div class="inner-text">
-                                John Jobs
-                            <br />
-                                <small>Last Login : 2 Weeks Ago </small>
+                            <div sec:authorize="isAuthenticated()">
+                                Username: <span sec:authentication="name"></span>
+                           
                             </div>
                         </div>
 
@@ -55,32 +58,37 @@
 
 
                     <li>
-                        <a href="dashboard.html"><i class="fa fa-dashboard "></i>Dashboard</a>
+                        <a  th:href="@{/dashboard}"><i class="fa fa-dashboard "></i>Dashboard</a>
                     </li>
                     
                     <li>
-                        <a class="active-menu"  href="air_control.html"><i class="fa fa-send-o"></i>Air-Control </a>
+                        <a th:href="@{/air_quality}"><i class="fa fa-send-o "></i>Air-Quality </a>
                         
                     </li>
 
                       <li>
-                        <a href="people_counter.html"><i class="fa fa-edit"></i>People Counter</a>
+                        <a th:href="@{/people_counter}"><i class="fa fa-edit"></i>People Counter</a>
                     </li>
  
                    
                     <li>
-                        <a href="body_temp_control.html"><i class="fa fa-plus-square "></i>Body Temperature Control</a>
+                        <a th:href="@{/body_temp_control}"><i class="fa fa-plus-square"></i>Body Temperature Control</a>
                     </li>
                 </ul>
+
             </div>
 
         </nav>
+       
+
+
+
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper">
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Air Control</h1>
+                        <h1 class="page-head-line">Air Quality</h1>
                         <h1 class="page-subhead-line">Here you can see all the existing co2 in the air as well as your access history and a brief description of the co2 values.</h1>
 
                     </div>

@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymleaf.org">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,7 +25,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">SMART BUILDING</a>
+                <a class="navbar-brand" th:href="@{/dashboard}">SMART BUILDING</a>
             </div>
 
         
@@ -40,7 +40,9 @@
 
 
         </nav>
-        <!-- /. NAV TOP  -->
+
+      <!--  <div th:replace="~{fragments/navigation :: navigation}"</div> -->
+
         <nav class="navbar-default navbar-side" role="navigation">
             <div class="sidebar-collapse">
                 <ul class="nav" id="main-menu">
@@ -58,29 +60,29 @@
 
 
                     <li>
-                        <a  class="active-menu" href="dashboard.html"><i class="fa fa-dashboard "></i>Dashboard</a>
+                        <a  th:href="@{/dashboard}"><i class="fa fa-dashboard "></i>Dashboard</a>
                     </li>
                     
                     <li>
-                        <a href="air_control.html"><i class="fa fa-send-o "></i>Air-Control </a>
+                        <a th:href="@{/air_quality}"><i class="fa fa-send-o "></i>Air-Quality </a>
                         
                     </li>
 
                       <li>
-                        <a href="people_counter.html"><i class="fa fa-edit"></i>People Counter</a>
+                        <a th:href="@{/people_counter}"><i class="fa fa-edit"></i>People Counter</a>
                     </li>
  
                    
                     <li>
-                        <a href="body_temp_control.html"><i class="fa fa-plus-square"></i>Body Temperature Control</a>
+                        <a th:href="@{/body_temp_control}"><i class="fa fa-plus-square"></i>Body Temperature Control</a>
                     </li>
                 </ul>
 
             </div>
 
         </nav>
-
-        
+            
+         
         <!-- /. NAV SIDE  -->
         <div id="page-wrapper">
             <div id="page-inner">
@@ -95,30 +97,32 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="main-box mb-red">
-                            <a href="#">
+                            <a th:href="@{/air_quality}">
                                 <i class="fa fa-send-o fa-5x"></i>
-                                <h5>Air Control</h5>
+                                <h5>Air Quality</h5>
                             </a>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="main-box mb-dull">
-                            <a href="#">
+                            <a th:href="@{/people_counter}" >
                                 <i class="fa fa-edit fa-5x"></i>
                                 <h5>People Counter</h5>
                             </a>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="main-box btn btn-danger">
-                            <a href="#">
+                        <div class="main-box  btn-danger">
+                            <a th:href="@{/body_temp_control}" >
                                 <i class="fa fa-plus-square fa-5x"></i>
                                 <h5>Body Temperature Control</h5>
                             </a>
                         </div>
                     </div>
 
-                    <!-- ---------------------------------------------!-->
+                    
+
+                    <!-- ----------------Buildings List-----------------------------!-->
                     
 
                      <div class="col-md-11">

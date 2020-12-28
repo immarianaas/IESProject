@@ -10,6 +10,5 @@ public interface BuildingService {
 	Building getBuildingById(long id);
 	void deleteBuildingById(long id);
 	Page<Building> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection);
-	//Page<Building> findPaginated(int pageNo, int pageSize, String sortField, String sortDirection);
 
 }

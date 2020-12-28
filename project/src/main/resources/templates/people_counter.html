@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymleaf.org">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,7 +25,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">SMART BUILDING</a>
+                <a class="navbar-brand" th:href="@{/dashboard}">SMART BUILDING</a>
             </div>
 
 
@@ -39,50 +39,52 @@
             </div>
 
         </nav>
-        <!-- /. NAV TOP  -->
-        <nav class="navbar-default navbar-side" role="navigation">
-            <div class="sidebar-collapse">
-                <ul class="nav" id="main-menu">
-                    <li>
-                        <div class="user-img-div">
-                            <img src="assets/img/user.png" class="img-thumbnail" />
+        <!-- <div th:replace="~{fragments/navigation :: navigation}"</div> -->
 
-                            <div class="inner-text">
-                                John Jobs
-                            <br />
-                                <small>Last Login : 2 Weeks Ago </small>
+
+            <nav class="navbar-default navbar-side" role="navigation">
+                <div class="sidebar-collapse">
+                    <ul class="nav" id="main-menu">
+                        <li>
+                            <div class="user-img-div">
+                                <img src="assets/img/user.png" class="img-thumbnail" />
+    
+                                <div sec:authorize="isAuthenticated()">
+                                    Username: <span sec:authentication="name"></span>
+                               
+                                </div>
                             </div>
-                        </div>
-
-                    </li>
-
-
-                    <li>
-                        <a href="dashboard.html"><i class="fa fa-dashboard "></i>Dashboard</a>
-                    </li>
-                    
-                    <li>
-                        <a href="air_control.html"><i class="fa fa-send-o"></i>Air-Control </a>
+    
+                        </li>
+    
+    
+                        <li>
+                            <a  th:href="@{/dashboard}" ><i class="fa fa-dashboard "></i>Dashboard</a>
+                        </li>
                         
-                    </li>
-
-                      <li>
-                        <a class="active-menu" href="people_counter.html"><i class="fa fa-edit"></i>People Counter</a>
-                    </li>
- 
-                   
-                    <li>
-                        <a href="body_temp_control.html"><i class="fa fa-plus-square "></i>Body Temperature Control</a>
-                    </li>
-                </ul>
-            </div>
-
-        </nav>
+                        <li>
+                            <a th:href="@{/air_quality}"><i class="fa fa-send-o "></i>Air-Quality </a>
+                            
+                        </li>
+    
+                          <li>
+                            <a th:href="@{/people_counter}"><i class="fa fa-edit"></i>People Counter</a>
+                        </li>
+     
+                       
+                        <li>
+                            <a th:href="@{/body_temp_control}"><i class="fa fa-plus-square"></i>Body Temperature Control</a>
+                        </li>
+                    </ul>
+    
+                </div>
+    
+            </nav>
         <div id="page-wrapper">
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Body Temperature Control</h1>
+                        <h1 class="page-head-line">People Counter</h1>
                         <h1 class="page-subhead-line">All Temperatures Detected</h1>
 
                     </div>
