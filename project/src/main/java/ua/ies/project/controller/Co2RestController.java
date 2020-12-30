@@ -13,7 +13,7 @@ import ua.ies.project.model.Co2;
 import ua.ies.project.repository.Co2Repository;
 
 @RestController
-public class Co2Controller {
+public class Co2RestController {
     
     @Autowired
     Co2Repository co2rep;
