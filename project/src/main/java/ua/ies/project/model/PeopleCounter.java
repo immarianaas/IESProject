@@ -33,6 +33,12 @@ public class PeopleCounter extends Sensor{
  
     }
 
+    public PeopleCounter( int value, Date timestamp, long sensorId) {
+        super( timestamp,  sensorId);
+        this.value = value;
+ 
+    }
+
 
     @Column(name="value")
     public int getValue() { return value; }

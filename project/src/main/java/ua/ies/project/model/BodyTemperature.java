@@ -1,5 +1,7 @@
 package ua.ies.project.model;
 
+import java.util.Date;
+
 import javax.persistence.*;
 
 @Entity
@@ -14,6 +16,12 @@ public class BodyTemperature extends Sensor{
     }
 
     public BodyTemperature( double value, String timestamp, long sensorId) {
+        super( timestamp,  sensorId);
+        this.value = value;
+ 
+    }
+
+    public BodyTemperature( double value, Date timestamp, long sensorId) {
         super( timestamp,  sensorId);
         this.value = value;
  

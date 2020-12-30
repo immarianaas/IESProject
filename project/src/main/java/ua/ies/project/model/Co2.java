@@ -33,6 +33,12 @@ public class Co2 extends Sensor{
  
     }
 
+    public Co2( double value, Date timestamp, long sensorId) {
+        super(timestamp,  sensorId);
+        this.value = value;
+ 
+    }
+
 
     @Column(name="value")
     public double getValue() { return value; }
