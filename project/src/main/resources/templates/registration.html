@@ -28,6 +28,8 @@ background-size: 530px 320px; background-position: 720px 330px;">
 
                     <form method="POST" class="form-signin" th:object="${userForm}" th:action="@{/registration}">
                         <div class="form-group input-group">
+                            <label >Choose your username</label><br>
+
                             <input type="text" th:field="*{username}" class="form-control" placeholder="Username"
                                 autofocus="true">
                             <span class="has-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
@@ -36,6 +38,8 @@ background-size: 530px 320px; background-position: 720px 330px;">
 
 
                         <div class="form-group input-group">
+                            <label >Create a password:</label><br>
+
                             <input type="password" th:field="*{password}" class="form-control" placeholder="Password">
                             <span class="has-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
                         </div>
@@ -43,6 +47,8 @@ background-size: 530px 320px; background-position: 720px 330px;">
 
 
                         <div class="form-group input-group">
+                            <label >Confirm your password:</label><br>
+
                             <input type="password" th:field="*{passwordConfirm}" class="form-control"
                                         placeholder="Confirm your password">
 

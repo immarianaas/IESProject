@@ -258,13 +258,6 @@
     <!-- CUSTOM SCRIPTS -->
     <script src="assets/js/custom.js"></script>
 
-    <script>
-        n =  new Date();
-        y = n.getFullYear();
-        m = n.getMonth() + 1;
-        d = n.getDate();
-        document.getElementById("date").innerHTML = d + "/" + m + "/" + y;
-    </script>
     <p id="demo"></p>
 
     <script>
@@ -273,6 +266,13 @@
         var m = d.getMinutes();
         document.getElementById("hour").innerHTML = h + ":" + m ;
         
+    </script>
+    <script>
+        n =  new Date();
+        y = n.getFullYear();
+        m = n.getMonth() + 1;
+        d = n.getDate();
+        document.getElementById("date").innerHTML = d + "/" + m + "/" + y;
     </script>
 
 </body>
