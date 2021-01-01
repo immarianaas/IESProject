@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
@@ -30,7 +31,7 @@ public class BuildingRestController {
      * acho q estes n faz sentido ter (ou entao alterar para apenas mostrar os
      * correspondentes!!)
      */
-    @GetMapping("/api/buildings")
+    @GetMapping("/api/buildings/all") // to be removed, ou apenas permitir os admins
     public List<Building> seeBuildings() {
         return buildrep.findAll();
     }
@@ -39,6 +40,13 @@ public class BuildingRestController {
     public Optional<Building> buildingsById(@PathVariable Long id) {
         return buildrep.findById(id);
     }
+
+    @GetMapping("/api/buildings") // to be removed, ou apenas permitir os admins
+    public Set<Building> seeBuildings(@CurrentSecurityContext(expression="authentication.name") String username) {
+        User u = userrep.findByUsername(username);
+        return u.getBuildings();
+    }
+
 
     /* fim do comentario anterior */
 
@@ -49,6 +57,9 @@ public class BuildingRestController {
         HashSet<User> building_users = new HashSet<User>();
         building_users.add(u);
         newbuilding.setUsers(building_users);
+        userrep.save(u); // faz update!
+        u.addBuilding(newbuilding);
+
         //System.out.println(u);
         return buildrep.save(newbuilding);
 

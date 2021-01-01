@@ -1,6 +1,8 @@
 package ua.ies.project.model;
 
 import javax.persistence.*;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -68,10 +70,15 @@ public class User {
 
     @ManyToMany
     private Set<Building> buildings;
-    @JoinColumn(name="building_id")
+    //@JoinColumn(name="building_id")
 
     public Set<Building> getBuildings() { return buildings; }
     public void setBuildings(Set<Building> b) { buildings = b; }
+    public void addBuilding(Building b) { 
+        if (buildings == null)
+            buildings = new HashSet<Building>();
+        buildings.add(b);
+    }
 }
 
 

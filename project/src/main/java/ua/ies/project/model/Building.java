@@ -50,7 +50,7 @@ public class Building {
     
 
     //@OneToMany(mappedBy = "building")
-    @ManyToMany //(mappedBy = "building")
+    @ManyToMany(mappedBy = "buildings")
     private Set<User> users;
     public Set<User> getUsers() { return users; }
     public void setUsers(Set<User> users) { this.users = users; }
