@@ -23,21 +23,51 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    
+    /*
+    @Override
+    protected void configure(HttpSecurity http) throws Exception 
+    {
+        http
+         .csrf().disable()
+         .authorizeRequests().anyRequest().authenticated()
+         .and()
+         .httpBasic();
+    }
+    */
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+            .csrf().disable() // added
             .authorizeRequests()
                 .antMatchers("/css/**", "/js/**", "/registration").permitAll()
                 .anyRequest().authenticated()
-                .and()
+            .and() // added
+                // added
+                //.httpBasic()
+                //.and()
+                // ate aqui
+
+
+
             .formLogin()
                 .loginPage("/login")
                 .permitAll()
-                .and()
+            .and()
+                // added
+                // .httpBasic()
+                // .and()
+
+                // ate aqui
             .logout()
-                .permitAll();
+                .permitAll()
+                .and()
+                .httpBasic() // added
+                ;//.and()
+    
     }
+    
 
     @Bean
     public AuthenticationManager customAuthenticationManager() throws Exception {

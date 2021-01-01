@@ -6,7 +6,7 @@ import json
 import fake_data_generators_nd as gen
 
 def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
     channel = connection.channel()
 
     queue_names = ['co2', 'body_temperature', 'people_counter']

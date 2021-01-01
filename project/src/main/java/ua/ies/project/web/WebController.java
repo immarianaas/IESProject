@@ -28,6 +28,11 @@ public class WebController {
 
     @Autowired
     PeopleCounterRepository peoplecountrep;
+
+    @GetMapping("/")
+    public String home(Model model) {
+        return "redirect:/dashboard";
+    }
     
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
