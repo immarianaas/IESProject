@@ -12,39 +12,35 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import ua.ies.project.model.Building;
 import ua.ies.project.model.User;
+import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.RoleRepository;
 import ua.ies.project.repository.UserRepository;
 
 @RestController
-public class UserRestController {
+public class BuildingRestController {
     @Autowired
-    UserRepository userrep;
+    BuildingRepository buildrep;
 
-    /* acho q estes n faz sentido ter */
-    @GetMapping("/api/users")
-    public List<User> seeUsers() {
-        return userrep.findAll();
+    /* acho q estes n faz sentido ter (ou entao alterar para apenas mostrar os correspondentes!!)*/
+    @GetMapping("/api/buildings")
+    public List<Building> seeBuildings() {
+        return buildrep.findAll();
     }
 
-    @GetMapping("/api/users/id/{id}")
-    public Optional<User> userById(@PathVariable Long id) {
-        return userrep.findById(id);
+    @GetMapping("/api/buildings/id/{id}")
+    public Optional<Building> buildingsById(@PathVariable Long id) {
+        return buildrep.findById(id);
     }
 
-    @GetMapping("/api/users/username/{uname}")
-    public User userByUname(@PathVariable String uname) {
-        return userrep.findByUsername(uname);
-    }
 
-    /* acho q estes n faz sentido ter */
+    /* fim do comentario anterior */
 
-    @PostMapping("/api/users")
-    public User newUser(@RequestBody User newuser) {
-        newuser.setPassword(bCryptPasswordEncoder.encode(newuser.getPassword()));
-        newuser.setRoles(new HashSet<>(roleRepository.findAll()));
-
-        return userrep.save(newuser);
+    @PostMapping("/api/buildings")
+    public Building newBuilding(@RequestBody Building newbuilding) {
+        // preciso de saber como se vai buscar o user atual para o adicionar à lista
+        return buildrep.save(newbuilding);
     }
 
     @Autowired

@@ -65,10 +65,6 @@ public class Building {
     private Set<Room> rooms;
 
 
-    
-
-
-
     public Building() {
     }
 
