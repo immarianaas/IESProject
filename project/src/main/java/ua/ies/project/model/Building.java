@@ -1,12 +1,15 @@
 package ua.ies.project.model;
 
 import javax.persistence.*;
-import java.util.Set;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+import java.util.*;
 
 
 @Entity
 @Table(name = "building")
-
 public class Building {
 
     @Id
@@ -54,7 +57,11 @@ public class Building {
     private Set<User> users;
     public Set<User> getUsers() { return users; }
     public void setUsers(Set<User> users) { this.users = users; }
-    public void addUser(User user) { this.users.add(user); }
+    public void addUser(User user) { 
+        if (users == null)
+            users = new HashSet<User>();
+        this.users.add(user); 
+    }
 
     /*
     @OneToMany(mappedBy = "rooms")
@@ -62,9 +69,15 @@ public class Building {
     public Set<Room> getRooms() { return rooms; }
     public void setRoom(Set<Room> rooms) { this.rooms = rooms; }
     */
-
     @OneToMany(mappedBy = "building")
     private Set<Room> rooms;
+    
+    public Set<Room> getRooms() { return rooms; }
+    public void setRooms(Set<Room> rooms) { this.rooms = rooms; }
+    public void addRoom(Room r) {
+        if (rooms == null) rooms = new HashSet<Room>();
+        rooms.add(r);
+    }
 
 
     public Building() {
@@ -74,6 +87,18 @@ public class Building {
         this.id = id;
         this.buildingName = buildingName;
       
+    }
+
+    
+    public Map<String, Object> convertToMap() {
+        HashMap<String, Object> hm = new HashMap<String, Object>();
+        hm.put("id", id);
+        hm.put("buildingName", buildingName);
+        hm.put("country", country);
+        hm.put("city", city);
+        hm.put("street", street);
+        hm.put("door_number", door_number);
+        return hm;
     }
     
 }

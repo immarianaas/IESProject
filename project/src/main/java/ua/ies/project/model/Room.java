@@ -1,7 +1,6 @@
 package ua.ies.project.model;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -59,11 +58,11 @@ public class Room {
     private Set<User> users;
     public Set<User> getUsers() { return users; }
     public void setUsers(Set<User> users) { this.users = users; }
-    */
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Co2 address;
+    */
 
     @OneToMany(mappedBy = "room")
     private Set<Sensor> sensors;
@@ -81,7 +80,16 @@ public class Room {
         this.building = building;
     }
 
-    
+    public Map<String, Object> convertToMap() {
+        HashMap<String, Object> hm = new HashMap<String, Object>();
+        hm.put("id", id);
+        hm.put("room_number", room_number);
+        hm.put("floorNumber", floorNumber);
+        hm.put("maxOccupation", maxOccupation);
+        hm.put("maxLevelCo2", maxLevelCo2);
+        hm.put("maxTemperature", maxTemperature);
+        return hm;
+    }   
 
 }
 

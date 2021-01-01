@@ -31,44 +31,31 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 
 @RestController
-public class BuildingRestController {
+public class RoomRestController {
     @Autowired
     BuildingRepository buildrep;
 
     @Autowired
     RoomRepository roomrep;
 
-    /*
-     * acho q estes n faz sentido ter (ou entao alterar para apenas mostrar os
-     * correspondentes!!)
-     */
-    @GetMapping("/api/buildings/all") // to be removed, ou apenas permitir os admins
-    public List<EntityModel<Map<String, Object>>> seeBuildings() {
+    @GetMapping("/api/rooms/all") // to be removed, ou apenas permitir os admins
+    public List<EntityModel<Map<String, Object>>> seeRooms() {
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
-        for (Building b : buildrep.findAll()) {
-            l.add(getBuildingEntityModel(b));
+        for (Room r : roomrep.findAll()) {
+            l.add(getRoomEntityModel(r));
         }
 
         return l;
     }
 
-    @GetMapping("/api/buildings/{id}") // TODO se for admin, permitir todos, se nao, apenas os correspondentes
-    public EntityModel<Map<String, Object>> buildingById(@PathVariable Long id) {
-        Building b = buildrep.findById(id).orElseThrow();
-        return getBuildingEntityModel(b);
+    @GetMapping("/api/rooms/{id}") // TODO se for admin, permitir todos, se nao, apenas os correspondentes
+    public EntityModel<Map<String, Object>> roomById(@PathVariable Long id) {
+        Room r = roomrep.findById(id).orElseThrow();
+        return getRoomEntityModel(r);
     }
 
-    public static EntityModel<Map<String, Object>> getBuildingEntityModel(Building b) {
-        Map<String, Object> b_map = b.convertToMap();
-        Long id = b.getId();
-        return EntityModel.of(b_map,
-            linkTo(methodOn(BuildingRestController.class).usersByBuilding(id)).withRel("users"),
-            linkTo(methodOn(BuildingRestController.class).roomsByBuilding(id)).withRel("rooms"),
-            linkTo(methodOn(BuildingRestController.class).buildingById(id)).withSelfRel() 
-            );
-        }
-
-    @GetMapping("/api/buildings/{id}/users")
+/*
+    @GetMapping("/api/rooms/{id}/users")
     public List<EntityModel<Map<String, Object>>> usersByBuilding(@PathVariable Long id) {
         Building b = buildrep.findById(id).orElseThrow();
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
@@ -77,19 +64,10 @@ public class BuildingRestController {
         }
         return l;
     }
+    */
 
-    @GetMapping("/api/buildings/{id}/rooms")
-    public List<EntityModel<Map<String, Object>>> roomsByBuilding(@PathVariable Long id) {
-        Building b = buildrep.findById(id).orElseThrow();
-        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
-        for (Room r : b.getRooms()) {
-            l.add(RoomRestController.getRoomEntityModel(r));
-        }
-        return l;
-    }
-
-
-    @GetMapping("/api/buildings") // mostra apenas os do user atual!!
+/*
+    @GetMapping("/api/buildings") // mostra apenas os do user atual!
     public List<EntityModel<Map<String, Object>>> seeBuildings(@CurrentSecurityContext(expression="authentication.name") String username) {
         User u = userrep.findByUsername(username);
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
@@ -98,19 +76,16 @@ public class BuildingRestController {
         }
         return l;
     }
+*/
 
-    /*
-    @GetMapping("/api/buildings/{id}/rooms") // TODO ver se ação é permitida ou nao
-    public Set<Room> getBuildingRooms(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
-        Optional<Building> b_opt = buildrep.findById(id);
-        Building b = null;
-        if (b_opt.isPresent()) {
-            b = b_opt.get();
-        }
-        return b.getRooms();
+    @GetMapping("/api/room/{id}/building") // TODO ver se ação é permitida ou nao
+    public EntityModel<Map<String, Object>> getRoomBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+        Room r = roomrep.findById(id).orElseThrow();
+        return BuildingRestController.getBuildingEntityModel(r.getBuilding());
     }
-    */
 
+    // -------- POST --------
+    /*
 
     @PostMapping("/api/buildings")
     public EntityModel<Map<String, Object>> newBuilding(@CurrentSecurityContext(expression="authentication.name")
@@ -129,32 +104,31 @@ public class BuildingRestController {
     }
 
     @PostMapping("/api/buildings/{id}/rooms")
-    public EntityModel<Map<String, Object>> addRoomToBuilding(
-            @CurrentSecurityContext(expression="authentication.name") String username, 
-            @PathVariable Long id, 
-            @RequestBody Room newroom) {
+    public Set<Room> addRoomToBuilding(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id, @RequestBody Room newroom) {
         Building b = buildrep.findById(id).get();
         newroom.setBuilding(b);
-        Room nr = roomrep.save(newroom);
-        b.addRoom(nr);
+        
+        b.addRoom(roomrep.save(newroom));
         b = buildrep.save(b);
-
-        return RoomRestController.getRoomEntityModel(nr);
-
-        //return b.getRooms();
+        return b.getRooms();
     }
+
+    */
 
 
     @Autowired
     private UserRepository userrep;
     
-/*
-    @Override
-    public void save(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRoles(new HashSet<>(roleRepository.findAll()));
-        userRepository.save(user);
-    }
-*/
+
+    public static EntityModel<Map<String, Object>> getRoomEntityModel(Room r) {
+        Map<String, Object> r_map = r.convertToMap();
+        Long id = r.getId();
+        return EntityModel.of(r_map,
+            linkTo(methodOn(BuildingRestController.class).buildingById(r.getBuilding().getId())).withRel("building"),
+            // SENSORES -> linkTo(methodOn(BuildingRestController.class).buildingById(r.getBuilding().getId())).withRel("users"),
+            linkTo(methodOn(RoomRestController.class).roomById(id)).withSelfRel() 
+            );
+        }
+        
 
 }

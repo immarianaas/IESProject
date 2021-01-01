@@ -1,6 +1,9 @@
 package ua.ies.project.model;
 
 import javax.persistence.*;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -47,5 +50,13 @@ public class Role {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    
+    public Map<String, Object> convertToMap() {
+        HashMap<String, Object> hm = new HashMap<String, Object>();
+        hm.put("id", id);
+        hm.put("name", name);
+        return hm;
     }
 }

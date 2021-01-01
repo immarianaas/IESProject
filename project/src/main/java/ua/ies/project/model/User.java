@@ -2,7 +2,9 @@ package ua.ies.project.model;
 
 import javax.persistence.*;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -78,6 +80,16 @@ public class User {
         if (buildings == null)
             buildings = new HashSet<Building>();
         buildings.add(b);
+    }
+
+
+    public Map<String, Object> convertToMap() {
+        HashMap<String, Object> hm = new HashMap<String, Object>();
+        hm.put("id", id);
+        hm.put("username", username);
+        hm.put("password", password);
+        hm.put("passwordConfirm", passwordConfirm);
+        return hm;
     }
 }
 
