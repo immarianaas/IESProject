@@ -49,10 +49,12 @@ public class Building {
 
     
 
-    @OneToMany(mappedBy = "building")
+    //@OneToMany(mappedBy = "building")
+    @ManyToMany //(mappedBy = "building")
     private Set<User> users;
     public Set<User> getUsers() { return users; }
     public void setUsers(Set<User> users) { this.users = users; }
+    public void addUser(User user) { this.users.add(user); }
 
     /*
     @OneToMany(mappedBy = "rooms")

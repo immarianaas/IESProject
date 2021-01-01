@@ -60,10 +60,18 @@ public class User {
         this.roles = roles;
     }
 
+    /*
     @ManyToOne
     @JoinColumn(name="building_id")
     private Building building;
+    */
 
+    @ManyToMany
+    private Set<Building> buildings;
+    @JoinColumn(name="building_id")
+
+    public Set<Building> getBuildings() { return buildings; }
+    public void setBuildings(Set<Building> b) { buildings = b; }
 }
 
 

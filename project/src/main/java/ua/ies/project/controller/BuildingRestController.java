@@ -1,10 +1,13 @@
 package ua.ies.project.controller;
 
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +26,10 @@ public class BuildingRestController {
     @Autowired
     BuildingRepository buildrep;
 
-    /* acho q estes n faz sentido ter (ou entao alterar para apenas mostrar os correspondentes!!)*/
+    /*
+     * acho q estes n faz sentido ter (ou entao alterar para apenas mostrar os
+     * correspondentes!!)
+     */
     @GetMapping("/api/buildings")
     public List<Building> seeBuildings() {
         return buildrep.findAll();
@@ -34,15 +40,22 @@ public class BuildingRestController {
         return buildrep.findById(id);
     }
 
-
     /* fim do comentario anterior */
 
     @PostMapping("/api/buildings")
-    public Building newBuilding(@RequestBody Building newbuilding) {
-        // preciso de saber como se vai buscar o user atual para o adicionar à lista
+    public Building newBuilding(@CurrentSecurityContext(expression="authentication.name")
+    String username, @RequestBody Building newbuilding) {
+        User u = userrep.findByUsername(username);
+        HashSet<User> building_users = new HashSet<User>();
+        building_users.add(u);
+        newbuilding.setUsers(building_users);
+        //System.out.println(u);
         return buildrep.save(newbuilding);
+
     }
 
+    @Autowired
+    private UserRepository userrep;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
