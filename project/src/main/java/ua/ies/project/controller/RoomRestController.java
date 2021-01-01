@@ -78,11 +78,12 @@ public class RoomRestController {
     }
 */
 
-    @GetMapping("/api/room/{id}/building") // TODO ver se ação é permitida ou nao
+    @GetMapping("/api/rooms/{id}/buildings") // TODO ver se ação é permitida ou nao
     public EntityModel<Map<String, Object>> getRoomBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         Room r = roomrep.findById(id).orElseThrow();
         return BuildingRestController.getBuildingEntityModel(r.getBuilding());
     }
+
 
     // -------- POST --------
     /*

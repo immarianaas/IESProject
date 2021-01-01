@@ -2,6 +2,7 @@ package ua.ies.project;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Component;
 import ua.ies.project.model.BodyTemperature;
 import ua.ies.project.model.Co2;
 import ua.ies.project.model.PeopleCounter;
+import ua.ies.project.model.Sensor;
 import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.PeopleCounterRepository;
+import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.BodyTemperatureRepository;
 
 @Component
@@ -26,6 +29,10 @@ public class Receiver {
 
     @Autowired
     private PeopleCounterRepository peopleCounterRepository;
+
+    @Autowired
+    private SensorRepository sensorrep;
+    
 
 
     @Bean
@@ -55,17 +62,55 @@ public class Receiver {
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES , true);
         //System.out.println("\n CO2: " + in);
 
+        String[] s = getSensorId(in);
+        long id = -1;
         try {
-            input = mapper.readValue(in, Co2.class);
+            id = Long.parseLong(s[1]);
+            System.out.println("number parsed gud!");
+        } catch(Exception e) {
+            System.err.println("Error parsing ID.");
+            return;
+        }
+
+        Sensor sens = null;
+        try {
+            sens = sensorrep.findOneBySensorId(id);
+            if (sens == null) {
+                System.err.println("There is no sensor with that ID.");
+                //return;
+            }
+            System.out.println("sensor found gud! -> " + sens);
+
+        } catch(Exception e) {  // TODO arranjar isto
+            e.printStackTrace();
+            System.err.println("There is no sensor with that ID.");
+            return;
+        }
+
+        try {
+            input = mapper.readValue(s[0], Co2.class);
             //input.setWarn(warn);
+            if (sens != null)
+                input.setSensor(sens);
             co2Repository.save(input);
             System.out.println("Co2 object saved to database!!");
             System.out.println(input);
         } catch (Exception e) {
+            getSensorId(in);
+            System.out.println(in);
             System.err.println("Error parsing JSON to Co2 object.");
             //e.printStackTrace();
         } 
         //System.out.println(input);
+    }
+
+    private static String[] getSensorId(String s) {
+        String s_to_return = s.substring(0, s.indexOf(", 'sensorId'")) + "}";
+        String number = s.substring(s.lastIndexOf(": ")+2, s.length()-1);
+        System.out.println("to return: " + s_to_return);
+        System.out.println("number: " + number);
+
+        return new String[] {s_to_return, number};
     }
 
     @RabbitListener(queues="body_temperature")

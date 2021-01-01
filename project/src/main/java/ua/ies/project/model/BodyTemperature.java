@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "bodyTemperature")
-public class BodyTemperature extends Sensor{
+public class BodyTemperature extends SensorData{
 
     private double value;
 
@@ -15,14 +15,14 @@ public class BodyTemperature extends Sensor{
         super();
     }
 
-    public BodyTemperature( double value, String timestamp, long sensorId, boolean warn) {
-        super( timestamp,  sensorId, warn);
+    public BodyTemperature( double value, String timestamp, Sensor sensor, boolean warn) {
+        super( timestamp,  sensor, warn);
         this.value = value;
  
     }
 
-    public BodyTemperature( double value, Date timestamp, long sensorId, boolean warn) {
-        super( timestamp,  sensorId, warn);
+    public BodyTemperature( double value, Date timestamp, Sensor sensor, boolean warn) {
+        super( timestamp,  sensor, warn);
         this.value = value;
  
     }
@@ -37,7 +37,7 @@ public class BodyTemperature extends Sensor{
 
     @Override
     public String toString() {
-        return "[ co2 entry id= " + super.getId() + ": timestamp= " + super.getTimestamp() +  "; sensorId= " + super.getSensorId() + "; VALUE= " + value + " ]" ;
+        return "[ co2 entry id= " + super.getId() + ": timestamp= " + super.getTimestamp() +  "; sensor= " + super.getSensor() + "; VALUE= " + value + " ]" ;
     }
     
     /* https://www.javaguides.net/2018/09/spring-boot-2-jpa-mysql-crud-example.html */

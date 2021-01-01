@@ -18,29 +18,27 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "co2")
-public class Co2 extends Sensor{
-
-    private double value;
-
+public class Co2 extends SensorData {
 
     public Co2() { 
         super();
     }
 
-    public Co2( double value, String timestamp, long sensorId, boolean warn) {
-        super(timestamp,  sensorId, warn);
+    public Co2( double value, String timestamp, Sensor sensor, boolean warn) {
+        super(timestamp,  sensor, warn);
         this.value = value;
  
     }
 
-    public Co2( double value, Date timestamp, long sensorId, boolean warn) {
-        super(timestamp,  sensorId, warn);
+    public Co2( double value, Date timestamp, Sensor sensor, boolean warn) {
+        super(timestamp,  sensor, warn);
         this.value = value;
  
     }
 
 
     @Column(name="value")
+    private double value;
     public double getValue() { return value; }
     public void setValue(double val) {
          value = val; }
@@ -49,7 +47,7 @@ public class Co2 extends Sensor{
 
     @Override
     public String toString() {
-        return "[ co2 entry id= " + super.getId() + ": timestamp= " + super.getTimestamp() +  "; sensorId= " + super.getSensorId() + "; VALUE= " + value + " ]" ;
+        return "[ co2 entry id= " + super.getId() + ": timestamp= " + super.getTimestamp() +  "; sensor= " + super.getSensor() + "; VALUE= " + value + " ]" ;
     }
     
     /* https://www.javaguides.net/2018/09/spring-boot-2-jpa-mysql-crud-example.html */
