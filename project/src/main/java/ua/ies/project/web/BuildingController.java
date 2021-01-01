@@ -12,30 +12,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import ua.ies.project.model.Building;
-import ua.ies.project.model.User;
-import ua.ies.project.service.BuildingService;
-import ua.ies.project.service.UserService;
+import ua.ies.project.repository.BuildingRepository;
+import ua.ies.project.repository.UserRepository;
+import java.util.Optional;
 
 @Controller
 public class BuildingController {
 
 	@Autowired
-	private BuildingService buildingService;
+	private BuildingRepository buildingRepository;
 
 	@Autowired
-	private UserService userService;
+	private UserRepository userRepository;
 	
 	//PARECE SER MAIS O dashboard do webController
 	@GetMapping("/allBuildings")
 	public String viewHomePage(Model model) {
 		
 		//load buildings
-		List<Building> listBuildings = buildingService.getAllBuildings();
+		List<Building> listBuildings = buildingRepository.findAll();
 		model.addAttribute("listBuildings", listBuildings);
 
 
 		return "dashboard";
-		//return findPaginated(1, "buildingName", "asc", model);		
 	}
 	
 	
@@ -50,25 +49,39 @@ public class BuildingController {
 	@PostMapping("/saveBuilding")
 	public String saveBuilding(@ModelAttribute("building") Building building,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
 		//user authenticated
-		User user = userService.findByUsername(username);
+		//User user = userService.findByUsername(username);
 
 		
 
 		//load all buildings
-		buildingService.saveBuilding(building);
+		buildingRepository.save(building);
 		
-		List<Building> listBuildings = buildingService.getAllBuildings();
+		List<Building> listBuildings = buildingRepository.findAll();
 		
 		model.addAttribute("listBuildings", listBuildings);
 		
 		return "dashboard";
 	}
 	
+	public Building getBuildingById(long id) {
+		Optional<Building> optional = buildingRepository.findById(id);
+		
+		Building building = null;
+		
+		if (optional.isPresent()) {
+			building = optional.get();
+		} else {
+			throw new RuntimeException(" Building not found ->  " + id);
+		}
+		
+		return building;
+	}
+
 	@GetMapping("/showFormForUpdate/{id}")
 	public String showFormForUpdate(@PathVariable ( value = "id") long id, Model model) {
-		Building building = buildingService.getBuildingById(id);
+		Building building = getBuildingById(id);
 		model.addAttribute("building", building);
-		List<Building> listBuildings = buildingService.getAllBuildings();
+		List<Building> listBuildings = buildingRepository.findAll();
 		
 		model.addAttribute("listBuildings", listBuildings);
 		
@@ -77,36 +90,13 @@ public class BuildingController {
 	
 	@GetMapping("/deleteBuilding/{id}")
 	public String deleteBuilding(@PathVariable (value = "id") long id,  Model model) {
-		this.buildingService.deleteBuildingById(id);
+		this.buildingRepository.deleteById(id);
 
-		List<Building> listBuildings = buildingService.getAllBuildings();
+		List<Building> listBuildings = buildingRepository.findAll();
 		model.addAttribute("listBuildings", listBuildings);
 		
 		return "dashboard";
 	}
+
 	
-	/*
-	
-	@GetMapping("/page/{pageNo}")
-	public String findPaginated(@PathVariable (value = "pageNo") int pageNo, 
-			@RequestParam("sortField") String sortField,
-			@RequestParam("sortDir") String sortDir,
-			Model model) {
-		int pageSize = 4;
-		
-		Page<Building> page = buildingService.findPaginated(pageNo, pageSize, sortField, sortDir);
-		List<Building> listBuildings = page.getContent();
-		
-		model.addAttribute("currentPage", pageNo);
-		model.addAttribute("totalPages", page.getTotalPages());
-		model.addAttribute("totalItems", page.getTotalElements());
-		
-		model.addAttribute("sortField", sortField);
-		model.addAttribute("sortDir", sortDir);
-		model.addAttribute("reverseSortDir", sortDir.equals("asc") ? "desc" : "asc");
-		
-		model.addAttribute("listBuildings", listBuildings);
-		return "dashboard";
-	}
-	*/
 }

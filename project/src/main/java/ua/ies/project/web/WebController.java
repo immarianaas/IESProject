@@ -14,10 +14,10 @@ import ua.ies.project.model.BodyTemperature;
 import ua.ies.project.model.Co2;
 import ua.ies.project.model.PeopleCounter;
 import ua.ies.project.repository.BodyTemperatureRepository;
+import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.PeopleCounterRepository;
 import ua.ies.project.model.Building;
-import ua.ies.project.service.BuildingService;
 
 @Controller
 public class WebController {
@@ -33,7 +33,7 @@ public class WebController {
 
 
 	@Autowired
-	private BuildingService buildingService;
+	private BuildingRepository buildingRepository;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -54,7 +54,7 @@ public class WebController {
         model.addAttribute("peoplecounter_data", pc);
         
         //load buildings
-        List<Building> listBuildings = buildingService.getAllBuildings();
+		List<Building> listBuildings = buildingRepository.findAll();
         model.addAttribute("listBuildings", listBuildings);
         
         return "dashboard";

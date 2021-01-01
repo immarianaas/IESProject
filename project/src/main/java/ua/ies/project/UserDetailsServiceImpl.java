@@ -1,4 +1,4 @@
-package ua.ies.project.service;
+package ua.ies.project;
 
 import ua.ies.project.model.Role;
 import ua.ies.project.model.User;
