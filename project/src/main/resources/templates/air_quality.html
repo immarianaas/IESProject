@@ -46,11 +46,11 @@
                 <ul class="nav" id="main-menu">
                     <li>
                         <div class="user-img-div">
-                            <img src="assets/img/user.png" class="img-thumbnail" />
 
                             <div sec:authorize="isAuthenticated()">
-                                Username: <span sec:authentication="name"></span>
-                           
+                                <h4>Welcome!</br> <span sec:authentication="name" ></span> </br>
+                                </br>
+                                Today: <span id="date"></span> </h4>
                             </div>
                         </div>
 
@@ -212,6 +212,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+
                                         <tr>
                                             <td>1</td>
                                             <td>250-400</td>
@@ -252,6 +253,7 @@
                      </div>
          
                 </div>
+                
         </div>
                 <!------------------------------------------------------------------------------------------------->
            

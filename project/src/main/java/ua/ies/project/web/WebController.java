@@ -16,6 +16,8 @@ import ua.ies.project.model.PeopleCounter;
 import ua.ies.project.repository.BodyTemperatureRepository;
 import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.PeopleCounterRepository;
+import ua.ies.project.model.Building;
+import ua.ies.project.service.BuildingService;
 
 @Controller
 public class WebController {
@@ -28,6 +30,10 @@ public class WebController {
 
     @Autowired
     PeopleCounterRepository peoplecountrep;
+
+
+	@Autowired
+	private BuildingService buildingService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -44,9 +50,13 @@ public class WebController {
         PeopleCounter pc = peoplecountrep.findTopByOrderByIdDesc();
 
         model.addAttribute("co2_data", co2);
-        //System.out.println("\n\n\n"+co2+"\n\n\n");
 	    model.addAttribute("bodytemp_data", bt);
-	    model.addAttribute("peoplecounter_data", pc);
+        model.addAttribute("peoplecounter_data", pc);
+        
+        //load buildings
+        List<Building> listBuildings = buildingService.getAllBuildings();
+        model.addAttribute("listBuildings", listBuildings);
+        
         return "dashboard";
     }
 

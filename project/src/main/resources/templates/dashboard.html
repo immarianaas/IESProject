@@ -48,11 +48,11 @@
                 <ul class="nav" id="main-menu">
                     <li>
                         <div class="user-img-div">
-                            <img src="assets/img/user.png" class="img-thumbnail" />
 
                             <div sec:authorize="isAuthenticated()">
-                                Username: <span sec:authentication="name"></span>
-                           
+                                <h4>Welcome!</br> <span sec:authentication="name" ></span> </br>
+                                </br>
+                                Today: <span id="date"></span> </h4>
                             </div>
                         </div>
 
@@ -171,32 +171,6 @@
                             </table>
                             <a th:href = "@{/newBuildingForm}" class="btn btn-primary btn-sm mb-3"> Add Building </a>
 
-                            <div th:if = "${totalPages > 1}">
-                                <div class = "row col-sm-10">
-                                    <div class = "col-sm-2">
-
-                                    </div>
-
-                                    <div class = "col-sm-2">
-                                        Total Buildings: [[${totalItems}]] 
-                                    </div>
-                                    <div class = "col-sm-1">
-                                        <span th:each="i: ${#numbers.sequence(1, totalPages)}">
-                                            <a th:if="${currentPage != i}" th:href="@{'/page/' + ${i}+ '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">[[${i}]]</a>
-                                            <span th:unless="${currentPage != i}">[[${i}]]</span>  &nbsp; &nbsp;
-                                        </span>
-                                    </div>
-                                    <div class = "col-sm-1">
-                                        <a th:if="${currentPage < totalPages}" th:href="@{'/page/' + ${currentPage + 1}+ '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Next</a>
-                                        <span th:unless="${currentPage < totalPages}">Next</span>
-                                    </div>
-                                    
-                                    <div class="col-sm-1">
-                                        <a th:if="${currentPage < totalPages}" th:href="@{'/page/' + ${totalPages}+ '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}}">Last</a>
-                                        <span th:unless="${currentPage < totalPages}">Last</span>
-                                    </div>
-                                </div>
-                            </div>
                             <br/>
 
                         </div>

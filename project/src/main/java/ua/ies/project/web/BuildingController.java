@@ -3,31 +3,39 @@ package ua.ies.project.web;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import ua.ies.project.model.Building;
+import ua.ies.project.model.User;
 import ua.ies.project.service.BuildingService;
+import ua.ies.project.service.UserService;
 
 @Controller
 public class BuildingController {
 
 	@Autowired
 	private BuildingService buildingService;
+
+	@Autowired
+	private UserService userService;
 	
-	//TODO: Quando se grava um building ao fazer save deve estar th:href="@{/allBuildings}" e n como esta. 
-	//quando se carrega na dash tmb n atualiza
-	//apenas problemas de redirecionamento pq de resto funciona
-	
+	//PARECE SER MAIS O dashboard do webController
 	@GetMapping("/allBuildings")
 	public String viewHomePage(Model model) {
-		return findPaginated(1, "buildingName", "asc", model);		
+		
+		//load buildings
+		List<Building> listBuildings = buildingService.getAllBuildings();
+		model.addAttribute("listBuildings", listBuildings);
+
+
+		return "dashboard";
+		//return findPaginated(1, "buildingName", "asc", model);		
 	}
 	
 	
@@ -40,24 +48,44 @@ public class BuildingController {
 	}
 	
 	@PostMapping("/saveBuilding")
-	public String saveBuilding(@ModelAttribute("building") Building building) {
+	public String saveBuilding(@ModelAttribute("building") Building building,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		//user authenticated
+		User user = userService.findByUsername(username);
+
+		
+
+		//load all buildings
 		buildingService.saveBuilding(building);
-		return "redirect:/dashboard";
+		
+		List<Building> listBuildings = buildingService.getAllBuildings();
+		
+		model.addAttribute("listBuildings", listBuildings);
+		
+		return "dashboard";
 	}
 	
 	@GetMapping("/showFormForUpdate/{id}")
 	public String showFormForUpdate(@PathVariable ( value = "id") long id, Model model) {
 		Building building = buildingService.getBuildingById(id);
 		model.addAttribute("building", building);
+		List<Building> listBuildings = buildingService.getAllBuildings();
+		
+		model.addAttribute("listBuildings", listBuildings);
+		
 		return "updateBuilding";
 	}
 	
 	@GetMapping("/deleteBuilding/{id}")
-	public String deleteBuilding(@PathVariable (value = "id") long id) {
+	public String deleteBuilding(@PathVariable (value = "id") long id,  Model model) {
 		this.buildingService.deleteBuildingById(id);
-		return "redirect:/dashboard";
+
+		List<Building> listBuildings = buildingService.getAllBuildings();
+		model.addAttribute("listBuildings", listBuildings);
+		
+		return "dashboard";
 	}
 	
+	/*
 	
 	@GetMapping("/page/{pageNo}")
 	public String findPaginated(@PathVariable (value = "pageNo") int pageNo, 
@@ -80,4 +108,5 @@ public class BuildingController {
 		model.addAttribute("listBuildings", listBuildings);
 		return "dashboard";
 	}
+	*/
 }

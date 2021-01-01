@@ -29,7 +29,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" th:href="@{/allBuildings}">SMART BUILDING</a>
+                <a class="navbar-brand" th:href="@{/dashboard}">SMART BUILDING</a>
             </div>
 
 
@@ -51,11 +51,11 @@
                     <ul class="nav" id="main-menu">
                         <li>
                             <div class="user-img-div">
-                                <img src="assets/img/user.png" class="img-thumbnail" />
-    
+
                                 <div sec:authorize="isAuthenticated()">
-                                    Username: <span sec:authentication="name"></span>
-                               
+                                    <h4>Welcome!</br> <span sec:authentication="name" ></span> </br>
+                                    </br>
+                                    Today: <span id="date"></span> </h4>
                                 </div>
                             </div>
     
@@ -95,27 +95,33 @@
                 </div>
 
                 <div class="container">
-                    <div class="row text-center " style="padding-top:100px;">
+                    <div class="row text-center " style="padding-top:100px; padding-left:100px;">
                         <br/>
                     </div>
                        <div class="row ">
                             <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1" >
                                 <form action="#" th:action="@{/saveBuilding}" th:object="${building}"
                                     method="POST">
-                                    <input type="text" th:field="*{buildingName}"
-                                        placeholder="Building Name" class="form-control mb-4 col-4">
-                                        
+                                        <label >Building name:</label><br>
+                                        <input type="text" th:field="*{buildingName}"
+                                         class="form-control mb-4 col-4">
+
+                                        <label>Country:</label><br>
                                         <input type="text" th:field="*{country}"
-                                        placeholder="Country" class="form-control mb-4 col-4">
-                                        
+                                        class="form-control mb-4 col-4">
+
+                                        <label >City:</label><br>
                                         <input type="text" th:field="*{city}"
-                                        placeholder="City" class="form-control mb-4 col-4">
+                                         class="form-control mb-4 col-4">
                                         
+                                        <label>Street:</label><br>
                                         <input type="text" th:field="*{street}"
-                                        placeholder="Street" class="form-control mb-4 col-4">
-            
+                                         class="form-control mb-4 col-4">
+
+                                        <label >Building Number:</label><br>
                                         <input type="text" th:field="*{door_number}"
-                                        placeholder="Door Number" class="form-control mb-4 col-4">
+                                        class="form-control mb-4 col-4">
+                                        
                                         <br/>
                                         <button type="submit" class="btn btn-info col-4"> Save Building</button>
             
