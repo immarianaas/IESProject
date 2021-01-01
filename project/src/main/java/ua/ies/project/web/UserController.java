@@ -1,5 +1,6 @@
 package ua.ies.project.web;
 
+import ua.ies.project.UserDetailsServiceImpl;
 import ua.ies.project.model.Role;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.RoleRepository;
@@ -57,6 +58,11 @@ public class UserController {
     private AuthenticationManager authenticationManager;
 
 
+    @Autowired
+    private UserDetailsServiceImpl userDetailsServiceImpl;
+
+
+
 
     //Security
     public boolean isAuthenticated() {
@@ -69,20 +75,9 @@ public class UserController {
     }
 
 
-    public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) throw new UsernameNotFoundException(username);
-
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        for (Role role : user.getRoles()){
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
-
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
-    }
 
     public void autoLogin(String username, String password) {
-        UserDetails userDetails = loadUserByUsername(username);
+        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
 
         authenticationManager.authenticate(usernamePasswordAuthenticationToken);
