@@ -27,14 +27,14 @@ public class Co2 extends Sensor{
         super();
     }
 
-    public Co2( double value, String timestamp, long sensorId) {
-        super(timestamp,  sensorId);
+    public Co2( double value, String timestamp, long sensorId, boolean warn) {
+        super(timestamp,  sensorId, warn);
         this.value = value;
  
     }
 
-    public Co2( double value, Date timestamp, long sensorId) {
-        super(timestamp,  sensorId);
+    public Co2( double value, Date timestamp, long sensorId, boolean warn) {
+        super(timestamp,  sensorId, warn);
         this.value = value;
  
     }

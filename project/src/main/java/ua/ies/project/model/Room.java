@@ -1,5 +1,6 @@
 package ua.ies.project.model;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -63,6 +64,11 @@ public class Room {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Co2 address;
+
+    @OneToMany(mappedBy = "room")
+    private Set<Sensor> sensors;
+    public Set<Sensor> getSensors() { return sensors; }
+    public void setSensors(Set<Sensor> sensors) { this.sensors = sensors; }
 
 
     public Room() {

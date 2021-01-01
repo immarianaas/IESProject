@@ -15,14 +15,14 @@ public class BodyTemperature extends Sensor{
         super();
     }
 
-    public BodyTemperature( double value, String timestamp, long sensorId) {
-        super( timestamp,  sensorId);
+    public BodyTemperature( double value, String timestamp, long sensorId, boolean warn) {
+        super( timestamp,  sensorId, warn);
         this.value = value;
  
     }
 
-    public BodyTemperature( double value, Date timestamp, long sensorId) {
-        super( timestamp,  sensorId);
+    public BodyTemperature( double value, Date timestamp, long sensorId, boolean warn) {
+        super( timestamp,  sensorId, warn);
         this.value = value;
  
     }

@@ -27,14 +27,14 @@ public class PeopleCounter extends Sensor{
         super();
     }
 
-    public PeopleCounter( int value,String timestamp, long sensorId) {
-        super( timestamp,  sensorId);
+    public PeopleCounter( int value,String timestamp, long sensorId, boolean warn) {
+        super( timestamp,  sensorId, warn);
         this.value = value;
  
     }
 
-    public PeopleCounter( int value, Date timestamp, long sensorId) {
-        super( timestamp,  sensorId);
+    public PeopleCounter( int value, Date timestamp, long sensorId, boolean warn) {
+        super( timestamp,  sensorId, warn);
         this.value = value;
  
     }

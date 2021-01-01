@@ -57,6 +57,7 @@ public class Receiver {
 
         try {
             input = mapper.readValue(in, Co2.class);
+            //input.setWarn(warn);
             co2Repository.save(input);
             System.out.println("Co2 object saved to database!!");
             System.out.println(input);

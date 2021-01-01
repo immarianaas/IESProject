@@ -13,8 +13,11 @@ import java.util.TimeZone;
 import javax.persistence.*;
 import javax.swing.text.DateFormatter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import ua.ies.project.model.Room;
 
 @Entity
 @Table(name = "sensor")
@@ -24,22 +27,25 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Sensor {
     private long id;
     private Date timestamp;
-
+    
+    private Room room;
 
     private long sensorId;
-
+    private boolean warn;
 
     public Sensor() { }
 
-    public Sensor(String timestamp, long sensorId) {
+    public Sensor(String timestamp, long sensorId, boolean warn) {
 
         this.sensorId = sensorId;
         this.timestamp = this.parseDate(timestamp);
+        this.warn = warn;
     }
 
-    public Sensor(Date timestamp,  long sensorId) {
+    public Sensor(Date timestamp,  long sensorId, boolean warn) {
         this.timestamp = timestamp;
         this.sensorId = sensorId;
+        this.warn = warn;
     }
 
     private Date parseDate(String date) {
@@ -83,10 +89,21 @@ public class Sensor {
     public void setSensorId(long id) { 
         sensorId = id; }
 
+    @JsonIgnore
+    @Column(name="warn")
+    public boolean getWarn() { return warn; }
+    public void setWarn(boolean warn) { this.warn = warn; }
+    
+
     @Override
     public String toString() {
         return "[ sensor entry id= " + id + ": timestamp= " + timestamp + "; sensorId= " + sensorId + "; ]" ;
     }
+
+    @ManyToOne()
+    public Room getRoom() { return room; }
+    public void setRoom(Room room) { this.room = room; }
+
     
     /* https://www.javaguides.net/2018/09/spring-boot-2-jpa-mysql-crud-example.html */
 
