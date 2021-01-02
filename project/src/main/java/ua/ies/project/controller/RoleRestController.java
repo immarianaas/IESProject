@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ua.ies.project.repository.RoleRepository;
@@ -37,14 +39,50 @@ public class RoleRestController {
         Role r = rolerep.findById(id)
             .orElseThrow();
         return getRoleEntityModel(r);
-        }
+    }
 
-    
+    @GetMapping("/api/roles/{id}/users")
+    public EntityModel<Map<String, Object>> usersInRoleById(@PathVariable Long id) {
+        Role r = rolerep.findById(id)
+            .orElseThrow();
+        return getRoleEntityModel(r);
+    }
+
+    @PostMapping("/api/roles")
+    public List<EntityModel<Map<String, Object>>> addRole(@RequestBody Role role) {
+        rolerep.save(role);
+        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+        for (Role r:  rolerep.findAll()) {
+            l.add(getRoleEntityModel(r));
+        }
+        return l;    
+    }
+
+    @PostMapping("/api/roles/{id}/users")
+    public List<EntityModel<Map<String, Object>>> addUserToRole(@PathVariable Long id, @RequestBody Map<String, Object> map) {
+        Role r = rolerep.getOne(id);
+        User u = null;
+        if (map.containsKey("id")) {
+            u = userrep.getOne((Long) map.get("id"));
+        } else if (map.containsKey("username")) {
+            u = userrep.findByUsername((String) map.get("username"));
+        }
+        if (r == null || u == null) return null; // TODO something else here
+
+        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+        for (Role ro:  rolerep.findAll()) {
+            l.add(getRoleEntityModel(ro));
+        }
+        return l;    
+    }
+
+
+
 
     public static EntityModel<Map<String, Object>> getRoleEntityModel(Role r) {
         Long id = r.getId();
         return EntityModel.of(r.convertToMap(),
-                // linkTo(methodOn(UserRestController.class).usersByRole(role_id)).withRel("users"),
+                linkTo(methodOn(RoleRestController.class).usersInRoleById(id)).withRel("users"),
                 linkTo(methodOn(RoleRestController.class).roleById(id)).withSelfRel() 
         );
     }

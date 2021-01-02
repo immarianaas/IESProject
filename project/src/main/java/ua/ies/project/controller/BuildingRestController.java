@@ -156,7 +156,7 @@ public class BuildingRestController {
                 u = userrep.findByUsername((String) rec.get("username"));
             }
 
-            if (u == null && b == null) return null; // TODO meter um erro qq
+            if (u == null || b == null) return null; // TODO meter um erro qq
 
             u.addBuilding(b);
             b.addUser(userrep.save(u));
