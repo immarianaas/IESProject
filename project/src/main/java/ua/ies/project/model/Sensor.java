@@ -48,9 +48,22 @@ public class Sensor {
 
     public Set<SensorData> getSensorsData() { return sensorsData; }
     public void setSensorsData(Set<SensorData> ls) {sensorsData = ls; }
+    public void addSensorsData(SensorData sd) {
+        if (sensorsData == null) sensorsData = new HashSet<SensorData>();
+        sensorsData.add(sd);
+    }
 
     @Override
     public String toString() {
         return "[ sensor (db)-id= " + id + ": sensor_id = " + sensorId + "room= " + room + "; type= " + type + "; ]" ;
     }
+
+
+    public Map<String, Object> convertToMap() {
+        HashMap<String, Object> hm = new HashMap<String, Object>();
+        hm.put("id", id);
+        hm.put("sensorId", sensorId);
+        hm.put("type", type);
+        return hm;
+    }   
 }

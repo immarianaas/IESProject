@@ -21,10 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ua.ies.project.model.Building;
 import ua.ies.project.model.Room;
+import ua.ies.project.model.Sensor;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.RoleRepository;
 import ua.ies.project.repository.RoomRepository;
+import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.UserRepository;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -37,6 +39,10 @@ public class RoomRestController {
 
     @Autowired
     RoomRepository roomrep;
+
+    @Autowired
+    SensorRepository sensrep;
+
 
     @GetMapping("/api/rooms/all") // to be removed, ou apenas permitir os admins
     public List<EntityModel<Map<String, Object>>> seeRooms() {
@@ -84,6 +90,16 @@ public class RoomRestController {
         return BuildingRestController.getBuildingEntityModel(r.getBuilding());
     }
 
+    @GetMapping("/api/rooms/{id}/sensors") // TODO ver se ação é permitida ou nao
+    public List<EntityModel<Map<String, Object>>> getRoomSensorsById(@PathVariable Long id) {
+        Room r = roomrep.findById(id).orElseThrow();
+        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+        for (Sensor s : r.getSensors()) {
+            l.add(SensorRestController.getSensorEntityModel(s));
+        }
+        //return BuildingRestController.getBuildingEntityModel(r.getBuilding());
+        return l;
+    }
 
     // -------- POST --------
     /*
@@ -103,18 +119,24 @@ public class RoomRestController {
         return getBuildingEntityModel(newbuilding);
 
     }
+    */
 
-    @PostMapping("/api/buildings/{id}/rooms")
-    public Set<Room> addRoomToBuilding(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id, @RequestBody Room newroom) {
-        Building b = buildrep.findById(id).get();
-        newroom.setBuilding(b);
-        
-        b.addRoom(roomrep.save(newroom));
-        b = buildrep.save(b);
-        return b.getRooms();
+
+    @PostMapping("/api/rooms/{id}/sensors")
+    public List<EntityModel<Map<String, Object>>> addSensorToBuilding(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id, @RequestBody Sensor newsensor) {
+        Room r = roomrep.findById(id).get();
+        newsensor.setRoom(r);
+
+        r.addSensor(sensrep.save(newsensor));
+        r = roomrep.save(r);
+
+        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+        for (Sensor s : r.getSensors()) {
+            l.add(SensorRestController.getSensorEntityModel(s));
+        }
+        return l;
     }
 
-    */
 
 
     @Autowired
@@ -126,7 +148,7 @@ public class RoomRestController {
         Long id = r.getId();
         return EntityModel.of(r_map,
             linkTo(methodOn(BuildingRestController.class).buildingById(r.getBuilding().getId())).withRel("building"),
-            // SENSORES -> linkTo(methodOn(BuildingRestController.class).buildingById(r.getBuilding().getId())).withRel("users"),
+            linkTo(methodOn(RoomRestController.class).getRoomSensorsById(id)).withRel("sensors"),
             linkTo(methodOn(RoomRestController.class).roomById(id)).withSelfRel() 
             );
         }

@@ -1,7 +1,7 @@
 import pika
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(
-               'localhost'))
+               '192.168.160.211'))
 channel = connection.channel()
 
 channel.queue_delete(queue='co2')

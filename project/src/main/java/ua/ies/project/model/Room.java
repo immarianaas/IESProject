@@ -68,7 +68,10 @@ public class Room {
     private Set<Sensor> sensors;
     public Set<Sensor> getSensors() { return sensors; }
     public void setSensors(Set<Sensor> sensors) { this.sensors = sensors; }
-
+    public void addSensor(Sensor s) {
+        if (sensors == null) sensors = new HashSet<Sensor>();
+        sensors.add(s);
+    }
 
     public Room() {
     }

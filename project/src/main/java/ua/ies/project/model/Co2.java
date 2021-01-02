@@ -7,8 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.*;
 
 import javax.persistence.*;
 import javax.swing.text.DateFormatter;
@@ -52,4 +51,14 @@ public class Co2 extends SensorData {
     
     /* https://www.javaguides.net/2018/09/spring-boot-2-jpa-mysql-crud-example.html */
     
+    @Override
+    public Map<String, Object> convertToMap() {
+        HashMap<String, Object> hm = new HashMap<String, Object>();
+        hm.put("id", super.getId());
+        hm.put("timestamp", super.getTimestamp());
+        hm.put("warn", super.getWarn());
+
+        hm.put("value", value);
+        return hm;
+    }   
 }

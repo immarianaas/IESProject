@@ -1,5 +1,7 @@
 package ua.ies.project;
 
+import javax.transaction.Transactional;
+
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hibernate.ObjectNotFoundException;
@@ -15,14 +17,19 @@ import ua.ies.project.model.PeopleCounter;
 import ua.ies.project.model.Sensor;
 import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.PeopleCounterRepository;
+import ua.ies.project.repository.SensorDataRepository;
 import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.BodyTemperatureRepository;
 
+@Transactional
 @Component
 public class Receiver {
 
     @Autowired
     private Co2Repository co2Repository;
+
+    @Autowired
+    private SensorDataRepository sensordatarep;
 
     @Autowired
     private BodyTemperatureRepository bodyTemperatureRepository;
@@ -79,23 +86,29 @@ public class Receiver {
                 System.err.println("There is no sensor with that ID.");
                 //return;
             }
-            System.out.println("sensor found gud! -> " + sens);
+            System.out.println("sensor found gud!");
 
         } catch(Exception e) {  // TODO arranjar isto
-            e.printStackTrace();
+            //e.printStackTrace();
             System.err.println("There is no sensor with that ID.");
             return;
         }
 
         try {
             input = mapper.readValue(s[0], Co2.class);
+            if (sens == null) return;
+
             //input.setWarn(warn);
-            if (sens != null)
-                input.setSensor(sens);
+            sens.addSensorsData(input);
+            sens = sensorrep.save(sens);
+
+            input.setSensor(sens);
+            sensordatarep.save(input);
             co2Repository.save(input);
             System.out.println("Co2 object saved to database!!");
             System.out.println(input);
         } catch (Exception e) {
+            e.printStackTrace();
             getSensorId(in);
             System.out.println(in);
             System.err.println("Error parsing JSON to Co2 object.");
