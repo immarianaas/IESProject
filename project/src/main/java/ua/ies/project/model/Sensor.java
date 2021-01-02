@@ -19,7 +19,7 @@ public class Sensor {
     @Column(name="type")
     private String type;
     public String getType() { return type; }
-    public void getType(String t) { type = t; }
+    public void setType(String t) { type = t; }
 
 
     @Id

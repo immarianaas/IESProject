@@ -14,19 +14,25 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ua.ies.project.model.Building;
 import ua.ies.project.model.Role;
 import ua.ies.project.model.Room;
+import ua.ies.project.model.Sensor;
+import ua.ies.project.model.SensorData;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.RoleRepository;
 import ua.ies.project.repository.RoomRepository;
+import ua.ies.project.repository.SensorDataRepository;
+import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.UserRepository;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -188,6 +194,65 @@ public class BuildingRestController {
             return l;
         }
 
+
+    // ------ PUT (UPDATE) ------ (ainda n tem permissoes certas (da todos))
+
+    @PutMapping("/api/buildings/{id}")
+    public EntityModel<Map<String, Object>> updateBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Building newbuilding) {
+        Building b = buildrep.findById(id).get();
+
+        if (newbuilding.getBuildingName() != null) b.setBuildingName(newbuilding.getBuildingName());
+        if (newbuilding.getCountry() != null) b.setCountry(newbuilding.getCountry());
+        if (newbuilding.getCity() != null) b.setCity(newbuilding.getCity());
+        if (newbuilding.getDoor_number() != 0) 
+        b.setDoor_number(newbuilding.getDoor_number());
+
+        return getBuildingEntityModel(username, buildrep.save(b));
+    }
+
+    // ------ DELETE ------
+
+    @DeleteMapping("/api/buildings/{id}")
+    public void deleteBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+        Building b = buildrep.findById(id).get();
+
+        for (User u : b.getUsers()) {
+            u.getBuildings().remove(b);
+            userrep.save(u);
+        }
+        for (Room r : b.getRooms()) {
+            // delete room...
+            for (Sensor s : r.getSensors()) {
+                sensdatarep.deleteAll(s.getSensorsData());
+            }
+            sensrep.deleteAll(r.getSensors());
+        }
+        roomrep.deleteAll(b.getRooms());
+        buildrep.delete(b);
+    }
+
+    // nao elimino nada, mas desassocio 
+    @DeleteMapping("/api/buildings/{id}/users/{userid}")
+    public List<EntityModel<Map<String, Object>>> removeUserFromBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @PathVariable long userid) {
+        User u = userrep.findById(userid).get();
+        Building b = buildrep.findById(id).get();
+        u.getBuildings().remove(b);
+        b.getUsers().remove(u);
+        userrep.save(u);
+        buildrep.save(b);
+        // retrun users in this building
+        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+        for (User us : b.getUsers()) {
+            l.add(UserRestController.getUserEntityModel(username, us));
+        }
+        return l;
+    }
+
+
+    @Autowired
+    private SensorDataRepository sensdatarep;
+    @Autowired
+    private SensorRepository sensrep;
 
     @Autowired
     private UserRepository userrep;

@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -102,6 +104,39 @@ public class RoleRestController {
     }
 
 
+    // ------- PUT -------
+    @PutMapping("/api/roles/{id}")
+    public EntityModel<Map<String, Object>> updateRoleById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Role newrole) {
+        Role r = rolerep.getOne(id);
+
+        if (newrole.getName() != null) r.setName(newrole.getName());
+        return getRoleEntityModel(username, rolerep.save(r));
+    }
+
+
+    // ------- DELETE ------
+    @DeleteMapping("/api/roles/{id}")
+    public void deleteRoleById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+        Role r = rolerep.getOne(id);
+
+        for (User u : r.getUsers()) {
+            u.getRoles().remove(r);
+            userrep.save(u);
+        }
+        rolerep.delete(r);
+    }
+
+    @DeleteMapping("/api/roles/{id}/users/{userid}")
+    public void removeUserFromRole(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @PathVariable long userid) {
+        Role r = rolerep.getOne(id);
+        User u = userrep.getOne(userid);
+        if (r == null || u == null) return;
+        u.getRoles().remove(r);
+        u = userrep.save(u);
+
+        r.getUsers().remove(u);
+        rolerep.save(r);
+    }
 
 
     public static EntityModel<Map<String, Object>> getRoleEntityModel(String username, Role r) {
