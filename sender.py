@@ -11,10 +11,6 @@ def main():
 	connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 	channel = connection.channel()
 
-	# if there's only one queue, comment the queue2gen and for loop and uncomment this:
-	# generators = [getattr(gen, f) for f in dir(gen) if f.startswith("fake_")]
-	# channel.queue_declare(queue='queue')
-
 	queue2gen = {
 		f.replace("fake","queue") : getattr(gen, f) 
 			for f in dir(gen)
@@ -27,13 +23,16 @@ def main():
 	while True:
 		if randint(0,1):
 			random_queue = choice(list(queue2gen.keys()))
-			random_generator = queue2gen[random_queue]
+			random_generator = queue2gen[random_queue]()
 
 			channel.basic_publish(
 				exchange='', 
-				routing_key=random_queue, # or 'queue', if there's only one queue
-				body=json.dumps(random_generator()) # or generators[randint(0, len(generators))], if there's only one queue
+				routing_key=random_queue, 
+				body=json.dumps(random_generator) 
 			)
+			print("The following was sent through the RabbitMQ:")
+			print(f"queue: {random_queue}")
+			print(f"data: {random_generator}\n")
 
 		sleep(random()*5)
 
