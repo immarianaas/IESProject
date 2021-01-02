@@ -140,9 +140,36 @@ public class BuildingRestController {
         b = buildrep.save(b);
 
         return RoomRestController.getRoomEntityModel(nr);
-
-        //return b.getRooms();
     }
+
+    @PostMapping("/api/buildings/{id}/users")
+    public List<EntityModel<Map<String, Object>>> addUserToBuilding(
+        @CurrentSecurityContext(expression="authentication.name") String username, 
+        @PathVariable Long id, 
+        @RequestBody Map<String, Object> rec ) {
+            Building b = buildrep.getOne(id);
+
+            User u = null;
+            if (rec.keySet().contains("id")) {
+                u = userrep.getOne((Long) rec.get("id"));
+            } else if (rec.keySet().contains("username")) {
+                u = userrep.findByUsername((String) rec.get("username"));
+            }
+
+            if (u == null && b == null) return null; // TODO meter um erro qq
+
+            u.addBuilding(b);
+            b.addUser(userrep.save(u));
+            b = buildrep.save(b);
+
+            List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+            for (User us : b.getUsers()) {
+                l.add(UserRestController.getUserEntityModel(us));
+            }
+            return l;
+        }
+    
+
 
 
     @Autowired

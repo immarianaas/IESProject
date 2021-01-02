@@ -47,9 +47,9 @@ public class SensorData {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"); 
         
         try {
-            System.out.println("\n\n\nbefore: "+date);
+            // System.out.println("\n\n\nbefore: "+date);
             Date d = formatter.parse(date);
-            System.out.println("after: "+ d + "\n\n\n");
+            // System.out.println("after: "+ d + "\n\n\n");
             return d;
         } catch( Exception e) {
             e.printStackTrace();
@@ -70,12 +70,12 @@ public class SensorData {
     @JsonProperty
     public void setTimestamp(String ts) { 
         this.timestamp = this.parseDate(ts); 
-        System.out.println("\n\n\n\nhere a ser guardado; ts: "+this.timestamp+"\n\n\n\n");
+        //System.out.println("\n\n\n\nhere a ser guardado; ts: "+this.timestamp+"\n\n\n\n");
 
         //System.out.println("\n\n\n\nco2 ts: " +this.timestamp);
     }
     public void setTimestamp(Date ts) { this.timestamp = ts; 
-        System.out.println("\n\n\n\nhere; ts: "+ts+"\n\n\n\n");
+        //System.out.println("\n\n\n\nhere; ts: "+ts+"\n\n\n\n");
      
     }
 

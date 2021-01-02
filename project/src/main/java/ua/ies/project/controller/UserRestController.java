@@ -75,13 +75,7 @@ EntityModel<Employee> one(@PathVariable Long id) {
         User u = userrep.findById(id).orElseThrow();
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Role r : u.getRoles()) {
-            Long role_id = r.getId();
-            l.add(
-                EntityModel.of(r.convertToMap(), // TODO!!!
-                    // linkTo(methodOn(UserRestController.class).usersByRole(role_id)).withRel("users"),
-                    linkTo(methodOn(UserRestController.class).rolesByUserId(id)).withSelfRel() 
-            )
-            );
+            l.add(RoleRestController.getRoleEntityModel(r));
         }
         return l;
     }

@@ -16,8 +16,8 @@ def main():
     while True:
 
         data = [gen.fake_co2(), gen.fake_body_temp(), gen.fake_people_counter()]
-        # for d in range(len(data)): #-> apenas quero o co2
-        for d in range(1):
+        for d in range(len(data)): #-> apenas quero o co2
+        # for d in range(1):
 
             channel.basic_publish(
                 exchange='',

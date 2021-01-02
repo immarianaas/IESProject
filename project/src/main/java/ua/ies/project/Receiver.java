@@ -67,63 +67,48 @@ public class Receiver {
         Co2 input = null;
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES , true);
-        //System.out.println("\n CO2: " + in);
+        Object[] s = getSensorId(in);
 
-        String[] s = getSensorId(in);
-        long id = -1;
-        try {
-            id = Long.parseLong(s[1]);
-            System.out.println("number parsed gud!");
-        } catch(Exception e) {
-            System.err.println("Error parsing ID.");
-            return;
-        }
-
-        Sensor sens = null;
-        try {
-            sens = sensorrep.findOneBySensorId(id);
-            if (sens == null) {
-                System.err.println("There is no sensor with that ID.");
-                //return;
-            }
-            System.out.println("sensor found gud!");
-
-        } catch(Exception e) {  // TODO arranjar isto
-            //e.printStackTrace();
-            System.err.println("There is no sensor with that ID.");
-            return;
-        }
 
         try {
-            input = mapper.readValue(s[0], Co2.class);
-            if (sens == null) return;
+            input = mapper.readValue((String) s[0], Co2.class);
 
             //input.setWarn(warn);
+            Sensor sens = (Sensor) s[1];
             sens.addSensorsData(input);
             sens = sensorrep.save(sens);
 
             input.setSensor(sens);
             sensordatarep.save(input);
             co2Repository.save(input);
-            System.out.println("Co2 object saved to database!!");
-            System.out.println(input);
+            System.out.println("\t>>\tCo2 object saved to database!!");
         } catch (Exception e) {
-            e.printStackTrace();
-            getSensorId(in);
-            System.out.println(in);
-            System.err.println("Error parsing JSON to Co2 object.");
             //e.printStackTrace();
+            System.err.println("\t!!\tError parsing JSON to Co2 object.");
         } 
         //System.out.println(input);
     }
 
-    private static String[] getSensorId(String s) {
+    private Object[] getSensorId(String s) {
         String s_to_return = s.substring(0, s.indexOf(", 'sensorId'")) + "}";
         String number = s.substring(s.lastIndexOf(": ")+2, s.length()-1);
-        System.out.println("to return: " + s_to_return);
-        System.out.println("number: " + number);
+        long id = -1;
+        try {
+            id = Long.parseLong(number);
+            System.out.println("\t>>\tnumber parsed gud!");
+        } catch(Exception e) {
+            System.err.println("\t!!\tError parsing ID.");
+            return null;
+        }
 
-        return new String[] {s_to_return, number};
+        Sensor sens = sensorrep.findOneBySensorId(id);
+        if (sens == null) {
+            System.err.println("\t!!\tThere is no sensor with that ID.");
+            return null;
+        }
+        System.out.println("\t>>\tsensor found gud!");
+
+        return new Object[] {s_to_return, sens};
     }
 
     @RabbitListener(queues="body_temperature")
@@ -131,18 +116,23 @@ public class Receiver {
         BodyTemperature input = null;
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES , true);
-        //System.out.println("\n BODY TEMP: " + in);
+
+        Object[] o = getSensorId(in);
 
         try {
-            input = mapper.readValue(in, BodyTemperature.class);
-            bodyTemperatureRepository.save(input);
-            System.out.println("BodyTemperature object saved to database!!");
-        } catch (Exception e) {
-            System.err.println("Error parsing JSON to BodyTemperature object.");
-            //e.printStackTrace();
-        } 
-        //System.out.println(input);
+            input = mapper.readValue((String) o[0], BodyTemperature.class);
 
+            Sensor sens = (Sensor) o[1];
+            sens.addSensorsData(input);
+            sens = sensorrep.save(sens);
+            
+            input.setSensor(sens);
+            sensordatarep.save(input);
+            bodyTemperatureRepository.save(input);
+            System.out.println("\t>>\tBodyTemperature object saved to database!!");
+        } catch (Exception e) {
+            System.err.println("\t!!\tError parsing JSON to BodyTemperature object.");
+        } 
     }
 
     @RabbitListener(queues="people_counter")
@@ -152,16 +142,23 @@ public class Receiver {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES , true);
         //System.out.println("\n CO2: " + in);
+        Object[] o = getSensorId(in);
 
         try {
-            input = mapper.readValue(in, PeopleCounter.class);
+            input = mapper.readValue((String) o[0], PeopleCounter.class);
+
+            Sensor sens = (Sensor) o[1];
+            sens.addSensorsData(input);
+            sens = sensorrep.save(sens);
+            
+            input.setSensor(sens);
+            sensordatarep.save(input);
+
             peopleCounterRepository.save(input);
-            System.out.println("PeopleCounter object saved to database!!");
+            System.out.println("\t>>\tPeopleCounter object saved to database!!");
         } catch (Exception e) {
-            System.err.println("Error parsing JSON to PeopleCounter object.");
-            //e.printStackTrace();
+            System.err.println("\t!!\tError parsing JSON to PeopleCounter object.");
         } 
-        //System.out.println(input);
     
     }
 
