@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import ua.ies.project.model.Building;
+import ua.ies.project.model.User;
 import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.UserRepository;
 import java.util.Optional;
@@ -47,15 +50,24 @@ public class BuildingController {
 	}
 	
 	@PostMapping("/saveBuilding")
-	public String saveBuilding(@ModelAttribute("building") Building building,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+	public String saveBuilding(@ModelAttribute("building") Building building,  Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Building newbuilding) {
 		//user authenticated
-		//User user = userService.findByUsername(username);
-
+		User user = userRepository.findByUsername(username);
 		
+		//save building
+		newbuilding = buildingRepository.save(newbuilding);
+		
+		//add new building to user
+		user.addBuilding(newbuilding);
+		
+		//save user in building table
+        user = userRepository.save(user); // faz update!
 
-		//load all buildings
+		newbuilding.addUser(user);
+		//save new building
 		buildingRepository.save(building);
 		
+		//load all buildings
 		List<Building> listBuildings = buildingRepository.findAll();
 		
 		model.addAttribute("listBuildings", listBuildings);
@@ -77,16 +89,65 @@ public class BuildingController {
 		return building;
 	}
 
-	@GetMapping("/showFormForUpdate/{id}")
-	public String showFormForUpdate(@PathVariable ( value = "id") long id, Model model) {
+	@PutMapping("/updateBuilding/{id}")
+	public String showFormForUpdate(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Building newbuilding) {
 		Building building = getBuildingById(id);
 		model.addAttribute("building", building);
+		
+		//user authenticated
+		User user = userRepository.findByUsername(username);
+		
+		//save building
+		newbuilding = buildingRepository.save(newbuilding);
+		
+		//add new building to user
+		user.addBuilding(newbuilding);
+		
+		//save user in building table
+        user = userRepository.save(user); // faz update!
+
+		newbuilding.addUser(user);
+		//save new building
+		buildingRepository.save(building);
+
+
 		List<Building> listBuildings = buildingRepository.findAll();
 		
 		model.addAttribute("listBuildings", listBuildings);
 		
 		return "updateBuilding";
 	}
+	/*
+	@PostMapping("/api/buildings/{id}/users")
+    public List<EntityModel<Map<String, Object>>> addUserToBuilding(
+        @CurrentSecurityContext(expression="authentication.name") String username, 
+        @PathVariable Long id, 
+        @RequestBody Map<String, Object> rec ) {
+            Building b = buildrep.getOne(id);
+
+            User u = null;
+            if (rec.keySet().contains("id")) {
+                u = userrep.getOne((Long) rec.get("id"));
+            } else if (rec.keySet().contains("username")) {
+                u = userrep.findByUsername((String) rec.get("username"));
+            }
+
+            if (u == null && b == null) return null; // TODO meter um erro qq
+
+            u.addBuilding(b);
+            b.addUser(userrep.save(u));
+            b = buildrep.save(b);
+
+            List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+            for (User us : b.getUsers()) {
+                l.add(UserRestController.getUserEntityModel(us));
+            }
+            return l;
+		}
+		
+		*/
+    
+    
 	
 	@GetMapping("/deleteBuilding/{id}")
 	public String deleteBuilding(@PathVariable (value = "id") long id,  Model model) {
