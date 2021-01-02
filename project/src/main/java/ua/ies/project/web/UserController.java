@@ -88,7 +88,8 @@ public class UserController {
     //...................
     public void save(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setRoles(new HashSet<>(roleRepository.findAll()));
+        //user.setRoles(new HashSet<>(roleRepository.findAll()));
+        user.addRole(roleRepository.findById((long)2).get()); // fica apenas com o "client"
         userRepository.save(user);
     }
 

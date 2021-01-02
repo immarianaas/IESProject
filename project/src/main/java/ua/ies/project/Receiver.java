@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 import ua.ies.project.model.BodyTemperature;
 import ua.ies.project.model.Co2;
 import ua.ies.project.model.PeopleCounter;
+import ua.ies.project.model.Room;
 import ua.ies.project.model.Sensor;
+import ua.ies.project.model.SensorData;
 import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.PeopleCounterRepository;
 import ua.ies.project.repository.SensorDataRepository;
@@ -79,6 +81,7 @@ public class Receiver {
             sens = sensorrep.save(sens);
 
             input.setSensor(sens);
+            if (isWarningCo2(input)) input.setWarn(true);
             sensordatarep.save(input);
             co2Repository.save(input);
             System.out.println("\t>>\tCo2 object saved to database!!");
@@ -88,6 +91,12 @@ public class Receiver {
         } 
         //System.out.println(input);
     }
+
+    private boolean isWarningCo2(Co2 input) {
+            Room r = input.getSensor().getRoom();
+            return r.getMaxLevelCo2() > input.getValue();
+        }
+
 
     private Object[] getSensorId(String s) {
         String s_to_return = s.substring(0, s.indexOf(", 'sensorId'")) + "}";
@@ -127,12 +136,24 @@ public class Receiver {
             sens = sensorrep.save(sens);
             
             input.setSensor(sens);
+            if (isWarningBodyTemp(input)) input.setWarn(true);
+
             sensordatarep.save(input);
             bodyTemperatureRepository.save(input);
             System.out.println("\t>>\tBodyTemperature object saved to database!!");
         } catch (Exception e) {
             System.err.println("\t!!\tError parsing JSON to BodyTemperature object.");
         } 
+    }
+
+    private boolean isWarningBodyTemp(BodyTemperature input) {
+        Room r = input.getSensor().getRoom();
+        return r.getMaxTemperature() > input.getValue();
+    }
+
+    private boolean isWarningPeopleCounter(PeopleCounter input) {
+        Room r = input.getSensor().getRoom();
+        return r.getMaxOccupation() > input.getValue();
     }
 
     @RabbitListener(queues="people_counter")
@@ -152,6 +173,8 @@ public class Receiver {
             sens = sensorrep.save(sens);
             
             input.setSensor(sens);
+            if (isWarningPeopleCounter(input)) input.setWarn(true);
+
             sensordatarep.save(input);
 
             peopleCounterRepository.save(input);

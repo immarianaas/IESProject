@@ -3,6 +3,7 @@ package ua.ies.project.model;
 import javax.persistence.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,6 +52,11 @@ public class Role {
     public void setUsers(Set<User> users) {
         this.users = users;
     }
+
+    public void addUser(User u) {
+        if (users==null) users = new HashSet<User>();
+        users.add(u);
+        }
 
     
     public Map<String, Object> convertToMap() {

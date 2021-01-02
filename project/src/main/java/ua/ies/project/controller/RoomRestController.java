@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ua.ies.project.model.Building;
+import ua.ies.project.model.Role;
 import ua.ies.project.model.Room;
 import ua.ies.project.model.Sensor;
 import ua.ies.project.model.User;
@@ -43,87 +45,76 @@ public class RoomRestController {
     @Autowired
     SensorRepository sensrep;
 
+    public boolean checkIfAdmin(String uname) {
+        User u = userrep.findByUsername(uname);
+        if (u.getRoles() != null)
+            for (Role r : u.getRoles()) 
+                if (r.getName().equals("admin")) return true;
+        return false;
+    }
 
-    @GetMapping("/api/rooms/all") // to be removed, ou apenas permitir os admins
-    public List<EntityModel<Map<String, Object>>> seeRooms() {
+
+    public boolean checkIfMine(String uname, long room_id) {
+        //User u = userrep.findByUsername(uname);
+        Room b = roomrep.findById(room_id).get();
+        for (User u : b.getBuilding().getUsers()) {
+            if (u.getUsername().equals(uname)) return true;
+        }
+        return false;
+    }
+
+
+    @GetMapping("/api/rooms/all") // -> admins
+    public List<EntityModel<Map<String, Object>>> seeRooms(@CurrentSecurityContext(expression="authentication.name") String username) {
+        if (!(checkIfAdmin(username))) throw new AccessDeniedException("403 returned");
+        
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Room r : roomrep.findAll()) {
-            l.add(getRoomEntityModel(r));
+            l.add(getRoomEntityModel(username, r));
         }
 
         return l;
     }
 
-    @GetMapping("/api/rooms/{id}") // TODO se for admin, permitir todos, se nao, apenas os correspondentes
-    public EntityModel<Map<String, Object>> roomById(@PathVariable Long id) {
+    @GetMapping("/api/rooms/{id}") // -> admin e meu
+    public EntityModel<Map<String, Object>> roomById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+
         Room r = roomrep.findById(id).orElseThrow();
-        return getRoomEntityModel(r);
+        return getRoomEntityModel(username, r);
     }
 
-/*
-    @GetMapping("/api/rooms/{id}/users")
-    public List<EntityModel<Map<String, Object>>> usersByBuilding(@PathVariable Long id) {
-        Building b = buildrep.findById(id).orElseThrow();
-        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
-        for (User u : b.getUsers()) {
-            l.add(UserRestController.getUserEntityModel(u));
-        }
-        return l;
-    }
-    */
 
-/*
-    @GetMapping("/api/buildings") // mostra apenas os do user atual!
-    public List<EntityModel<Map<String, Object>>> seeBuildings(@CurrentSecurityContext(expression="authentication.name") String username) {
-        User u = userrep.findByUsername(username);
-        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
-        for (Building b : u.getBuildings()) {
-            l.add(getBuildingEntityModel(b));
-        }
-        return l;
-    }
-*/
 
-    @GetMapping("/api/rooms/{id}/buildings") // TODO ver se ação é permitida ou nao
+    @GetMapping("/api/rooms/{id}/buildings") // -> admin ou men
     public EntityModel<Map<String, Object>> getRoomBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+
         Room r = roomrep.findById(id).orElseThrow();
-        return BuildingRestController.getBuildingEntityModel(r.getBuilding());
+        return BuildingRestController.getBuildingEntityModel(username, r.getBuilding());
     }
 
-    @GetMapping("/api/rooms/{id}/sensors") // TODO ver se ação é permitida ou nao
-    public List<EntityModel<Map<String, Object>>> getRoomSensorsById(@PathVariable Long id) {
+    @GetMapping("/api/rooms/{id}/sensors") // -> admin ou meu
+    public List<EntityModel<Map<String, Object>>> getRoomSensorsById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+
         Room r = roomrep.findById(id).orElseThrow();
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Sensor s : r.getSensors()) {
-            l.add(SensorRestController.getSensorEntityModel(s));
+            l.add(SensorRestController.getSensorEntityModel(username, s));
         }
         //return BuildingRestController.getBuildingEntityModel(r.getBuilding());
         return l;
     }
 
     // -------- POST --------
-    /*
-
-    @PostMapping("/api/buildings")
-    public EntityModel<Map<String, Object>> newBuilding(@CurrentSecurityContext(expression="authentication.name")
-    String username, @RequestBody Building newbuilding) {
-        User u = userrep.findByUsername(username);
-        newbuilding = buildrep.save(newbuilding);
-        u.addBuilding(newbuilding);
-        u = userrep.save(u); // faz update!
-
-        newbuilding.addUser(u);
-        newbuilding = buildrep.save(newbuilding);
-        
-        //System.out.println(u);
-        return getBuildingEntityModel(newbuilding);
-
-    }
-    */
 
 
-    @PostMapping("/api/rooms/{id}/sensors")
+
+    @PostMapping("/api/rooms/{id}/sensors") // -> admin ou meu
     public List<EntityModel<Map<String, Object>>> addSensorToBuilding(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id, @RequestBody Sensor newsensor) {
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+
         Room r = roomrep.findById(id).get();
         newsensor.setRoom(r);
 
@@ -132,24 +123,23 @@ public class RoomRestController {
 
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Sensor s : r.getSensors()) {
-            l.add(SensorRestController.getSensorEntityModel(s));
+            l.add(SensorRestController.getSensorEntityModel(username, s));
         }
         return l;
     }
-
 
 
     @Autowired
     private UserRepository userrep;
     
 
-    public static EntityModel<Map<String, Object>> getRoomEntityModel(Room r) {
+    public static EntityModel<Map<String, Object>> getRoomEntityModel(String username, Room r) {
         Map<String, Object> r_map = r.convertToMap();
         Long id = r.getId();
         return EntityModel.of(r_map,
-            linkTo(methodOn(BuildingRestController.class).buildingById(r.getBuilding().getId())).withRel("building"),
-            linkTo(methodOn(RoomRestController.class).getRoomSensorsById(id)).withRel("sensors"),
-            linkTo(methodOn(RoomRestController.class).roomById(id)).withSelfRel() 
+            linkTo(methodOn(BuildingRestController.class).buildingById(username, r.getBuilding().getId())).withRel("building"),
+            linkTo(methodOn(RoomRestController.class).getRoomSensorsById(username, id)).withRel("sensors"),
+            linkTo(methodOn(RoomRestController.class).roomById(username, id)).withSelfRel() 
             );
         }
         

@@ -64,6 +64,11 @@ public class User {
         this.roles = roles;
     }
 
+    public void addRole(Role r) {
+        if (roles==null) roles = new HashSet<Role>();
+        roles.add(r);
+    }
+
     /*
     @ManyToOne
     @JoinColumn(name="building_id")
@@ -87,8 +92,8 @@ public class User {
         HashMap<String, Object> hm = new HashMap<String, Object>();
         hm.put("id", id);
         hm.put("username", username);
-        hm.put("password", password);
-        hm.put("passwordConfirm", passwordConfirm);
+        //hm.put("password", password);
+        //hm.put("passwordConfirm", passwordConfirm);
         return hm;
     }
 }

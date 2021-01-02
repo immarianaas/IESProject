@@ -4,13 +4,18 @@ import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import ua.ies.project.model.Role;
 import ua.ies.project.model.Sensor;
 import ua.ies.project.model.SensorData;
+import ua.ies.project.model.User;
 import ua.ies.project.repository.SensorRepository;
+import ua.ies.project.repository.UserRepository;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -21,55 +26,98 @@ public class SensorRestController {
     private SensorRepository sensrep;
 
 
-    public static EntityModel<Map<String, Object>> getSensorEntityModel(Sensor s) {
+    @Autowired
+    private UserRepository userrep;
+
+    public boolean checkIfAdmin(String uname) {
+        User u = userrep.findByUsername(uname);
+        if (u.getRoles() != null)
+            for (Role r : u.getRoles()) 
+                if (r.getName().equals("admin")) return true;
+        return false;
+    }
+
+
+    public boolean checkIfMine(String uname, long sens_id) {
+        //User u = userrep.findByUsername(uname);
+        Sensor s = sensrep.findById(sens_id).get();
+        for (User u : s.getRoom().getBuilding().getUsers()) {
+            if (u.getUsername().equals(uname)) return true;
+        }
+        return false;
+    }
+    
+
+    public static EntityModel<Map<String, Object>> getSensorEntityModel(String username, Sensor s) {
         Map<String, Object> s_map = s.convertToMap();
         Long id = s.getId();
         return EntityModel.of(s_map,
-            linkTo(methodOn(RoomRestController.class).roomById(s.getRoom().getId())).withRel("room"),
-            linkTo(methodOn(SensorRestController.class).sensordataByIdOfSensor(id)).withRel("sensordata"),
-            linkTo(methodOn(SensorRestController.class).sensorById(id)).withSelfRel() 
+            linkTo(methodOn(RoomRestController.class).roomById(username, s.getRoom().getId())).withRel("room"),
+            linkTo(methodOn(SensorRestController.class).sensordataByIdOfSensor(username, id)).withRel("sensordata"),
+            linkTo(methodOn(SensorRestController.class).sensorById(username, id)).withSelfRel() 
             );
         }
 
     
-    @GetMapping("/api/sensors")
-    public List<EntityModel<Map<String, Object>>> allSensors() {
+    @GetMapping("/api/sensors/all") // -> admin
+    public List<EntityModel<Map<String, Object>>> allSensors(@CurrentSecurityContext(expression="authentication.name") String username) {
+        if (!(checkIfAdmin(username))) throw new AccessDeniedException("403 returned");
+
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Sensor s : sensrep.findAll()) {
-            l.add(getSensorEntityModel(s));
+            l.add(getSensorEntityModel(username, s));
         }
         return l;
     }
 
-    @GetMapping("/api/sensors/sensorid/{id}") // TODO se for admin, permitir todos, se nao, apenas os correspondentes
-    public EntityModel<Map<String, Object>> sensorBySensorId(@PathVariable Long id) {
+    /*
+    @GetMapping("/api/sensors") // -> todos (mostra os meus) -> n feito, n sei se é util.
+    public List<EntityModel<Map<String, Object>>> allMySensors(@CurrentSecurityContext(expression="authentication.name") String username) { // TODO a parte do 'my'
+        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+        for (Sensor s : sensrep.findAll()) {
+            l.add(getSensorEntityModel(username, s));
+        }
+        return l;
+    }
+    */
+
+    @GetMapping("/api/sensors/sensorid/{id}") // -> admin ou meu
+    public EntityModel<Map<String, Object>> sensorBySensorId(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+
         Sensor s = sensrep.findOneBySensorId(id);
-        return getSensorEntityModel(s);
+        return getSensorEntityModel(username, s);
     }
     
 
-    @GetMapping("/api/sensors/{id}") // TODO se for admin, permitir todos, se nao, apenas os correspondentes
-    public EntityModel<Map<String, Object>> sensorById(@PathVariable Long id) {
+    @GetMapping("/api/sensors/{id}") // -> admin ou meu
+    public EntityModel<Map<String, Object>> sensorById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+
         Sensor s = sensrep.findById(id).orElseThrow();
-        return getSensorEntityModel(s);
+        return getSensorEntityModel(username, s);
     }
 
-    @GetMapping("/api/sensors/{id}/sensordata")
-    public List<EntityModel<Map<String, Object>>> sensordataByIdOfSensor(@PathVariable Long id) {
+    @GetMapping("/api/sensors/{id}/sensordata") // -> admin ou meu
+    public List<EntityModel<Map<String, Object>>> sensordataByIdOfSensor(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         Sensor s = sensrep.findById(id).orElseThrow();
         for (SensorData sd : s.getSensorsData()) {
-            l.add(SensorDataRestController.getSensorDataEntityModel(sd));
+            l.add(SensorDataRestController.getSensorDataEntityModel(username, sd));
         }
         return l;
     }
 
-    @GetMapping("/api/sensors/sensorid/{id}/sensordata")
-    public List<EntityModel<Map<String, Object>>> sensordataBySensorId(@PathVariable Long id) {
+    @GetMapping("/api/sensors/sensorid/{id}/sensordata") // -> admin ou meu
+    public List<EntityModel<Map<String, Object>>> sensordataBySensorId(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         Sensor s = sensrep.findOneBySensorId(id);
         for (SensorData sd : s.getSensorsData()) {
-            l.add(SensorDataRestController.getSensorDataEntityModel(sd));
+            l.add(SensorDataRestController.getSensorDataEntityModel(username, sd));
         }
         return l;
     }

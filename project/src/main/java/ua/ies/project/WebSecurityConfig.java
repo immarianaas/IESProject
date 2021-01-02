@@ -41,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .csrf().disable() // added
             .authorizeRequests()
-                .antMatchers("/css/**", "/js/**", "/registration").permitAll()
+                .antMatchers("/css/**", "/js/**", "/registration").permitAll() // TODO meter o post (ou os 2) do /api/users pra dar pra todos
                 .anyRequest().authenticated()
             .and() // added
                 // added

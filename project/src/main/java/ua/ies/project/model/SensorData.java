@@ -28,6 +28,7 @@ public class SensorData {
 
     public SensorData() { }
 
+
     public SensorData(String timestamp, Sensor sensor, boolean warn) {
 
         this.sensor = sensor;

@@ -2,6 +2,8 @@ package ua.ies.project.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,41 +27,59 @@ public class RoleRestController {
     @Autowired
     private UserRepository userrep;
 
-    @GetMapping("/api/roles/all")
-    public List<EntityModel<Map<String, Object>>> seeRoles() {
+
+    public boolean checkIfAdmin(String uname) {
+        User u = userrep.findByUsername(uname);
+        if (u.getRoles() != null)
+            for (Role r : u.getRoles()) 
+                if (r.getName().equals("admin")) return true;
+        return false;
+    }
+
+
+    @GetMapping("/api/roles/all") // -> todos
+    public List<EntityModel<Map<String, Object>>> seeRoles(@CurrentSecurityContext(expression="authentication.name") String username) {
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Role r:  rolerep.findAll()) {
-            l.add(getRoleEntityModel(r));
+            l.add(getRoleEntityModel(username, r));
         }
         return l;
     }
 
-    @GetMapping("/api/roles/{id}")
-    public EntityModel<Map<String, Object>> roleById(@PathVariable Long id) {
+    @GetMapping("/api/roles/{id}") // -> todos
+    public EntityModel<Map<String, Object>> roleById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         Role r = rolerep.findById(id)
             .orElseThrow();
-        return getRoleEntityModel(r);
+        return getRoleEntityModel(username, r);
     }
 
-    @GetMapping("/api/roles/{id}/users")
-    public EntityModel<Map<String, Object>> usersInRoleById(@PathVariable Long id) {
+    @GetMapping("/api/roles/{id}/users") // -> todos
+    public List<EntityModel<Map<String, Object>>> usersInRoleById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         Role r = rolerep.findById(id)
             .orElseThrow();
-        return getRoleEntityModel(r);
+        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+        for (User u:  r.getUsers()) {
+            l.add(UserRestController.getUserEntityModel(username, u));
+        }
+        return l;    
     }
 
-    @PostMapping("/api/roles")
-    public List<EntityModel<Map<String, Object>>> addRole(@RequestBody Role role) {
+    @PostMapping("/api/roles") // -> admin
+    public List<EntityModel<Map<String, Object>>> addRole(@CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Role role) {
+        if (!checkIfAdmin(username)) throw new AccessDeniedException("403 returned");
+        
         rolerep.save(role);
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Role r:  rolerep.findAll()) {
-            l.add(getRoleEntityModel(r));
+            l.add(getRoleEntityModel(username, r));
         }
         return l;    
     }
 
     @PostMapping("/api/roles/{id}/users")
-    public List<EntityModel<Map<String, Object>>> addUserToRole(@PathVariable Long id, @RequestBody Map<String, Object> map) {
+    public List<EntityModel<Map<String, Object>>> addUserToRole(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id, @RequestBody Map<String, Object> map) {
+        if (!checkIfAdmin(username)) throw new AccessDeniedException("403 returned");
+
         Role r = rolerep.getOne(id);
         User u = null;
         if (map.containsKey("id")) {
@@ -67,11 +87,16 @@ public class RoleRestController {
         } else if (map.containsKey("username")) {
             u = userrep.findByUsername((String) map.get("username"));
         }
-        if (r == null || u == null) return null; // TODO something else here
+        if (r == null || u == null) { System.err.println("\t\terror!"); return null;} // TODO something else here
+
+        r.addUser(u);
+        r = rolerep.save(r);
+        u.addRole(r);
+        u = userrep.save(u);
 
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
-        for (Role ro:  rolerep.findAll()) {
-            l.add(getRoleEntityModel(ro));
+        for (User us: r.getUsers()) {
+            l.add(UserRestController.getUserEntityModel(username, us));
         }
         return l;    
     }
@@ -79,11 +104,11 @@ public class RoleRestController {
 
 
 
-    public static EntityModel<Map<String, Object>> getRoleEntityModel(Role r) {
+    public static EntityModel<Map<String, Object>> getRoleEntityModel(String username, Role r) {
         Long id = r.getId();
         return EntityModel.of(r.convertToMap(),
-                linkTo(methodOn(RoleRestController.class).usersInRoleById(id)).withRel("users"),
-                linkTo(methodOn(RoleRestController.class).roleById(id)).withSelfRel() 
+                linkTo(methodOn(RoleRestController.class).usersInRoleById(username, id)).withRel("users"),
+                linkTo(methodOn(RoleRestController.class).roleById(username, id)).withSelfRel() 
         );
     }
 
