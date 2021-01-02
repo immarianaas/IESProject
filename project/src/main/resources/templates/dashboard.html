@@ -163,7 +163,7 @@
                                         <td th:text="${building.street}"></td>
                                         <td th:text="${building.door_number}"></td>
 
-                                        <td> <a th:href="@{/showFormForUpdate/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
+                                        <td> <a th:href="@{/updateBuilding/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
                                             <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
                                         </td>
                                     </tr>
