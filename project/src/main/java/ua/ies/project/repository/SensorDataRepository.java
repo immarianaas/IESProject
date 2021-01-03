@@ -12,5 +12,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SensorDataRepository extends JpaRepository<SensorData, Long>{
     //tipos de sensores num determinado quarto
     List<SensorData> findBySensorIdOrderByTimestampDesc(Long id);
+    List<SensorData> findBySensorIdOrderByTimestampAsc(Long id);
     
 }

@@ -23,21 +23,21 @@ def fake_co2(precision=3):
 	co2 = {}
 	co2["value"] = proper_round(np.random.normal(loc=700, scale=0.4), 3)
 	co2["timestamp"] = datetime.datetime.now().isoformat()
-	co2["sensorId"] = 18374
+	co2["sensorId"] = 11111
 	return co2
 	
 def fake_body_temp(precision=3):
 	body_temp = {}
 	body_temp["value"] = proper_round(np.random.normal(loc=36.8, scale=0.4), 3)
 	body_temp["timestamp"] = datetime.datetime.now().isoformat()
-	body_temp["sensorId"] = 38421
+	body_temp["sensorId"] = 22222
 	return body_temp
 
 def fake_people_counter(area_range=1):
 	people_counter = {}
 	people_counter["value"] = int(f"{proper_round(np.random.normal(loc=5, scale=0.4) * area_range)}"[:-2])
 	people_counter["timestamp"] = datetime.datetime.now().isoformat()
-	people_counter["sensorId"] = 54281
+	people_counter["sensorId"] = 333333
 	return people_counter
 
 def main():

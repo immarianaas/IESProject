@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -66,10 +67,19 @@ public class BuildingController {
 	
 	
 	@GetMapping("/newBuildingForm")
-	public String shownewBuildingForm(Model model) {
+	public String shownewBuildingForm(Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
 		Building building = new Building();
 		model.addAttribute("building", building);
 		return "newBuilding";
+	}
+
+	@GetMapping("/newSensorForm/{id}") //este id vai ser o id do room
+	public String shownewSensorForm(@PathVariable ( value = "id") long id, Model model,@CurrentSecurityContext(expression="authentication.name") String username) {
+		Room r = roomRepository.getOne(id);
+		Sensor s = new Sensor();
+		model.addAttribute("room", r);
+		model.addAttribute("sensor", s);
+		return "newSensor";
 	}
 
 	@GetMapping("/newRoomForm/{id}")
@@ -82,18 +92,6 @@ public class BuildingController {
 	}
 
 
-	@PostMapping("/saveRoom/{id}")
-	public String saveNewRoom(@ModelAttribute("room") Room newroom, @PathVariable ( value = "id") long id, Model model,@CurrentSecurityContext(expression="authentication.name") String username) {
-		// TODO verificar se o building corresponde mm ao user
-		Building b = getBuildingById(id);
-
-		newroom.setBuilding(b);
-		newroom = roomRepository.save(newroom);
-		b.addRoom(newroom);
-		buildingRepository.save(b);
-		return "redirect:/dashboard";
-	}
-
 
 
 	// ---
@@ -102,8 +100,19 @@ public class BuildingController {
 		Building b = getBuildingById(id);
 		//System.out.println(b);
 		model.addAttribute("building", b);
-		return "newBuilding";
+		return "updateBuilding";
 	}
+
+
+	// ---
+	@GetMapping("/updateRoom/{id}")
+	public String showFormRoomUpdate(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		Room r = roomRepository.getOne(id);
+		//System.out.println(b);
+		model.addAttribute("room", r);
+		return "updateRoom";
+	}
+
 
 	// ---
 	
@@ -127,14 +136,73 @@ public class BuildingController {
 		//save new building
 		buildingRepository.save(newbuilding);
 		
-		/*
-		//load all buildings
-		List<Building> listBuildings = buildingRepository.findAll();
+		return "redirect:/dashboard";
 		
-		model.addAttribute("listBuildings", listBuildings);
-		*/
+	}
+
+	@PostMapping("/saveBuildingUpdate/{id}")
+	//public String saveBuilding(@ModelAttribute("building") Building building,  Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Building newbuilding) {
+	public String saveBuilding(@ModelAttribute("building") Building newbuilding,  Model model, @CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+	//public String saveBuilding( Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Building newbuilding) {
+		//user authenticated
+		User user = userRepository.findByUsername(username);
+		
+		newbuilding.setId(id);
+		//save building
+		newbuilding = buildingRepository.save(newbuilding);
+		
+		
+		//add new building to user
+		user.addBuilding(newbuilding);
+		
+		//save user in building table
+        user = userRepository.save(user); // faz update!
+
+		newbuilding.addUser(user);
+		//save new building
+		buildingRepository.save(newbuilding);
+		
+		
+		return "redirect:/dashboard";
+		
+	}
+
+
+	@PostMapping("/saveRoom/{id}") // o id é do edificio
+	public String saveNewRoom(@ModelAttribute("room") Room newroom, Model model,@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+		// verificar se a room corresponde ao user
+		Building b = getBuildingById(id);
+
+		newroom.setBuilding(b);
+		newroom = roomRepository.save(newroom);
+		b.addRoom(newroom);
+		buildingRepository.save(b);
 		return "redirect:/dashboard";
 	}
+
+	@PostMapping("/saveNewSensor/{id}")	// -> vai ser o id da room
+	public String saveNewSensor(@ModelAttribute("sensor") Sensor newsensor, Model model,@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+		Room r = roomRepository.getOne(id);
+		newsensor.setRoom(r);
+		if (!(newsensor.getType().equals("CO2") || newsensor.getType().equals("BODY_TEMPERATURE") || newsensor.getType().equals("PEOPLE_COUNTER") ))
+			return "redirect:/newSensorForm/"+id; // nao vai guardar s en for nenhum destes valores
+
+		Sensor ns = sensorRepository.save(newsensor);
+		r.addSensor(ns);
+		roomRepository.save(r);
+		return "redirect:/dashboard";
+	}
+
+	@PostMapping("/saveUpdatedRoom/{id}") // no update -> aqui o id é do room mm
+	public String saveUpdatedRoom(@ModelAttribute("room") Room updroom, Model model,@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+		// verificar se a room corresponde ao user
+		updroom.setId(id);
+		roomRepository.save(updroom);
+		return "redirect:/dashboard";
+	}
+
+
+
 	
 	public Building getBuildingById(long id) {
 		Optional<Building> optional = buildingRepository.findById(id);
@@ -150,6 +218,7 @@ public class BuildingController {
 		return building;
 	}
 
+	/*
 	@PutMapping("/updateBuilding/{id}")
 	public String showFormForUpdate(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Building newbuilding) {
 		Building building = getBuildingById(id);
@@ -178,6 +247,9 @@ public class BuildingController {
 		
 		return "updateBuilding";
 	}
+	*/
+
+
 	/*
 	@PostMapping("/api/buildings/{id}/users")
     public List<EntityModel<Map<String, Object>>> addUserToBuilding(
@@ -207,11 +279,21 @@ public class BuildingController {
 		}
 		
 		*/
-    
+	
+	@GetMapping("/deleteRoom/{id}")
+	public String deleteRoom(@PathVariable(value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		Room r = roomRepository.getOne(id);
+        for (Sensor s : r.getSensors()) {
+            sensorDataRepository.deleteAll(s.getSensorsData());
+        }
+        sensorRepository.deleteAll(r.getSensors());
+		roomRepository.delete(r);
+		return "redirect:/dashboard";
+	}
     
 	
 	@GetMapping("/deleteBuilding/{id}")
-	public String deleteBuilding(@PathVariable (value = "id") long id,  Model model) {
+	public String deleteBuilding(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
 		Building b = getBuildingById(id);
 
 		// tirar o building de todos os users q o tem
