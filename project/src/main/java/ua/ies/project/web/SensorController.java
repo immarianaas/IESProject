@@ -78,7 +78,14 @@ public class SensorController {
             Map<String, Set<Room>> mapbuildingsAndRooms = new HashMap<String, Set<Room>>();
             
             for(Building b :u.getBuildings()){
-                mapbuildingsAndRooms.put(b.getBuildingName(), b.getRooms());
+                for(Room r : b.getRooms()){
+                    if(r.getFloorNumber() != 0 && r.getRoom_number() != 0){
+                        mapbuildingsAndRooms.put(b.getBuildingName(), b.getRooms());
+
+
+                    }
+
+                }
             }
             model.addAttribute("mapbuildingsAndRooms", mapbuildingsAndRooms);
 		
