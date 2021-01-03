@@ -6,14 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ua.ies.project.model.Role;
 import ua.ies.project.model.Sensor;
 import ua.ies.project.model.SensorData;
 import ua.ies.project.model.User;
+import ua.ies.project.repository.SensorDataRepository;
 import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.UserRepository;
 
@@ -121,5 +125,36 @@ public class SensorRestController {
         }
         return l;
     }
+
+    // ------- UPDATE ------- (falta permissoes)
+
+    @PutMapping("/api/sensors/{id}")
+    public EntityModel<Map<String, Object>> updateSensorById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Sensor newsensor) {
+        Sensor s = sensrep.findById(id).get();
+
+        if (newsensor.getType() != null) s.setType(newsensor.getType());
+        // n atualiza o sensorId.
+
+        return getSensorEntityModel(username, sensrep.save(s));
+    }
+
+
+    // ------- DELETE ------- (falta permissoes)
+    @DeleteMapping("/api/sensors/{id}")
+    public void deleteSensorById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+        Sensor s = sensrep.findById(id).get();
+        sensdatarep.deleteAll(s.getSensorsData());
+        s.getRoom().getSensors().remove(s);
+        sensrep.delete(s);
+        
+    }
+
+
+    @Autowired
+    private SensorDataRepository sensdatarep;
+
+
+
+
         
 }

@@ -15,9 +15,11 @@ import org.springframework.data.repository.support.Repositories;
 import org.springframework.hateoas.*;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +30,7 @@ import org.springframework.security.access.AccessDeniedException;
 import ua.ies.project.model.Building;
 import ua.ies.project.model.Role;
 import ua.ies.project.model.User;
+import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.RoleRepository;
 import ua.ies.project.repository.UserRepository;
 
@@ -117,7 +120,36 @@ public class UserRestController {
     }
 
 
-public static EntityModel<Map<String, Object>> getUserEntityModel(String username, User u) {
+    // ------ PUT (UPDATE) ------ (ainda n tem permissoes certas (da todos))
+
+    @PutMapping("/api/users/{id}")
+    public EntityModel<Map<String, Object>> updateUserById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody User newuser) {
+        User u = userrep.findById(id).get();
+        if (newuser.getUsername() != null) u.setUsername(newuser.getUsername());
+        if (newuser.getPassword() != null) u.setPassword(bCryptPasswordEncoder.encode(newuser.getPassword()));
+
+        return getUserEntityModel(username, userrep.save(u));
+    }
+
+
+    // ------ DELETE ------ (ainda n tem permissoes certas (da todos))
+
+    @DeleteMapping("/api/users/{id}")
+    public void deleteUserById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody User newuser) {
+        User u = userrep.findById(id).get();
+        for (Building b : u.getBuildings()) {
+            b.getUsers().remove(u);
+            buildrep.save(b);
+        }
+        userrep.delete(u);
+    }
+
+
+    @Autowired
+    private BuildingRepository buildrep;
+
+
+    public static EntityModel<Map<String, Object>> getUserEntityModel(String username, User u) {
     Map<String, Object> u_map = u.convertToMap();
     Long id = u.getId();
     return EntityModel.of(u_map,

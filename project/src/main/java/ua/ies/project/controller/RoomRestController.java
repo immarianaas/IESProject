@@ -14,9 +14,11 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,6 +30,7 @@ import ua.ies.project.model.User;
 import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.RoleRepository;
 import ua.ies.project.repository.RoomRepository;
+import ua.ies.project.repository.SensorDataRepository;
 import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.UserRepository;
 
@@ -128,6 +131,38 @@ public class RoomRestController {
         return l;
     }
 
+    // ------ PUT (UPDATE) ------ (ainda n tem permissoes certas (da todos))
+
+    @PutMapping("/api/rooms/{id}")
+    public EntityModel<Map<String, Object>> updateRoomById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Room newroom) {
+        Room r = roomrep.findById(id).get();
+
+        // devia verificar se é null ou nao mas como sao 'ints'/'doubles' nao dá pq n sao objs.
+        r.setRoom_number(newroom.getRoom_number());
+        r.setFloorNumber(newroom.getFloorNumber());
+        r.setMaxLevelCo2(newroom.getMaxOccupation());
+        r.setMaxTemperature(newroom.getMaxTemperature());
+        r.setMaxLevelCo2(newroom.getMaxLevelCo2());
+
+        return getRoomEntityModel(username, roomrep.save(r));
+    }
+
+    // ------ DELETE ------ (ainda n tem permissoes certas (da todos))
+
+    @DeleteMapping("/api/rooms/{id}")
+    public void deleteRoomById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+        Room r = roomrep.getOne(id);
+        for (Sensor s : r.getSensors()) {
+            sensdatarep.deleteAll(s.getSensorsData());
+        }
+        sensrep.deleteAll(r.getSensors());
+        roomrep.delete(r);
+    }
+
+
+
+    @Autowired
+    private SensorDataRepository sensdatarep;
 
     @Autowired
     private UserRepository userrep;
