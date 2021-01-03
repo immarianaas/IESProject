@@ -100,29 +100,18 @@
                     </div>
                        <div class="row ">
                             <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1" >
-                                <form action="#" th:action="@{/saveRoom/{id}(id=${building.id})}" th:object="${room}"
+                                <form action="#" th:action="@{/saveNewSensor/{id}(id=${room.id})}" th:object="${sensor}"
                                     method="POST">
-                                        <label >Room number:</label><br>
-                                        <input type="text" th:field="*{room_number}"
+                                        <label >Sensor ID:</label><br>
+                                        <input type="text" th:field="*{sensorId}"
                                          class="form-control mb-4 col-4">
 
-                                        <label>Floor number:</label><br>
-                                        <input type="text" th:field="*{floorNumber}"
+                                        <label>Type:</label><br>
+                                        <input type="text" th:field="*{type}"
                                         class="form-control mb-4 col-4">
 
-                                        <label >Max occupation:</label><br>
-                                        <input type="text" th:field="*{maxOccupation}"
-                                         class="form-control mb-4 col-4">
-                                        
-                                        <label>Max level CO2:</label><br>
-                                        <input type="text" th:field="*{maxLevelCo2}"
-                                         class="form-control mb-4 col-4">
-
-                                        <label >Max body temperature:</label><br>
-                                        <input type="text" th:field="*{maxTemperature}"
-                                        class="form-control mb-4 col-4">
                                         <br/>
-                                        <button type="submit" class="btn btn-info col-4">Save Room</button>
+                                        <button type="submit" class="btn btn-info col-4">Save Sensor</button>
             
             
                                 </form>

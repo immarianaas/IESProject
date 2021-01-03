@@ -121,7 +121,10 @@ public class WebController {
     }
 
     private Object[] getLastValueRecieved(Sensor s) {
-        SensorData sd = sensdatarep.findBySensorIdOrderByTimestampDesc(s.getId()).get(0);
+        SensorData sd;
+        try {
+            sd = sensdatarep.findBySensorIdOrderByTimestampDesc(s.getId()).get(0);
+        } catch (Exception e) { return null; }
 
         if (sd instanceof Co2) {
             return new Object[] {((Co2)sd).getValue(), sd.getTimestamp(), sd.getWarn()};
@@ -129,11 +132,8 @@ public class WebController {
             return new Object[] {((PeopleCounter) sd).getValue(), sd.getTimestamp(), sd.getWarn()};
         } else if (sd instanceof BodyTemperature) {
             return new Object[] {((BodyTemperature) sd).getValue() , sd.getTimestamp(), sd.getWarn()};
-        } else {
-            System.out.println("\n\n\n\nPLEASE DONT ENTER HERE(so se for vazio) \n\n\n\n");
         }
         return null;
-
     }
 
     @Autowired

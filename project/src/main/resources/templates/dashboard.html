@@ -282,8 +282,7 @@
                                     <th>No. CO2 sensors</th>
                                     <th>No. body temp. sensors</th>
                                     <th>No. occupation sensors</th>
-                                    <th> Actions </th>
-
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                         <tbody>
@@ -302,10 +301,9 @@
                                 <td th:text="${mapNrSensors.get(anews)[2]}"></td>
 
                                 
-                                <td> ss<a th:href="" class="btn btn-primary">Update</a>
-                                    <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
-                                    <a th:href="@{/newRoomForm/{id}(id=${building.id})}" class="btn btn-info">Add Room</a>
-
+                                <td> <a th:href="@{/updateRoom/{id}(id=${anews.id})}" class="btn btn-primary">Update</a>
+                                     <a th:href="@{/deleteRoom/{id}(id=${anews.id})}" class="btn btn-danger">Delete</a>
+                                    <a th:href="@{/newSensorForm/{id}(id=${anews.id})}" class="btn btn-info">Add Sensor</a>
                                 </td>
                         
                             </tr>
@@ -358,7 +356,7 @@
 
             
     
-<div th:if="${3==4}"> <!-- apenas para "comentar/esconder" o que está abaixo (q acho q é pra tirar)-->
+            <div th:if="${3==4}"> <!-- apenas para "comentar/esconder" o que está abaixo (q acho q é pra tirar)-->
 
             <div class="col-md-11">
 
@@ -432,10 +430,11 @@
                                 <td th:text="${mapNrSensors.get(anews)[1]}"></td>
                                 <td th:text="${mapNrSensors.get(anews)[2]}"></td>
                                 
-                                <td> <a th:href="@{/updateBuilding/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
+                                <!--<td> <a th:href="@{/updateBuilding/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
                                     <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
                                     <a th:href="@{/newRoomForm/{id}(id=${building.id})}" class="btn btn-info">Add Sensor</a>
-                                </td>
+                                
+                                </td>-->
                         
                             </tr>
                         </tbody>
@@ -473,7 +472,6 @@
                     </tr>
                 </table>
 
-            </div>
             </div>
 
                 <!-- ---------------------------------------------!-->
@@ -588,6 +586,7 @@
 
                 </div>
 
+            </div>
 
 
 
