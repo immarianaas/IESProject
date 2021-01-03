@@ -1,7 +1,9 @@
 package ua.ies.project.web;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +48,10 @@ public class WebController {
     private BuildingRepository buildingRepository;
     
     @Autowired
-	private UserRepository userRepository;
+    private UserRepository userRepository;
+    @Autowired
+	private Co2Repository co2Repository;
+
 
     @GetMapping("/")
     public String home(Model model) {
@@ -159,29 +164,77 @@ public class WebController {
 		graphData.put("2017", 1256);
 		graphData.put("2018", 3856);
 		graphData.put("2019", 19807);
-		model.addAttribute("chartData", graphData);
-   
+        model.addAttribute("chartData", graphData);
 
 
+        User ux = userRepository.findByUsername(username);
+        Set<Building> buildings =  ux.getBuildings();
 
-        Map<Integer, ArrayList<String>> v = new HashMap<>();
-        ArrayList<String> x = new ArrayList<String>();
-        x.add("2100");
-        x.add("color: #b87333");
+        Set<SensorData> allSensorsData = new HashSet<>();
+        for(Building b : buildings){
 
-        v.put(123, x );
+            Set<Room> rooms = b.getRooms();
+            if(rooms.size() != 0){
+                for(Room r : rooms){
+                    
+                    Set<Sensor> sensors = r.getSensors();
 
-      
-        //System.out.println(graphData + "  EEEEEEEEEEEEEE");
-        model.addAttribute("SSchacrtData", v);
-
-
-
-
-
+                    if(sensors.size() != 0){
+                        for(Sensor s : sensors){
+                            System.out.println("TYEP  " + s.getType());
         
+                            if(s.getType().equals("CO2")){
+                                allSensorsData.addAll(s.getSensorsData());
+                        }
+                    }
+                }
+            }
+        }
 
-        return "air_quality";
+
+        Map<String, Integer> graphDataX = new TreeMap<>();
+
+
+        for (SensorData sd : allSensorsData) {
+            Co2 co2Object= null;
+
+            try{
+                co2Object= co2Repository.findById(sd.getId()).get();
+            }catch(Exception e){
+                continue;
+            }
+
+            //System.out.println(graphDataX.size() + "  ENTROU ------------------------" + co2Object.getValue() + "  " +  sd.getWarn()+ "   " + sd.getTimestamp());
+
+
+            //if(sd.getWarn()){
+               // System.out.println("BBB   " + allSensorsData.size());
+
+
+
+            String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+            //column.add( formattedDate);
+            //column.add( "formattedDate");
+
+            //column.add("color: #FF0000");
+
+            graphDataX.put(formattedDate, (int)co2Object.getValue());
+ 
+            System.out.println(graphDataX + "  ANTES");//DEL
+            
+            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
+
+            if(graphDataX.size() == 4){
+                System.out.println(graphDataX + "  FINAL");//DEL
+                model.addAttribute("graphData", graphDataX);//DEL
+                break;
+            }
+
+        }
+        
+    }
+    return "air_quality";
+        
     }
 
 

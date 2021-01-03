@@ -167,17 +167,17 @@
 
 
 <!-- --------------------------------------CHARTS--------.............................................------>
-<form action="#" th:action="@{/sensorCo2AllData}" method="GET">
-    <button name="submit" type="submit" >Search </button>
+        <form action="#" th:action="@{/sensorCo2AllData}" method="GET">
+            <button name="submit" type="submit" >Search </button>
 
-</form>
+        </form>
 
 
-<div align="center" style="width: 1000px;">
-    <h2>Spring Boot Google Charts Example</h2>
-    <div id="chart_div"></div>
-    <div id="piechart" style="width: 900px; height: 500px;"></div>
-</div>
+        <div align="center" style="width: 1000px;">
+            <h2>Spring Boot Google Charts Example</h2>
+            <div id="chart_div"style="width: 1500px; height: 00px;"></div>
+            <div id="piechart" style="width: 900px; height: 500px;"></div>
+        </div>
 
 
     <!-- ---------------------------------------------------->
@@ -426,7 +426,7 @@
 
 
     <script th:inline="javascript">
-        var real_data = /*[[${teste}]]*/'noValue';
+        var real_data = /*[[${graphData}]]*/'noValue';
  
         $(document).ready(function() {
             google.charts.load('current', {
@@ -439,25 +439,33 @@
  
         function drawColumnChart() {
             var data = new google.visualization.DataTable();
-            data.addColumn('string', 'Year');
-            data.addColumn('number', 'Views');
+            data.addColumn('string', 'Date');
+            data.addColumn('number', 'Co2');
             data.addColumn({type: 'string', role: 'style'});
 
 
             Object.keys(real_data).forEach(function(key) {
+                const warn = key.slice(key.length-1);
+                console.log(warn);
+                
+                if(warn == "W"){
+                    data.addRow([key.substring(0, key.length - 1) , real_data[key],  "color:#d9534f"]);
 
-                data.addRow([ real_data[key][0], key, "color: #e5e4e2"]);
+                }else{
+                    data.addRow([ key, real_data[key],  "#4c7f1a"]);
+
+                }
             });
             
             
             
             var options = {
-                title : 'Blog stats',
+                title : '',
                 hAxis : {
-                    title : 'Years',
+                    title : 'Date(MM-dd-yyyy HH:mm)',
                 },
                 vAxis : {
-                    title : 'View Count'
+                    title : 'Co2 Concentration (ppm)'
                 }
             };
 

@@ -263,10 +263,10 @@
  
             <div class="table-responsive">
 
-                <table th:each="element : ${mapbuildingsAndRooms}">
+                <table style="table-layout: fixed ; width: 100%;" class="table table-striped table-bordered table-hover" th:each="element : ${mapbuildingsAndRooms}">
                     <tr th:each="anews : ${element.value}">
                     
-                        <table style="table-layout: fixed; width:80%; " class="table table-striped table-bordered table-hover" >
+                        <table  style="table-layout: fixed ; width: 100%;" class="table table-striped table-bordered table-hover">
                             <h4>Rooms of building <strong><span th:text="${element.key}"></span></strong>:</h4>                     
 
                             <thead>
@@ -282,6 +282,8 @@
                                     <th>No. CO2 sensors</th>
                                     <th>No. body temp. sensors</th>
                                     <th>No. occupation sensors</th>
+                                    <th> Actions </th>
+
                                 </tr>
                             </thead>
                         <tbody>
@@ -298,10 +300,11 @@
                                 <td th:text="${mapNrSensors.get(anews)[0]}"></td>
                                 <td th:text="${mapNrSensors.get(anews)[1]}"></td>
                                 <td th:text="${mapNrSensors.get(anews)[2]}"></td>
+
                                 
-                                <td> <a th:href="@{/updateBuilding/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
+                                <td> ss<a th:href="" class="btn btn-primary">Update</a>
                                     <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
-                                    <a th:href="@{/newRoomForm/{id}(id=${building.id})}" class="btn btn-info">Add Sensor</a>
+                                    <a th:href="@{/newRoomForm/{id}(id=${building.id})}" class="btn btn-info">Add Room</a>
 
                                 </td>
                         
@@ -343,6 +346,17 @@
 
             </div>
             </div>
+
+
+
+
+
+
+
+
+
+
+            
     
 <div th:if="${3==4}"> <!-- apenas para "comentar/esconder" o que está abaixo (q acho q é pra tirar)-->
 
@@ -377,6 +391,8 @@
                 </div>
             </div>
 
+
+            
             <div class="table-responsive">
 
                 <table th:each="element : ${mapbuildingsAndRooms}">
@@ -398,6 +414,7 @@
                                     <th>No. CO2 sensors</th>
                                     <th>No. body temp. sensors</th>
                                     <th>No. occupation sensors</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                         <tbody>
@@ -418,7 +435,6 @@
                                 <td> <a th:href="@{/updateBuilding/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
                                     <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
                                     <a th:href="@{/newRoomForm/{id}(id=${building.id})}" class="btn btn-info">Add Sensor</a>
-
                                 </td>
                         
                             </tr>

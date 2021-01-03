@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -58,14 +59,9 @@ public class SensorDataController {
 
     @GetMapping("/sensorCo2AllData")
     public String getSensorDataByRoom( Model model, @CurrentSecurityContext(expression="authentication.name") String username){
-        System.out.println("  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw");
-        //if (!checkIfMine(username,id)) throw new AccessDeniedException("403 returned");
-
-        
-        User u = userRepository.findByUsername(username);
-        Set<Building> buildings =  u.getBuildings();
-        System.out.println("-#############BUILDINGS   " + buildings.size());
-
+       
+        User ux = userRepository.findByUsername(username);
+        Set<Building> buildings =  ux.getBuildings();
 
         Set<SensorData> allSensorsData = new HashSet<>();
         for(Building b : buildings){
@@ -73,7 +69,6 @@ public class SensorDataController {
             Set<Room> rooms = b.getRooms();
             if(rooms.size() != 0){
                 for(Room r : rooms){
-                    System.out.println("DDD");
                     
                     Set<Sensor> sensors = r.getSensors();
 
@@ -82,50 +77,68 @@ public class SensorDataController {
                             System.out.println("TYEP  " + s.getType());
         
                             if(s.getType().equals("CO2")){
-                                System.out.println("TRUEE");   
+                                allSensorsData.addAll(s.getSensorsData());
                         }
-
                     }
                 }
             }
-
         }
-        System.out.println("-#############   " + allSensorsData.size());
 
-        Map<Integer, ArrayList<String>> graphData = new HashMap<>();
+
+        Map<String, Integer> graphDataX = new TreeMap<>();
+
+        Map<Integer, ArrayList<String>> graphDataY = new TreeMap<>();
+
+
+
         for (SensorData sd : allSensorsData) {
-            Co2 co2Object= co2Repository.findById(sd.getId()).get();
+            Co2 co2Object= null;
+
+            try{
+                co2Object= co2Repository.findById(sd.getId()).get();
+            }catch(Exception e){
+                continue;
+            }
+
+            //System.out.println(graphDataX.size() + "  ENTROU ------------------------" + co2Object.getValue() + "  " +  sd.getWarn()+ "   " + sd.getTimestamp());
+
 
             if(sd.getWarn()){
-                ArrayList<String> column = new ArrayList<String>();
-     
-                String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(sd.getTimestamp());
-                column.add( formattedDate);
-                column.add("color: #FF0000");
+                //ArrayList<String> column = new ArrayList<>();
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+                //column.add(formattedDate);
+                //column.add("color: #FF0000");
+                String y = formattedDate + "W";
+                graphDataX.put(y, (int)co2Object.getValue());
 
-                graphData.put((int)co2Object.getValue(), column);
 
-
+                //graphDataY.put( (int)co2Object.getValue(), column);
             }else{
-                ArrayList<String> column = new ArrayList<String>();
-                String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(sd.getTimestamp());
-                column.add( formattedDate);
-                column.add("color: #FF0000");
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+                graphDataX.put(formattedDate, (int)co2Object.getValue());
 
-                graphData.put((int)co2Object.getValue(), column);
 
+                
+            }
+    
+            System.out.println(graphDataY + "  ANTES");//DEL
+            
+            System.out.println("  SIZZE MAP ------------------------" + graphDataY.size() );
+
+            if(graphDataX.size() == 10){
+                System.out.println(graphDataX + "  FINAL");//DEL
+                model.addAttribute("graphData", graphDataX);//DEL
+                break;
             }
 
         }
-        
-        
 
-      
-        System.out.println(graphData + "  EEEEEEEEEEEEEE");
-        model.addAttribute("teste",graphData);
 
-    }
-    return "air_quality";
+        } 
+        return "air_quality";
+        }
+
+        
 
 }
 
@@ -136,4 +149,4 @@ public class SensorDataController {
         
         
   
-}
+
