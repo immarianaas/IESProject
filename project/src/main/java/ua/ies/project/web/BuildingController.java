@@ -16,8 +16,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import ua.ies.project.model.Building;
+import ua.ies.project.model.Room;
+import ua.ies.project.model.Sensor;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.BuildingRepository;
+import ua.ies.project.repository.RoomRepository;
+import ua.ies.project.repository.SensorDataRepository;
+import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.UserRepository;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +35,16 @@ public class BuildingController {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private SensorDataRepository sensorDataRepository;
+
+	@Autowired
+	private SensorRepository sensorRepository;
 	
+	@Autowired
+	private RoomRepository roomRepository;
+
 	//PARECE SER MAIS O dashboard do webController
 	@GetMapping("/allBuildings")
 	public String viewHomePage(Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
@@ -49,9 +63,22 @@ public class BuildingController {
 		model.addAttribute("building", building);
 		return "newBuilding";
 	}
+
+	// ---
+	@GetMapping("/updateBuilding/{id}")
+	public String showFormBuildingUpdate(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		Building b = getBuildingById(id);
+		//System.out.println(b);
+		model.addAttribute("building", b);
+		return "newBuilding";
+	}
+
+	// ---
 	
 	@PostMapping("/saveBuilding")
-	public String saveBuilding(@ModelAttribute("building") Building building,  Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Building newbuilding) {
+	//public String saveBuilding(@ModelAttribute("building") Building building,  Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Building newbuilding) {
+	public String saveBuilding(@ModelAttribute("building") Building newbuilding,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+	//public String saveBuilding( Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Building newbuilding) {
 		//user authenticated
 		User user = userRepository.findByUsername(username);
 		
@@ -66,14 +93,14 @@ public class BuildingController {
 
 		newbuilding.addUser(user);
 		//save new building
-		buildingRepository.save(building);
+		buildingRepository.save(newbuilding);
 		
 		//load all buildings
 		List<Building> listBuildings = buildingRepository.findAll();
 		
 		model.addAttribute("listBuildings", listBuildings);
 		
-		return "dashboard";
+		return "redirect:/dashboard";
 	}
 	
 	public Building getBuildingById(long id) {
@@ -152,12 +179,32 @@ public class BuildingController {
 	
 	@GetMapping("/deleteBuilding/{id}")
 	public String deleteBuilding(@PathVariable (value = "id") long id,  Model model) {
-		this.buildingRepository.deleteById(id);
+		Building b = getBuildingById(id);
 
+		// tirar o building de todos os users q o tem
+		for (User u : b.getUsers()) {
+			u.getBuildings().remove(b);
+			userRepository.save(u);
+		}
+
+		for (Room r : b.getRooms()) {
+            for (Sensor s : r.getSensors()) {
+				// apagar todos os dados dos sensores
+                sensorDataRepository.deleteAll(s.getSensorsData());
+			}
+			// e tambem todos os sensores associados...
+            sensorRepository.deleteAll(r.getSensors());
+		}
+		
+		// eliminar todas as salas relacionadas c ele
+		roomRepository.deleteAll(b.getRooms());
+
+		this.buildingRepository.deleteById(id);
+		/*
 		List<Building> listBuildings = buildingRepository.findAll();
 		model.addAttribute("listBuildings", listBuildings);
-		
-		return "dashboard";
+		*/
+		return "redirect:/dashboard";
 	}
 
 

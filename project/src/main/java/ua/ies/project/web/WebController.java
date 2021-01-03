@@ -50,8 +50,8 @@ public class WebController {
     
     @GetMapping("/dashboard")
     public String dashboard(Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
-        // TODO alterar isto pq assim aparece de todas as casas!!
-        // (neste momento tá a dar o ultimo de todos e n o ultimo de todos para o edificio X)
+
+        /* // isto tem mm de ser alterado
         Co2 co2 = co2rep.findTopByOrderByIdDesc();
         BodyTemperature bt = bodytemprep.findTopByOrderByIdDesc();
         //System.out.println(data);
@@ -60,18 +60,18 @@ public class WebController {
         model.addAttribute("co2_data", co2);
 	    model.addAttribute("bodytemp_data", bt);
         model.addAttribute("peoplecounter_data", pc);
-        
+        */
         //load buildings
 
         User u = userRepository.findByUsername(username);
         model.addAttribute("listBuildings", u.getBuildings());
         
         //buildings and rooms of user
-        User u1 = userRepository.findByUsername(username);
+        // User u1 = userRepository.findByUsername(username);
         System.out.println(u.getUsername());
         Map<String, Set<Room>> mapbuildingsAndRooms = new HashMap<String, Set<Room>>();
         
-        for(Building b :u1.getBuildings()){
+        for(Building b :u.getBuildings()){
             mapbuildingsAndRooms.put(b.getBuildingName(), b.getRooms());
         }
         model.addAttribute("mapbuildingsAndRooms", mapbuildingsAndRooms);
