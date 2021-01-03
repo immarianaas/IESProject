@@ -1,9 +1,11 @@
 package ua.ies.project.web;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -94,6 +96,34 @@ public class WebController {
         model.addAttribute("mapbuildingsAndRooms", mapbuildingsAndRooms);
 
         //...
+
+        
+        //DELET%E
+        Map<String, Integer> graphData = new TreeMap<>();
+		graphData.put("2016", 147);
+		graphData.put("2017", 1256);
+		graphData.put("2018", 3856);
+		graphData.put("2019", 19807);
+		model.addAttribute("chartData", graphData);
+   
+
+
+
+        Map<Integer, ArrayList<String>> v = new HashMap<>();
+        ArrayList<String> x = new ArrayList<String>();
+        x.add("2100");
+        x.add("color: #b87333");
+
+        v.put(123, x );
+
+      
+        //System.out.println(graphData + "  EEEEEEEEEEEEEE");
+        model.addAttribute("SSchacrtData", v);
+
+
+
+
+
         
 
         return "air_quality";

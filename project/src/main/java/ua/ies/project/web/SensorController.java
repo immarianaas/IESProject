@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ua.ies.project.model.Room;
 import ua.ies.project.model.Sensor;
+import ua.ies.project.model.SensorData;
 import ua.ies.project.repository.SensorDataRepository;
 import ua.ies.project.repository.SensorRepository;
 import java.util.HashMap;
@@ -54,9 +55,18 @@ public class SensorController {
     @Autowired
 	private UserRepository userRepository;
 	//----------- QUERIES--------------------
+    public boolean checkIfMine(String uname, long data_id) {
+        SensorData sd = sensorDataRepository.findById(data_id).get();
+        for (User u : sd.getSensor().getRoom().getBuilding().getUsers()) {
+            if (u.getUsername().equals(uname)) return true;
+        }
+        return false;
+    }
+    
 
     @GetMapping("/searchSensorTypeByRoom")
-    public String getSensorDataByRoom(@RequestParam(value="searchTerm", required = false) Long room_id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username){
+    public String getSensorDataByRoom(@RequestParam(value="searchTerm", required = false) Long room_id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id){
+        if (!checkIfMine(username,id)) throw new AccessDeniedException("403 returned");
 
         List<Sensor> sensorL = sensorRepository.findAll();
         Iterator<Sensor> s = sensorL.iterator();
@@ -70,7 +80,8 @@ public class SensorController {
                 sensorList.add(sensor);
             }
         }
-		
+        
+        
         model.addAttribute("sensorList", sensorList);
             //buildings and rooms of user
             User u = userRepository.findByUsername(username);
@@ -91,6 +102,10 @@ public class SensorController {
 		
     return "dashboard";
     }
+    
+   
+  
+
 
   
 

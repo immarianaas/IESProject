@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ua.ies.project.model.Building;
 import ua.ies.project.model.Room;
 import ua.ies.project.model.Sensor;
+import ua.ies.project.model.SensorData;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.RoomRepository;
@@ -45,9 +46,16 @@ public class BuildingController {
 	@Autowired
 	private RoomRepository roomRepository;
 
+	public boolean checkIfMine(String uname, long data_id) {
+        SensorData sd = sensorDataRepository.findById(data_id).get();
+        for (User u : sd.getSensor().getRoom().getBuilding().getUsers()) {
+            if (u.getUsername().equals(uname)) return true;
+        }
+        return false;
+    }
 	//PARECE SER MAIS O dashboard do webController
 	@GetMapping("/allBuildings")
-	public String viewHomePage(Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+	public String viewHomePage(Model model, @CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
 		User u = userRepository.findByUsername(username);
 		model.addAttribute("listBuildings", u.getBuildings());
 
