@@ -61,22 +61,36 @@ public class SensorDataController {
         System.out.println("  WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw");
         //if (!checkIfMine(username,id)) throw new AccessDeniedException("403 returned");
 
-        /*
+        
         User u = userRepository.findByUsername(username);
         Set<Building> buildings =  u.getBuildings();
+        System.out.println("-#############BUILDINGS   " + buildings.size());
+
 
         Set<SensorData> allSensorsData = new HashSet<>();
         for(Building b : buildings){
+
             Set<Room> rooms = b.getRooms();
-            for(Room r : rooms){
-                Set<Sensor> sensors = r.getSensors();
-                for(Sensor s : sensors){
-                    if(s.getType().equals("CO2")){
-                        allSensorsData.addAll(s.getSensorsData());
+            if(rooms.size() != 0){
+                for(Room r : rooms){
+                    System.out.println("DDD");
+                    
+                    Set<Sensor> sensors = r.getSensors();
+
+                    if(sensors.size() != 0){
+                        for(Sensor s : sensors){
+                            System.out.println("TYEP  " + s.getType());
+        
+                            if(s.getType().equals("CO2")){
+                                System.out.println("TRUEE");   
+                        }
+
                     }
                 }
             }
+
         }
+        System.out.println("-#############   " + allSensorsData.size());
 
         Map<Integer, ArrayList<String>> graphData = new HashMap<>();
         for (SensorData sd : allSensorsData) {
@@ -84,7 +98,7 @@ public class SensorDataController {
 
             if(sd.getWarn()){
                 ArrayList<String> column = new ArrayList<String>();
-                column.add("color: #FF0000");
+     
                 String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(sd.getTimestamp());
                 column.add( formattedDate);
                 column.add("color: #FF0000");
@@ -94,7 +108,6 @@ public class SensorDataController {
 
             }else{
                 ArrayList<String> column = new ArrayList<String>();
-                column.add("color: #b87333");
                 String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(sd.getTimestamp());
                 column.add( formattedDate);
                 column.add("color: #FF0000");
@@ -104,20 +117,18 @@ public class SensorDataController {
             }
 
         }
-        */
-        Map<Integer, ArrayList<String>> v = new HashMap<>();
-        ArrayList<String> x = new ArrayList<String>();
-        x.add("2100");
-        x.add("color: #b87333");
-
-        v.put(123, x );
+        
+        
 
       
-        //System.out.println(graphData + "  EEEEEEEEEEEEEE");
-        model.addAttribute("SSchacrtData", v);
+        System.out.println(graphData + "  EEEEEEEEEEEEEE");
+        model.addAttribute("teste",graphData);
 
-        return "air_quality";
     }
+    return "air_quality";
+
+}
+
     
 
 

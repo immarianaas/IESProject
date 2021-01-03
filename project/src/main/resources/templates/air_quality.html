@@ -426,7 +426,7 @@
 
 
     <script th:inline="javascript">
-        var real_data = /*[[${chartData}]]*/'noValue';
+        var real_data = /*[[${teste}]]*/'noValue';
  
         $(document).ready(function() {
             google.charts.load('current', {
@@ -446,7 +446,7 @@
 
             Object.keys(real_data).forEach(function(key) {
 
-                data.addRow([ key, real_data[1],"color: #b87333" ]);
+                data.addRow([ real_data[key][0], key, "color: #e5e4e2"]);
             });
             
             
