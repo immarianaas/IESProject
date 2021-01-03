@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymleaf.org">
 <head>
     <meta charset="utf-8" />
@@ -178,9 +178,103 @@
                       <br/>
                        <br/>
                     </div>
-                     
+                                     
+            <!-- ------------------Buildings and Rooms---------------------------------->
+            <div class="col-md-11">
+ 
+            <div class="table-responsive">
+
+                <table >
+                    <tr th:each="element : ${mapbuildingsAndRooms}">
+                    
+                        
+
+                        <table style="table-layout: fixed; width:80%; " class="table table-striped table-bordered table-hover">
+                            <h4 >Building Rooms Info: </h3>                     
+
+                            <thead>
+                                <tr>
+                                    <th>
+                                        
+                                        Building Name
+                                    </th>
+                                
+                                    
+                                    <th>
+                                        
+                                        Room ID
+                                    </th>
+                                    
+                                    <th>
+                                        
+                                            Room Number
+                                    </th>
+                                    <th>
+                                
+                                            Floor Number
+                                    </th>
+                                    <th>Max. level co2</th>
+                                    <th>Max. temperature</th>
+                                    <th>Max. occupation</th>
+                                                            
+                    
+                                
+                                
+                                </tr>
+                            </thead>
+                        <tbody>
+                            <tr th:each="anews : ${element.value}">
+                                <td th:text="${element.key}"></td>
+
+                                <td th:text="${anews.getId}"></td>
+                                <td th:text="${anews.getRoom_number}"></td>
+                                <td th:text="${anews.getFloorNumber}"></td>
+                                <td th:text="${anews.getMaxLevelCo2}"></td>
+                                <td th:text="${anews.getMaxTemperature}"></td>
+                                <td th:text="${anews.getMaxOccupation}"></td>
+
+                        
+                            </tr>
+                            </tbody>
+                        </table>
+                    </tr>
+                </table>
+            </div>
+            </div>
+    
+            <div class="col-md-11">
 
                     <!-- ---------------------------------------------!-->
+                                    <!--input room by id-->
+                <h4 >Room sensors available: </h4>                     
+
+                <form action="#" th:action="@{/searchSensorTypeByRoom}" method="GET">
+                    <input type="text" name="searchTerm">
+                    <button name="submit" type="submit" >Search </button>
+
+                </form>
+
+                <!--show sensor data-->
+                <div class="table-responsive">
+                    <table style="table-layout: fixed ; width: 20%;" class="table table-striped table-bordered table-hover">
+                    
+                        <thead>
+                            <tr>           
+                                <th>Sensor Types</th>
+                            </tr>
+                        </thead>
+                       <tbody>
+                        <tr width="80px" th:each="sensorList : ${sensorList}">
+                            <td width="80px" th:text="${sensorList.getType()}"></td>
+
+                        </tr>
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+
+                <!-- ---------------------------------------------!-->
+
 
 
                

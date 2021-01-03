@@ -1,5 +1,7 @@
 package ua.ies.project.web;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import ua.ies.project.model.User;
 import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.UserRepository;
 import java.util.Optional;
+import java.util.Set;
 
 @Controller
 public class BuildingController {
@@ -30,11 +33,9 @@ public class BuildingController {
 	
 	//PARECE SER MAIS O dashboard do webController
 	@GetMapping("/allBuildings")
-	public String viewHomePage(Model model) {
-		
-		//load buildings
-		List<Building> listBuildings = buildingRepository.findAll();
-		model.addAttribute("listBuildings", listBuildings);
+	public String viewHomePage(Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		User u = userRepository.findByUsername(username);
+		model.addAttribute("listBuildings", u.getBuildings());
 
 
 		return "dashboard";
@@ -158,6 +159,11 @@ public class BuildingController {
 		
 		return "dashboard";
 	}
+
+
+	//----------- QUERIES--------------------
+
+
 
 	
 }
