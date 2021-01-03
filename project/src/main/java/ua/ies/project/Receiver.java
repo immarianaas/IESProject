@@ -94,7 +94,7 @@ public class Receiver {
 
     private boolean isWarningCo2(Co2 input) {
             Room r = input.getSensor().getRoom();
-            return r.getMaxLevelCo2() > input.getValue();
+            return r.getMaxLevelCo2() < input.getValue();
         }
 
 
@@ -148,12 +148,12 @@ public class Receiver {
 
     private boolean isWarningBodyTemp(BodyTemperature input) {
         Room r = input.getSensor().getRoom();
-        return r.getMaxTemperature() > input.getValue();
+        return r.getMaxTemperature() < input.getValue();
     }
 
     private boolean isWarningPeopleCounter(PeopleCounter input) {
         Room r = input.getSensor().getRoom();
-        return r.getMaxOccupation() > input.getValue();
+        return r.getMaxOccupation() < input.getValue();
     }
 
     @RabbitListener(queues="people_counter")

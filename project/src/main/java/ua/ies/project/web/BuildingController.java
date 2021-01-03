@@ -64,6 +64,30 @@ public class BuildingController {
 		return "newBuilding";
 	}
 
+	@GetMapping("/newRoomForm/{id}")
+	public String shownewBuildingForm(@PathVariable ( value = "id") long id, Model model,@CurrentSecurityContext(expression="authentication.name") String username) {
+		Room room = new Room();
+		Building b = getBuildingById(id);
+		model.addAttribute("room", room);
+		model.addAttribute("building", b);
+		return "newRoom";
+	}
+
+
+	@PostMapping("/saveRoom/{id}")
+	public String saveNewRoom(@ModelAttribute("room") Room newroom, @PathVariable ( value = "id") long id, Model model,@CurrentSecurityContext(expression="authentication.name") String username) {
+		// TODO verificar se o building corresponde mm ao user
+		Building b = getBuildingById(id);
+
+		newroom.setBuilding(b);
+		newroom = roomRepository.save(newroom);
+		b.addRoom(newroom);
+		buildingRepository.save(b);
+		return "redirect:/dashboard";
+	}
+
+
+
 	// ---
 	@GetMapping("/updateBuilding/{id}")
 	public String showFormBuildingUpdate(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
@@ -95,11 +119,12 @@ public class BuildingController {
 		//save new building
 		buildingRepository.save(newbuilding);
 		
+		/*
 		//load all buildings
 		List<Building> listBuildings = buildingRepository.findAll();
 		
 		model.addAttribute("listBuildings", listBuildings);
-		
+		*/
 		return "redirect:/dashboard";
 	}
 	

@@ -165,7 +165,7 @@
 
                                         <td> <a th:href="@{/updateBuilding/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
                                             <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
-                                            <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-info">Add Room</a>
+                                            <a th:href="@{/newRoomForm/{id}(id=${building.id})}" class="btn btn-info">Add Room</a>
 
                                         </td>
                                     </tr>
@@ -183,7 +183,7 @@
 
 
             <!-- ----------------Room List-----------------------------!-->
-  
+  <!--
 
             <div class="col-md-11">
                 <div class="table-responsive">
@@ -256,54 +256,38 @@
 
 
 
-
+-->
                                      
             <!-- ------------------Buildings and Rooms---------------------------------->
             <div class="col-md-11">
  
             <div class="table-responsive">
 
-                <table >
-                    <tr th:each="element : ${mapbuildingsAndRooms}">
+                <table th:each="element : ${mapbuildingsAndRooms}">
+                    <tr th:each="anews : ${element.value}">
                     
-                        
-
-                        <table style="table-layout: fixed; width:80%; " class="table table-striped table-bordered table-hover">
-                            <h4 >Building Rooms Info: </h3>                     
+                        <table style="table-layout: fixed; width:80%; " class="table table-striped table-bordered table-hover" >
+                            <h4>Rooms of building <strong><span th:text="${element.key}"></span></strong>:</h4>                     
 
                             <thead>
                                 <tr>
-                                    <th>
-                                        
-                                        Building Name
-                                    </th>
-                                
-                                    
-                                    <th>
-                                        
-                                        Room ID
-                                    </th>
-                                    
-                                    <th>
-                                        
-                                            Room Number
-                                    </th>
-                                    <th>
-                                
-                                            Floor Number
-                                    </th>
+                                    <!--<th>Building Name</th>-->
+                                    <th>Room ID</th>
+                                    <th>Room Number</th>
+                                    <th>Floor Number</th>
                                     <th>Max. level co2</th>
                                     <th>Max. temperature</th>
                                     <th>Max. occupation</th>
-                                                            
-                    
-                                
-                                
+
+                                    <th>No. CO2 sensors</th>
+                                    <th>No. body temp. sensors</th>
+                                    <th>No. occupation sensors</th>
                                 </tr>
                             </thead>
                         <tbody>
-                            <tr th:each="anews : ${element.value}">
-                                <td th:text="${element.key}"></td>
+                            <tr>
+                                <!--<tr th:each="anews : ${element.value}">-->
+                                <!--<td th:text="${element.key}"></td>-->
 
                                 <td th:text="${anews.getId}"></td>
                                 <td th:text="${anews.getRoom_number}"></td>
@@ -311,19 +295,54 @@
                                 <td th:text="${anews.getMaxLevelCo2}"></td>
                                 <td th:text="${anews.getMaxTemperature}"></td>
                                 <td th:text="${anews.getMaxOccupation}"></td>
-
+                                <td th:text="${mapNrSensors.get(anews)[0]}"></td>
+                                <td th:text="${mapNrSensors.get(anews)[1]}"></td>
+                                <td th:text="${mapNrSensors.get(anews)[2]}"></td>
                         
                             </tr>
-                            </tbody>
+                        </tbody>
                         </table>
+
+                        <!-- para os sensores de cada room -->
+                        <!-- percorrer por cada sensor aqui... -->
+
+                        <div th:each="sensorr : ${mapRoomSensor.get(anews)}">
+                            
+                            <table style="table-layout: fixed; width:80%; " class="table table-striped table-bordered table-hover" >
+                                <h4>[latest data from:] Sensor <strong><span th:text="${sensorr.getSensorId}"></span></strong> - <span th:text="${sensorr.getType}"></span>:</h4>                     
+                                <thead>
+                                    <tr>
+                                        <!--<th>Sensor ID</th>-->
+                                        <th>Timestamp</th>
+                                        <th>Value</th>
+                                        <th>Alert</th>
+                                    </tr>
+                                </thead>
+                            <tbody th:if="${mapRoomSensorsLastVal.get(sensorr) != null}">
+                                <tr>
+                                    <!--<td th:text="${anews}"></td>-->
+                                    <td th:text="${mapRoomSensorsLastVal.get(sensorr)[1]}"></td>
+                                    <td th:text="${mapRoomSensorsLastVal.get(sensorr)[0]}"></td>
+                                    <td th:text="${mapRoomSensorsLastVal.get(sensorr)[2]}"></td>
+                                </tr>
+                            </tbody>
+                            </table>
+
+                        </div>
+                        <br>
+                <hr style="width:100%;"> 
+
                     </tr>
                 </table>
+
             </div>
             </div>
     
+<div th:if="${3==4}"> <!-- apenas para "comentar/esconder" o que está abaixo (q acho q é pra tirar)-->
+
             <div class="col-md-11">
 
-                    <!-- ---------------------------------------------!-->
+                    <!-- --------------------------------------------- -->
                                     <!--input room by id-->
                 <h4 >Room sensors available: </h4>                     
 
@@ -462,9 +481,7 @@
 
 
 
-
-
-
+                </div>
 
 
 

@@ -15,4 +15,6 @@ public interface Co2Repository extends JpaRepository<Co2, Long> {
     Co2 findTopByOrderByIdDesc();
 
     List<Co2> findBySensorId(Long id);
+
+
 }
