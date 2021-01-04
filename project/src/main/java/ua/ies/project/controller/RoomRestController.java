@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.management.BadAttributeValueExpException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.security.access.AccessDeniedException;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javassist.tools.web.BadHttpRequest;
 import ua.ies.project.model.Building;
 import ua.ies.project.model.Role;
 import ua.ies.project.model.Room;
@@ -115,8 +118,12 @@ public class RoomRestController {
 
 
     @PostMapping("/api/rooms/{id}/sensors") // -> admin ou meu
-    public List<EntityModel<Map<String, Object>>> addSensorToBuilding(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id, @RequestBody Sensor newsensor) {
+    public List<EntityModel<Map<String, Object>>> addSensorToBuilding(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id, @RequestBody Sensor newsensor)
+            throws BadAttributeValueExpException {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+
+        if (!(newsensor.getType().equals("CO2") || newsensor.getType().equals("PEOPLE_COUNTER") || newsensor.getType().equals("BODY_TEMPERATURE")))
+            throw new BadAttributeValueExpException("400 invalid parameter value in 'type'");
 
         Room r = roomrep.findById(id).get();
         newsensor.setRoom(r);

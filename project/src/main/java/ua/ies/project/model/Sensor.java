@@ -36,7 +36,7 @@ public class Sensor {
     public void setRoom(Room room) { this.room = room; }
 
 
-    @Column(name="sensorId")
+    @Column(name="sensorId", unique = true)
     private long sensorId;
     public long getSensorId() { return sensorId; }
     public void setSensorId(long id) { 
