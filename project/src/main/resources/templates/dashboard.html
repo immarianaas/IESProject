@@ -127,11 +127,11 @@
 
                      <div >
                         <div class="table-responsive">
-                        <h3 style=" width: 51%; margin-left: 60px; " >           Buildings List</h3>
+                        <h3 style=" width: 51%; margin-left: 36px; " >           Buildings List</h3>
                         
                        
                         
-                            <table  style=" width: 51%; margin-left: 60px; " class="table table-striped table-bordered table-hover">
+                            <table style="width: 95%; margin-left: 36px;" class="table table-striped table-bordered table-hover">
                                 <thead>
                                     <tr>
                                         <th>
@@ -161,7 +161,7 @@
                                         <td  width= 7%; th:text="${building.country}"></td>
                                         <td width= 7%; th:text="${building.city}"></td>
                                         <td width= 7%; th:text="${building.street}"></td>
-                                        <td  width= 5%;th:text="${building.door_number}"></td>
+                                        <td  width= 3%;th:text="${building.door_number}"></td>
 
                                         <td width= 9%; > <a th:href="@{/updateBuilding/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
                                             <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
@@ -259,15 +259,15 @@
 -->
                                      
             <!-- ------------------Buildings and Rooms---------------------------------->
-            <div class="col-md-10">
+            <div class="col-md-11">
  
             <div class="table-responsive">
 
-                <table  style=" width: 100%; margin-left: 60px; " class="table table-striped table-bordered table-hover" th:each="element : ${mapbuildingsAndRooms}">
+                <table  style=" width: 150%; margin-left: 60px; " class="table table-striped table-bordered table-hover" th:each="element : ${mapbuildingsAndRooms}">
                     <tr th:each="anews : ${element.value}">
                     
-                        <table  style=" width: 90%; margin-left: 50px; " class="table table-striped table-bordered table-hover">
-                            <h4 style=" margin-left: 50px;">Rooms of building <strong><span th:text="${element.key}"></span></strong>:</h4>                     
+                        <table  style=" width: 150%; margin-left: 36px; " class="table table-striped table-bordered table-hover">
+                            <h4 style=" margin-left: 36px;">Rooms of building <strong><span th:text="${element.key}"></span></strong>:</h4>                     
 
                             <thead>
                                 <tr>
@@ -293,15 +293,15 @@
                                 <td width= 5%; th:text="${anews.getId}"></td>
                                 <td width= 6%; th:text="${anews.getRoom_number}"></td>
                                 <td width= 7%; th:text="${anews.getFloorNumber}"></td>
-                                <td width= 8%; th:text="${anews.getMaxLevelCo2}"></td>
+                                <td width= 6%; th:text="${anews.getMaxLevelCo2}"></td>
                                 <td width= 8%; th:text="${anews.getMaxTemperature}"></td>
                                 <td width= 8%; th:text="${anews.getMaxOccupation}"></td>
-                                <td width= 8%; th:text="${mapNrSensors.get(anews)[0]}"></td>
+                                <td width= 7%; th:text="${mapNrSensors.get(anews)[0]}"></td>
                                 <td width= 10%; th:text="${mapNrSensors.get(anews)[1]}"></td>
-                                <td width= 10%; th:text="${mapNrSensors.get(anews)[2]}"></td>
+                                <td width= 8%; th:text="${mapNrSensors.get(anews)[2]}"></td>
 
                                 
-                                <td width= 11%; > <a th:href="@{/updateRoom/{id}(id=${anews.id})}" class="btn btn-primary">Update</a>
+                                <td width= 15%; > <a th:href="@{/updateRoom/{id}(id=${anews.id})}" class="btn btn-primary">Update</a>
                                      <a th:href="@{/deleteRoom/{id}(id=${anews.id})}" class="btn btn-danger">Delete</a>
                                     <a th:href="@{/newSensorForm/{id}(id=${anews.id})}" class="btn btn-info">Add Sensor</a>
                                 </td>
