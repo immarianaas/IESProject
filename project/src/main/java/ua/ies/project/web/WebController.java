@@ -143,9 +143,20 @@ public class WebController {
 
     @GetMapping("/air_quality")
     public String getAir_quality(Model model,  @CurrentSecurityContext(expression="authentication.name") String username){
+        
 
         //buildings and rooms of user
         User u = userRepository.findByUsername(username);
+
+        //Building List
+        //vai buscar ao 
+        model.addAttribute("listBuildingsAQ", u.getBuildings());
+
+
+
+        
+        //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+        /*
         System.out.println(u.getUsername());
         Map<String, Set<Room>> mapbuildingsAndRooms = new HashMap<String, Set<Room>>();
         
@@ -156,17 +167,8 @@ public class WebController {
         }
         model.addAttribute("mapbuildingsAndRooms", mapbuildingsAndRooms);
 
-        //...
+    
 
-        
-        //DELET%E
-        Map<String, Integer> graphData = new TreeMap<>();
-		graphData.put("2016", 147);
-		graphData.put("2017", 1256);
-		graphData.put("2018", 3856);
-		graphData.put("2019", 19807);
-        model.addAttribute("chartData", graphData);
-        //-------------------
 
         //Graficos
         User ux = userRepository.findByUsername(username);
@@ -251,7 +253,7 @@ public class WebController {
         }
     }
         
-    
+     */
     return "air_quality";
         
     }
@@ -260,6 +262,18 @@ public class WebController {
 
     @GetMapping("/body_temp_control")
     public String getBody_Temp_Control(Model model, @CurrentSecurityContext(expression="authentication.name") String username){
+
+        //buildings and rooms of user
+        User u = userRepository.findByUsername(username);
+
+        //Building List
+        model.addAttribute("listBuildingsBT", u.getBuildings());
+
+        /*
+        //Building List
+        User u = userRepository.findByUsername(username);
+		model.addAttribute("listBuildingsBT", u.getBuildings());
+
 
         //Graficos
         User ux = userRepository.findByUsername(username);
@@ -335,8 +349,8 @@ public class WebController {
                 break;
             }
 
-        }
-    }
+        } 
+    }*/
     return "body_temp_control";
 
 
@@ -356,6 +370,14 @@ public class WebController {
     @GetMapping("/people_counter")
     public String getPeople_counter(Model model,  @CurrentSecurityContext(expression="authentication.name") String username){
 
+        //buildings and rooms of user
+        User u = userRepository.findByUsername(username);
+
+        //Building List
+        //vai buscar ao 
+        model.addAttribute("listBuildingsBT", u.getBuildings());
+   
+        /*
         //Graficos
         User ux = userRepository.findByUsername(username);
         Set<Building> buildings =  ux.getBuildings();
@@ -430,8 +452,8 @@ public class WebController {
                 
             }
 
-        }
-    }
+        } */
+    
         return "people_counter";
     }
 }

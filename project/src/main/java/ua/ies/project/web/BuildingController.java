@@ -1,8 +1,11 @@
 package ua.ies.project.web;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -17,17 +20,20 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import ua.ies.project.model.Building;
+import ua.ies.project.model.Co2;
 import ua.ies.project.model.Room;
 import ua.ies.project.model.Sensor;
 import ua.ies.project.model.SensorData;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.BuildingRepository;
+import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.RoomRepository;
 import ua.ies.project.repository.SensorDataRepository;
 import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.UserRepository;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 
 @Controller
 public class BuildingController {
@@ -46,6 +52,8 @@ public class BuildingController {
 	
 	@Autowired
 	private RoomRepository roomRepository;
+	@Autowired
+	private Co2Repository co2Repository;
 
 	public boolean checkIfMine(String uname, long data_id) {
         SensorData sd = sensorDataRepository.findById(data_id).get();
@@ -64,6 +72,7 @@ public class BuildingController {
 		return "dashboard";
 	}
 	
+
 	
 	
 	@GetMapping("/newBuildingForm")
@@ -280,6 +289,316 @@ public class BuildingController {
 		
 		*/
 	
+
+
+
+
+
+
+
+
+	//GRAPHS ########################################################################################################
+
+	//Para o graphStatsCO2
+	@GetMapping("/roomStatsBuildingCO2/{id}")
+	public String showRoomsBuildingCo2(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		System.out.println("Building ID " + id);
+		
+		User ux = userRepository.findByUsername(username);
+        Set<Building> buildings =  ux.getBuildings();
+
+		Set<Room> allRooms = new HashSet<>();
+   
+        for(Building b : buildings){
+			if(b.getId() == id){
+				Set<Room> rooms = b.getRooms();
+				allRooms.addAll(rooms);
+
+			}
+		
+		}
+		//model.addAttribute("showRoomsbyBuilging", allRooms);
+
+
+
+        Set<SensorData> allSensorsData = new HashSet<>();
+    
+
+		Set<Room> rooms = allRooms;
+		if(rooms.size() != 0){
+			for(Room r : rooms){
+				
+				Set<Sensor> sensors = r.getSensors();
+
+				if(sensors.size() != 0){
+					for(Sensor s : sensors){
+						System.out.println("TYEP  " + s.getType());
+	
+						if(s.getType().equals("CO2")){
+							allSensorsData.addAll(s.getSensorsData());
+					}
+				}
+			}
+		}
+        }
+
+
+        Map<String, Integer> graphDataX = new TreeMap<>();
+        for (SensorData sd : allSensorsData) {
+            Co2 co2Object= null;
+
+            try{
+                co2Object= co2Repository.findById(sd.getId()).get();
+            }catch(Exception e){
+                continue;
+            }
+
+            if(sd.getWarn()){
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+				long roomId = sd.getSensor().getRoom().getId();
+                String y = formattedDate + roomId + "W" ;
+                graphDataX.put(y, (int)co2Object.getValue());
+            }else{
+				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+				long roomId = sd.getSensor().getRoom().getId();
+                String y = formattedDate +  roomId;
+
+                graphDataX.put(y, (int)co2Object.getValue());  
+            }
+            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
+
+            if(graphDataX.size() == 10){
+                System.out.println(graphDataX + "  FINAL");//DEL
+                model.addAttribute("graphDataCO2BC", graphDataX);//DEL
+
+				//pie graph
+                Map<Integer, Integer> resultMap = new TreeMap<>();
+
+                for (String key : graphDataX.keySet()) {
+                    Integer value = graphDataX.get(key);
+                    
+                    if (resultMap.containsKey(value)) {
+                        resultMap.put(value, resultMap.get(value) + 1);
+                    } else {
+                        resultMap.put(value, 1);
+                    }
+                }
+                model.addAttribute("graphDataCO2_pieBC", resultMap);
+                break;
+            }
+
+        }
+		return "graphStatsCO2";
+	}
+
+
+
+
+	//Para o graphStatsPeopleCounter
+	@GetMapping("/roomStatsBuildingPC/{id}")
+	public String showRoomsBuildingPC(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		System.out.println("Building ID " + id);
+		
+		User ux = userRepository.findByUsername(username);
+        Set<Building> buildings =  ux.getBuildings();
+
+		Set<Room> allRooms = new HashSet<>();
+   
+        for(Building b : buildings){
+			if(b.getId() == id){
+				Set<Room> rooms = b.getRooms();
+				allRooms.addAll(rooms);
+
+			}
+		
+		}
+		//model.addAttribute("showRoomsbyBuilging", allRooms);
+
+
+
+        Set<SensorData> allSensorsData = new HashSet<>();
+    
+
+		Set<Room> rooms = allRooms;
+		if(rooms.size() != 0){
+			for(Room r : rooms){
+				
+				Set<Sensor> sensors = r.getSensors();
+
+				if(sensors.size() != 0){
+					for(Sensor s : sensors){
+						System.out.println("TYEP  " + s.getType());
+	
+						if(s.getType().equals("PEOPLE_COUNTER")){
+							allSensorsData.addAll(s.getSensorsData());
+					}
+				}
+			}
+		}
+        }
+
+
+        Map<String, Integer> graphDataX = new TreeMap<>();
+        for (SensorData sd : allSensorsData) {
+            Co2 co2Object= null;
+
+            try{
+                co2Object= co2Repository.findById(sd.getId()).get();
+            }catch(Exception e){
+                continue;
+            }
+
+            if(sd.getWarn()){
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+				long roomId = sd.getSensor().getRoom().getId();
+                String y = formattedDate + roomId + "W" ;
+                graphDataX.put(y, (int)co2Object.getValue());
+            }else{
+				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+				long roomId = sd.getSensor().getRoom().getId();
+                String y = formattedDate +  roomId;
+
+                graphDataX.put(y, (int)co2Object.getValue());  
+            }
+            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
+
+            if(graphDataX.size() == 10){
+                System.out.println(graphDataX + "  FINAL");//DEL
+                model.addAttribute("graphDataPC", graphDataX);//DEL
+
+				//pie graph
+                Map<Integer, Integer> resultMap = new TreeMap<>();
+
+                for (String key : graphDataX.keySet()) {
+                    Integer value = graphDataX.get(key);
+                    
+                    if (resultMap.containsKey(value)) {
+                        resultMap.put(value, resultMap.get(value) + 1);
+                    } else {
+                        resultMap.put(value, 1);
+                    }
+                }
+                model.addAttribute("graphDataPC_pie", resultMap);
+                break;
+            }
+
+        }
+		return "graphStatsPeopleCounter";
+	}
+
+
+
+
+	//Para o graphStatsBodyTemperature
+	@GetMapping("/roomStatsBuilding/{id}")
+	public String showRoomsBuildingBT(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		System.out.println("Building ID " + id);
+		
+		User ux = userRepository.findByUsername(username);
+        Set<Building> buildings =  ux.getBuildings();
+
+		Set<Room> allRooms = new HashSet<>();
+   
+        for(Building b : buildings){
+			if(b.getId() == id){
+				Set<Room> rooms = b.getRooms();
+				allRooms.addAll(rooms);
+
+			}
+		
+		}
+		//model.addAttribute("showRoomsbyBuilging", allRooms);
+
+
+
+        Set<SensorData> allSensorsData = new HashSet<>();
+    
+
+		Set<Room> rooms = allRooms;
+		if(rooms.size() != 0){
+			for(Room r : rooms){
+				
+				Set<Sensor> sensors = r.getSensors();
+
+				if(sensors.size() != 0){
+					for(Sensor s : sensors){
+						System.out.println("TYEP  " + s.getType());
+	
+						if(s.getType().equals("BODY_TEMPERATURE")){
+							allSensorsData.addAll(s.getSensorsData());
+					}
+				}
+			}
+		}
+        }
+
+
+        Map<String, Integer> graphDataX = new TreeMap<>();
+        for (SensorData sd : allSensorsData) {
+            Co2 co2Object= null;
+
+            try{
+                co2Object= co2Repository.findById(sd.getId()).get();
+            }catch(Exception e){
+                continue;
+            }
+
+            if(sd.getWarn()){
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+				long roomId = sd.getSensor().getRoom().getId();
+                String y = formattedDate + roomId + "W" ;
+                graphDataX.put(y, (int)co2Object.getValue());
+            }else{
+				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+				long roomId = sd.getSensor().getRoom().getId();
+                String y = formattedDate +  roomId;
+
+                graphDataX.put(y, (int)co2Object.getValue());  
+            }
+            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
+
+            if(graphDataX.size() == 10){
+                System.out.println(graphDataX + "  FINAL");//DEL
+                model.addAttribute("graphDataBT", graphDataX);//DEL
+
+				//pie graph
+                Map<Integer, Integer> resultMap = new TreeMap<>();
+
+                for (String key : graphDataX.keySet()) {
+                    Integer value = graphDataX.get(key);
+                    
+                    if (resultMap.containsKey(value)) {
+                        resultMap.put(value, resultMap.get(value) + 1);
+                    } else {
+                        resultMap.put(value, 1);
+                    }
+                }
+                model.addAttribute("graphDataBT_pie", resultMap);
+                break;
+            }
+
+        }
+		return "graphStatsBT";
+	}
+
+	
+
+	
+
+
+	
+
+
+
+
+
+	
+
+
+
+
+
+
 	@GetMapping("/deleteRoom/{id}")
 	public String deleteRoom(@PathVariable(value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
 		Room r = roomRepository.getOne(id);
