@@ -45,12 +45,13 @@ public class WebController {
 
 
 	@Autowired
-    private BuildingRepository buildingRepository;
+    private BodyTemperatureRepository btRepository;
     
     @Autowired
     private UserRepository userRepository;
     @Autowired
-	private Co2Repository co2Repository;
+    private Co2Repository co2Repository;
+    
 
 
     @GetMapping("/")
@@ -165,8 +166,9 @@ public class WebController {
 		graphData.put("2018", 3856);
 		graphData.put("2019", 19807);
         model.addAttribute("chartData", graphData);
+        //-------------------
 
-
+        //Graficos
         User ux = userRepository.findByUsername(username);
         Set<Building> buildings =  ux.getBuildings();
 
@@ -194,6 +196,9 @@ public class WebController {
 
         Map<String, Integer> graphDataX = new TreeMap<>();
 
+        Map<Integer, ArrayList<String>> graphDataY = new TreeMap<>();
+
+
 
         for (SensorData sd : allSensorsData) {
             Co2 co2Object= null;
@@ -204,47 +209,229 @@ public class WebController {
                 continue;
             }
 
-            //System.out.println(graphDataX.size() + "  ENTROU ------------------------" + co2Object.getValue() + "  " +  sd.getWarn()+ "   " + sd.getTimestamp());
-
-
-            //if(sd.getWarn()){
-               // System.out.println("BBB   " + allSensorsData.size());
-
-
-
-            String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
-            //column.add( formattedDate);
-            //column.add( "formattedDate");
-
-            //column.add("color: #FF0000");
-
-            graphDataX.put(formattedDate, (int)co2Object.getValue());
- 
-            System.out.println(graphDataX + "  ANTES");//DEL
+            if(sd.getWarn()){
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+      
+                String y = formattedDate + "W";
+                graphDataX.put(y, (int)co2Object.getValue());
+            }else{
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+                graphDataX.put(formattedDate, (int)co2Object.getValue());  
+            }
+    
             
             System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
 
-            if(graphDataX.size() == 4){
+            if(graphDataX.size() == 10){
                 System.out.println(graphDataX + "  FINAL");//DEL
-                model.addAttribute("graphData", graphDataX);//DEL
+                model.addAttribute("graphDataCO2", graphDataX);//DEL
+
+
+                Map<Integer, Integer> resultMap = new TreeMap<>();
+
+                for (String key : graphDataX.keySet()) {
+                    Integer value = graphDataX.get(key);
+                    
+                    if (resultMap.containsKey(value)) {
+                        resultMap.put(value, resultMap.get(value) + 1);
+                    } else {
+                        resultMap.put(value, 1);
+                    }
+                }
+                model.addAttribute("graphDataCO2_pie", resultMap);
+
+                
+
+
+
+
                 break;
             }
 
         }
-        
     }
+        
+    
     return "air_quality";
         
     }
 
+    
 
     @GetMapping("/body_temp_control")
-    public String getBody_Temp_Control(Model model){
-        return "body_temp_control";
+    public String getBody_Temp_Control(Model model, @CurrentSecurityContext(expression="authentication.name") String username){
+
+        //Graficos
+        User ux = userRepository.findByUsername(username);
+        Set<Building> buildings =  ux.getBuildings();
+
+        Set<SensorData> allSensorsData = new HashSet<>();
+        for(Building b : buildings){
+
+            Set<Room> rooms = b.getRooms();
+            if(rooms.size() != 0){
+                for(Room r : rooms){
+                    
+                    Set<Sensor> sensors = r.getSensors();
+
+                    if(sensors.size() != 0){
+                        for(Sensor s : sensors){
+                            System.out.println("TYEP  " + s.getType());
+        
+                            if(s.getType().equals("BODY_TEMPERATURE")){
+                                allSensorsData.addAll(s.getSensorsData());
+                        }
+                    }
+                }
+            }
+        }
+
+
+        Map<String, Integer> graphDataX = new TreeMap<>();
+
+        Map<Integer, ArrayList<String>> graphDataY = new TreeMap<>();
+
+
+
+        for (SensorData sd : allSensorsData) {
+            BodyTemperature btObject= null;
+
+            try{
+                btObject= btRepository.findById(sd.getId()).get();
+            }catch(Exception e){
+                continue;
+            }
+
+            if(sd.getWarn()){
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+      
+                String y = formattedDate + "W";
+                graphDataX.put(y, (int)btObject.getValue());
+            }else{
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+                graphDataX.put(formattedDate, (int)btObject.getValue());  
+            }
+    
+            
+            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
+
+            if(graphDataX.size() == 10){
+                System.out.println(graphDataX + "  FINAL");//DEL
+                model.addAttribute("graphDataBT", graphDataX);//DEL
+
+
+                Map<Integer, Integer> resultMap = new TreeMap<>();
+
+                for (String key : graphDataX.keySet()) {
+                    Integer value = graphDataX.get(key);
+                    
+                    if (resultMap.containsKey(value)) {
+                        resultMap.put(value, resultMap.get(value) + 1);
+                    } else {
+                        resultMap.put(value, 1);
+                    }
+                }
+                model.addAttribute("graphDatabt_pie", resultMap);
+                break;
+            }
+
+        }
+    }
+    return "body_temp_control";
+
+
+        
     }
 
+
+
+
+
+
+
+
+
+
+
     @GetMapping("/people_counter")
-    public String getPeople_counter(Model model){
+    public String getPeople_counter(Model model,  @CurrentSecurityContext(expression="authentication.name") String username){
+
+        //Graficos
+        User ux = userRepository.findByUsername(username);
+        Set<Building> buildings =  ux.getBuildings();
+
+        Set<SensorData> allSensorsData = new HashSet<>();
+        for(Building b : buildings){
+
+            Set<Room> rooms = b.getRooms();
+            if(rooms.size() != 0){
+                for(Room r : rooms){
+                    
+                    Set<Sensor> sensors = r.getSensors();
+
+                    if(sensors.size() != 0){
+                        for(Sensor s : sensors){
+                            System.out.println("TYEP  " + s.getType());
+        
+                            if(s.getType().equals("PEOPLE_COUNTER")){
+                                allSensorsData.addAll(s.getSensorsData());
+                        }
+                    }
+                }
+            }
+        }
+
+
+        Map<String, Integer> graphDataX = new TreeMap<>();
+
+        Map<Integer, ArrayList<String>> graphDataY = new TreeMap<>();
+
+
+
+        for (SensorData sd : allSensorsData) {
+            PeopleCounter pcObject= null;
+
+            try{
+                pcObject= peoplecountrep.findById(sd.getId()).get();
+            }catch(Exception e){
+                continue;
+            }
+
+            if(sd.getWarn()){
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+      
+                String y = formattedDate + "W";
+                graphDataX.put(y, (int)pcObject.getValue());
+            }else{
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+                graphDataX.put(formattedDate, (int)pcObject.getValue());  
+            }
+    
+            
+            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
+
+            if(graphDataX.size() == 10){
+                model.addAttribute("graphDataPC", graphDataX);//DEL
+
+                Map<Integer, Integer> resultMap = new TreeMap<>();
+
+                for (String key : graphDataX.keySet()) {
+                    Integer value = graphDataX.get(key);
+                    
+                    if (resultMap.containsKey(value)) {
+                        resultMap.put(value, resultMap.get(value) + 1);
+                    } else {
+                        resultMap.put(value, 1);
+                    }
+                }
+                model.addAttribute("graphDataPC_pie", resultMap);
+                break;
+
+                
+            }
+
+        }
+    }
         return "people_counter";
     }
 }

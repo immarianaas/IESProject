@@ -118,6 +118,7 @@ public class SensorDataController {
                 graphDataX.put(formattedDate, (int)co2Object.getValue());
 
 
+
                 
             }
     
@@ -125,9 +126,9 @@ public class SensorDataController {
             
             System.out.println("  SIZZE MAP ------------------------" + graphDataY.size() );
 
-            if(graphDataX.size() == 10){
+            if(graphDataY.size() == 10){
                 System.out.println(graphDataX + "  FINAL");//DEL
-                model.addAttribute("graphData", graphDataX);//DEL
+                model.addAttribute("graphData", graphDataY);//DEL
                 break;
             }
 

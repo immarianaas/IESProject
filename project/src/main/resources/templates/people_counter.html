@@ -14,6 +14,12 @@
     <link href="/css/custom.css" rel="stylesheet" />
     <!-- GOOGLE FONTS-->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <script
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<link rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script type="text/javascript"
+    src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 <body>
     <div id="wrapper">
@@ -82,6 +88,9 @@
             </nav>
         <div id="page-wrapper">
             <div id="page-inner">
+
+
+
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-head-line">People Counter</h1>
@@ -97,6 +106,16 @@
                 </div>
 
                 <div class="row">
+                                                    <!-- --------------------------------------CHARTS--------.............................................------>
+ 
+                <div align="center" style="width: 1000px;">
+                    <h2>People Counter Control</h2>
+                    <div id="chart_div"  style="width: 1500px; height: 500px;" ></div>
+                    <div id="piechart" style="width: 1100px; height: 750px;"></div>
+                </div>
+
+
+    <!-- ---------------------------------------------------->
 
                     <div class="col-md-8">
                         <div class="panel-body">
@@ -223,6 +242,87 @@
         m = n.getMonth() + 1;
         d = n.getDate();
         document.getElementById("date").innerHTML = d + "/" + m + "/" + y;
+    </script>
+
+    
+    
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+    
+
+    <script th:inline="javascript">
+        var real_data = /*[[${graphDataPC}]]*/'noValue';
+ 
+        $(document).ready(function() {
+            google.charts.load('current', {
+                packages : [ 'corechart', 'bar' ]
+            });
+            google.charts.setOnLoadCallback(drawColumnChart);
+            
+            google.charts.setOnLoadCallback(drawPieChart);
+        });
+ 
+        function drawColumnChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Date');
+            data.addColumn('number', 'People');
+            data.addColumn({type: 'string', role: 'style'});
+
+
+            Object.keys(real_data).forEach(function(key) {
+                const warn = key.slice(key.length-1);
+                console.log(warn);
+                
+                if(warn == "W"){
+                    data.addRow([key.substring(0, key.length - 1) , real_data[key],  "color:#d9534f"]);
+
+                }else{
+                    data.addRow([ key, real_data[key],  "#4c7f1a"]);
+
+                }
+            });
+            
+            
+            
+            var options = {
+                title : '',
+                hAxis : {
+                    title : 'Date(MM-dd-yyyy HH:mm)',
+                },
+                vAxis : {
+                    title : 'People Counter'
+                }
+            };
+
+
+
+            var chart = new google.visualization.ColumnChart(document
+                    .getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+ 
+
+
+
+
+
+        var real_data_pie = /*[[${graphDataPC_pie}]]*/'noValue';
+        
+        function drawPieChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Year');
+            data.addColumn('number', 'Views');
+            Object.keys(real_data_pie).forEach(function(key) {
+                data.addRow([ key, real_data_pie[key] ]);
+            });
+            var options = {
+                title : ''
+            };
+            var chart = new google.visualization.PieChart(document
+                    .getElementById('piechart'));
+            chart.draw(data, options);
+        }
     </script>
 </body>
 </html>
