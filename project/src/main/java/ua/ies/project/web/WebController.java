@@ -153,107 +153,6 @@ public class WebController {
         model.addAttribute("listBuildingsAQ", u.getBuildings());
 
 
-
-        
-        //""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-        /*
-        System.out.println(u.getUsername());
-        Map<String, Set<Room>> mapbuildingsAndRooms = new HashMap<String, Set<Room>>();
-        
-
-        for(Building b :u.getBuildings()){
-            mapbuildingsAndRooms.put(b.getBuildingName(), b.getRooms());
-
-        }
-        model.addAttribute("mapbuildingsAndRooms", mapbuildingsAndRooms);
-
-    
-
-
-        //Graficos
-        User ux = userRepository.findByUsername(username);
-        Set<Building> buildings =  ux.getBuildings();
-
-        Set<SensorData> allSensorsData = new HashSet<>();
-        for(Building b : buildings){
-
-            Set<Room> rooms = b.getRooms();
-            if(rooms.size() != 0){
-                for(Room r : rooms){
-                    
-                    Set<Sensor> sensors = r.getSensors();
-
-                    if(sensors.size() != 0){
-                        for(Sensor s : sensors){
-                            System.out.println("TYEP  " + s.getType());
-        
-                            if(s.getType().equals("CO2")){
-                                allSensorsData.addAll(s.getSensorsData());
-                        }
-                    }
-                }
-            }
-        }
-
-
-        Map<String, Integer> graphDataX = new TreeMap<>();
-
-        Map<Integer, ArrayList<String>> graphDataY = new TreeMap<>();
-
-
-
-        for (SensorData sd : allSensorsData) {
-            Co2 co2Object= null;
-
-            try{
-                co2Object= co2Repository.findById(sd.getId()).get();
-            }catch(Exception e){
-                continue;
-            }
-
-            if(sd.getWarn()){
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
-      
-                String y = formattedDate + "W";
-                graphDataX.put(y, (int)co2Object.getValue());
-            }else{
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
-                graphDataX.put(formattedDate, (int)co2Object.getValue());  
-            }
-    
-            
-            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
-
-            if(graphDataX.size() == 10){
-                System.out.println(graphDataX + "  FINAL");//DEL
-                model.addAttribute("graphDataCO2", graphDataX);//DEL
-
-
-                Map<Integer, Integer> resultMap = new TreeMap<>();
-
-                for (String key : graphDataX.keySet()) {
-                    Integer value = graphDataX.get(key);
-                    
-                    if (resultMap.containsKey(value)) {
-                        resultMap.put(value, resultMap.get(value) + 1);
-                    } else {
-                        resultMap.put(value, 1);
-                    }
-                }
-                model.addAttribute("graphDataCO2_pie", resultMap);
-
-                
-
-
-
-
-                break;
-            }
-
-        }
-    }
-        
-     */
     return "air_quality";
         
     }
@@ -269,88 +168,7 @@ public class WebController {
         //Building List
         model.addAttribute("listBuildingsBT", u.getBuildings());
 
-        /*
-        //Building List
-        User u = userRepository.findByUsername(username);
-		model.addAttribute("listBuildingsBT", u.getBuildings());
-
-
-        //Graficos
-        User ux = userRepository.findByUsername(username);
-        Set<Building> buildings =  ux.getBuildings();
-
-        Set<SensorData> allSensorsData = new HashSet<>();
-        for(Building b : buildings){
-
-            Set<Room> rooms = b.getRooms();
-            if(rooms.size() != 0){
-                for(Room r : rooms){
-                    
-                    Set<Sensor> sensors = r.getSensors();
-
-                    if(sensors.size() != 0){
-                        for(Sensor s : sensors){
-                            System.out.println("TYEP  " + s.getType());
-        
-                            if(s.getType().equals("BODY_TEMPERATURE")){
-                                allSensorsData.addAll(s.getSensorsData());
-                        }
-                    }
-                }
-            }
-        }
-
-
-        Map<String, Integer> graphDataX = new TreeMap<>();
-
-        Map<Integer, ArrayList<String>> graphDataY = new TreeMap<>();
-
-
-
-        for (SensorData sd : allSensorsData) {
-            BodyTemperature btObject= null;
-
-            try{
-                btObject= btRepository.findById(sd.getId()).get();
-            }catch(Exception e){
-                continue;
-            }
-
-            if(sd.getWarn()){
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
-      
-                String y = formattedDate + "W";
-                graphDataX.put(y, (int)btObject.getValue());
-            }else{
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
-                graphDataX.put(formattedDate, (int)btObject.getValue());  
-            }
     
-            
-            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
-
-            if(graphDataX.size() == 10){
-                System.out.println(graphDataX + "  FINAL");//DEL
-                model.addAttribute("graphDataBT", graphDataX);//DEL
-
-
-                Map<Integer, Integer> resultMap = new TreeMap<>();
-
-                for (String key : graphDataX.keySet()) {
-                    Integer value = graphDataX.get(key);
-                    
-                    if (resultMap.containsKey(value)) {
-                        resultMap.put(value, resultMap.get(value) + 1);
-                    } else {
-                        resultMap.put(value, 1);
-                    }
-                }
-                model.addAttribute("graphDatabt_pie", resultMap);
-                break;
-            }
-
-        } 
-    }*/
     return "body_temp_control";
 
 
@@ -375,7 +193,7 @@ public class WebController {
 
         //Building List
         //vai buscar ao 
-        model.addAttribute("listBuildingsBT", u.getBuildings());
+        model.addAttribute("listBuildingsPC", u.getBuildings());
    
         /*
         //Graficos

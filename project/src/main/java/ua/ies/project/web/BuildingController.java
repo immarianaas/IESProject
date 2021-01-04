@@ -19,14 +19,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import ua.ies.project.model.BodyTemperature;
 import ua.ies.project.model.Building;
 import ua.ies.project.model.Co2;
+import ua.ies.project.model.PeopleCounter;
 import ua.ies.project.model.Room;
 import ua.ies.project.model.Sensor;
 import ua.ies.project.model.SensorData;
 import ua.ies.project.model.User;
+import ua.ies.project.repository.BodyTemperatureRepository;
 import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.Co2Repository;
+import ua.ies.project.repository.PeopleCounterRepository;
 import ua.ies.project.repository.RoomRepository;
 import ua.ies.project.repository.SensorDataRepository;
 import ua.ies.project.repository.SensorRepository;
@@ -53,7 +57,17 @@ public class BuildingController {
 	@Autowired
 	private RoomRepository roomRepository;
 	@Autowired
+
 	private Co2Repository co2Repository;
+
+	
+	@Autowired
+	private PeopleCounterRepository pcRepository;
+	
+
+
+	@Autowired
+	private BodyTemperatureRepository btRepository;
 
 	public boolean checkIfMine(String uname, long data_id) {
         SensorData sd = sensorDataRepository.findById(data_id).get();
@@ -61,7 +75,8 @@ public class BuildingController {
             if (u.getUsername().equals(uname)) return true;
         }
         return false;
-    }
+	}
+	
 	//PARECE SER MAIS O dashboard do webController
 	@GetMapping("/allBuildings")
 	public String viewHomePage(Model model, @CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
@@ -440,10 +455,10 @@ public class BuildingController {
 
         Map<String, Integer> graphDataX = new TreeMap<>();
         for (SensorData sd : allSensorsData) {
-            Co2 co2Object= null;
+            PeopleCounter pcObject= null;
 
             try{
-                co2Object= co2Repository.findById(sd.getId()).get();
+                pcObject= pcRepository.findById(sd.getId()).get();
             }catch(Exception e){
                 continue;
             }
@@ -452,19 +467,19 @@ public class BuildingController {
                 String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getId();
                 String y = formattedDate + roomId + "W" ;
-                graphDataX.put(y, (int)co2Object.getValue());
+                graphDataX.put(y, (int)pcObject.getValue());
             }else{
 				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getId();
                 String y = formattedDate +  roomId;
 
-                graphDataX.put(y, (int)co2Object.getValue());  
+                graphDataX.put(y, (int)pcObject.getValue());  
             }
             System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
 
             if(graphDataX.size() == 10){
-                System.out.println(graphDataX + "  FINAL");//DEL
-                model.addAttribute("graphDataPC", graphDataX);//DEL
+                System.out.println(graphDataX + "  FINAL");
+                model.addAttribute("graphDataPC", graphDataX);
 
 				//pie graph
                 Map<Integer, Integer> resultMap = new TreeMap<>();
@@ -490,7 +505,7 @@ public class BuildingController {
 
 
 	//Para o graphStatsBodyTemperature
-	@GetMapping("/roomStatsBuilding/{id}")
+	@GetMapping("/roomStatsBuildingBT/{id}")
 	public String showRoomsBuildingBT(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
 		System.out.println("Building ID " + id);
 		
@@ -535,10 +550,10 @@ public class BuildingController {
 
         Map<String, Integer> graphDataX = new TreeMap<>();
         for (SensorData sd : allSensorsData) {
-            Co2 co2Object= null;
+            BodyTemperature co2Object= null;
 
             try{
-                co2Object= co2Repository.findById(sd.getId()).get();
+                co2Object= btRepository.findById(sd.getId()).get();
             }catch(Exception e){
                 continue;
             }
@@ -634,10 +649,7 @@ public class BuildingController {
 		roomRepository.deleteAll(b.getRooms());
 
 		this.buildingRepository.deleteById(id);
-		/*
-		List<Building> listBuildings = buildingRepository.findAll();
-		model.addAttribute("listBuildings", listBuildings);
-		*/
+	
 		return "redirect:/dashboard";
 	}
 
