@@ -2,6 +2,8 @@ package ua.ies.project.controller;
 
 import java.util.*;
 
+import javax.management.BadAttributeValueExpException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.security.access.AccessDeniedException;
@@ -129,8 +131,12 @@ public class SensorRestController {
     // ------- UPDATE ------- (falta permissoes)
 
     @PutMapping("/api/sensors/{id}")
-    public EntityModel<Map<String, Object>> updateSensorById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Sensor newsensor) {
+    public EntityModel<Map<String, Object>> updateSensorById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Sensor newsensor)
+            throws BadAttributeValueExpException {
         Sensor s = sensrep.findById(id).get();
+        if (!(newsensor.getType().equals("CO2") || newsensor.getType().equals("PEOPLE_COUNTER") || newsensor.getType().equals("BODY_TEMPERATURE")))
+        throw new BadAttributeValueExpException("400 invalid parameter value in 'type'");
+
 
         if (newsensor.getType() != null) s.setType(newsensor.getType());
         // n atualiza o sensorId.

@@ -83,20 +83,32 @@ public class SensorDataRestController {
     }
 // ---- sem restricoes (e nao testado tambem) ----
 
+    public boolean checkIfSensorIsMine(String uname, long sens_id) {
+        //User u = userrep.findByUsername(uname);
+        Sensor s = sensrep.findById(sens_id).get();
+        for (User u : s.getRoom().getBuilding().getUsers()) {
+            if (u.getUsername().equals(uname)) return true;
+        }
+        return false;
+    }
+
     @GetMapping("/api/sensor/{id}/data/latest") 
     public EntityModel<Map<String, Object>> getLatestFromId(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+        
         Sensor s = sensrep.findById(id).get();
         return getLatestFromSensor(username, s);
     }
 
     @GetMapping("/api/sensor/sensorid/{id}/data/latest") 
     public EntityModel<Map<String, Object>> getLatestFromSensorId(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
-        Sensor s = sensrep.findOneBySensorId(id);
+        Sensor s = sensrep.findOneBySensorId(id);        
         return getLatestFromSensor(username, s);
     }
 
     private EntityModel<Map<String, Object>> getLatestFromSensor(String username, Sensor s) {
         // -- verificacoes aqui apenas (n nas 2 funcoes em cima)
+        if (!(checkIfAdmin(username)) && !(checkIfSensorIsMine(username, s.getId()))) throw new AccessDeniedException("403 returned");
+
         SensorData sd = sensdatarep.findBySensorIdOrderByTimestampDesc(s.getSensorId()).get(0);
         return getSensorDataEntityModel(username, sd);
     }
@@ -106,8 +118,12 @@ public class SensorDataRestController {
         @CurrentSecurityContext(expression="authentication.name") String username, 
         @PathVariable long id,
         @RequestParam(required = false) String begin,
-        @RequestParam(required = false) String end
+        @RequestParam(required = false) String end,
+        @RequestParam(required = false) String type,
+        @RequestParam(required = false) Boolean warningsOnly
         ) {
+            if (!(checkIfAdmin(username)) && !(checkIfSensorIsMine(username, id))) throw new AccessDeniedException("403 returned");
+
             Sensor s = sensrep.getOne(id);
             Date b = null;
             Date e = null;
@@ -122,14 +138,27 @@ public class SensorDataRestController {
                 if (b != null)
                     // se a data for menor que o 'begin', tirar
                     if (sd.getTimestamp().compareTo(b) < 0)
-                        datalist.remove(sd);
+                        continue;
+                
+                if (e != null)
                     // se a data for maior q o 'end', tambem tirar
-                    else if (sd.getTimestamp().compareTo(e)>0)
-                        datalist.remove(sd);
-                    l.add(getSensorDataEntityModel(username, sd));
+                    if (sd.getTimestamp().compareTo(e)>0)
+                        continue;
+
+                if (type != null)
+                    if (!(sd.getSensor().getType().equals(type)))
+                        continue;
+
+                if (warningsOnly != null && warningsOnly == true )
+                    if (sd.getWarn() != true)
+                        continue;
+
+                
+                l.add(getSensorDataEntityModel(username, sd));
             }
             return l;
         }
+
 
 }
 

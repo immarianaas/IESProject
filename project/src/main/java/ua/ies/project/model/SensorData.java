@@ -32,7 +32,7 @@ public class SensorData {
     public SensorData(String timestamp, Sensor sensor, boolean warn) {
 
         this.sensor = sensor;
-        this.timestamp = this.parseDate(timestamp);
+        this.timestamp = parseDate(timestamp);
         this.warn = warn;
     }
 
@@ -70,7 +70,7 @@ public class SensorData {
     public Date getTimestamp() { return timestamp; }
     @JsonProperty
     public void setTimestamp(String ts) { 
-        this.timestamp = this.parseDate(ts); 
+        this.timestamp = parseDate(ts); 
         //System.out.println("\n\n\n\nhere a ser guardado; ts: "+this.timestamp+"\n\n\n\n");
 
         //System.out.println("\n\n\n\nco2 ts: " +this.timestamp);

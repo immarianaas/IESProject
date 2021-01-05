@@ -730,6 +730,20 @@ public class BuildingController {
 		roomRepository.delete(r);
 		return "redirect:/dashboard";
 	}
+
+	@GetMapping("/deleteSensor/{id}")
+	public String deleteSensor(@PathVariable(value="id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		Sensor s;
+		try {
+			s = sensorRepository.getOne(id);
+		} catch (Exception e ) { s = null; }
+		
+		if (s != null) {
+			sensorRepository.delete(s);
+		}
+
+		return "redirect:/dashboard";
+	}
     
 	
 	@GetMapping("/deleteBuilding/{id}")
