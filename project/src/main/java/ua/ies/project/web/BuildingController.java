@@ -1,10 +1,14 @@
 package ua.ies.project.web;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import ua.ies.project.model.BodyTemperature;
 import ua.ies.project.model.Building;
@@ -320,18 +325,169 @@ public class BuildingController {
 	}
 
 
+
+
+
+
+
+
+	//PARA AS DATAS
+	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	@GetMapping("/roomStatsSearchDate/{id}")
-	public String numColumnsDate( @PathVariable (value = "id") long id, String keyword, String keyword1) {
-			System.out.println(  keyword + "  sSS" + keyword1 + "  ###########");	
+	public String numColumnsDate( @PathVariable (value = "id") long id, @CurrentSecurityContext(expression="authentication.name") String username,  
+	@RequestParam(required = false) String keywordDate1, 
+	@RequestParam(required = false) String keywordDate2) throws ParseException {
+
+			System.out.println( "DATE1     " + keywordDate1 + "     DATE2             " + keywordDate2 );	
+
+			User ux = userRepository.findByUsername(username);
+			Set<Building> buildings =  ux.getBuildings();
+
+			Set<Room> allRooms = new HashSet<>();
+			String buildingName ="";
+			for(Building b : buildings){
+				if(b.getId() == id){
+					buildingName = b.getBuildingName();
+					Set<Room> rooms = b.getRooms();
+					
+					allRooms.addAll(rooms);
+
+				}
+			}
+
+			Set<SensorData> allSensorsData = new HashSet<>();
+    
+
+			Set<Room> rooms = allRooms;
+			if(rooms.size() != 0){
+				for(Room r : rooms){
+					
+					Set<Sensor> sensors = r.getSensors();
+
+					if(sensors.size() != 0){
+						for(Sensor s : sensors){
+							System.out.println("TYEP  " + s.getType());
+		
+							if(s.getType().equals("CO2")){
+								allSensorsData.addAll(s.getSensorsData());
+						}
+					}
+				}
+			}
+
+			/*
+			List<SensorData> datalist = new ArrayList<>();
+
+			for(Sensor sensor: sensors){
+				datalist.addAll(sensorDataRepository.findBySensorIdOrderByTimestampAsc(sensor.getSensorId()));
+			}
+			*/
+
+
+
+			//format data 1
+			String[] allDate1 = keywordDate1.split(" "); 
+			String[] date01 = allDate1[0].split("/"); 
+			String[] hours01 = allDate1[1].split(":"); 
+			//2021-01-07 18:29:36
+			String dataFormatted1 = date01[2] + "-"+date01[0] + "-"+ date01[1] + " " + hours01[0]+":"+hours01[1]+":00.0";
+
+			//format data 2
+			String[] allDate2 = keywordDate1.split(" ");
+			String[] date02 = allDate2[0].split("/"); 
+			String[] hours02 = allDate2[1].split(":"); 
+			//2021-01-07 18:29:36
+			String dataFormatted2 = date02[2] + "-"+date02[0] + "-"+ date02[1] + " " + hours02[0]+":"+hours02[1]+":00.0"; 
+
+			SimpleDateFormat formatter1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+			SimpleDateFormat formatter2=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+
+			System.out.println("DATALIST   ->            "  + allSensorsData.size());
+
+			Date b = formatter1.parse(dataFormatted1);
+			System.out.println("AQUII   ->            "  +b);
+
+			java.sql.Date sqlDate = new java.sql.Date(b.getTime());
+			SimpleDateFormat changedFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			System.out.println("dataFormattedXXX   ->            "  +changedFormat.format(sqlDate));
+
+			//java.sql.Date sqlDate = new java.sql.Date(b.getTime());
+
+			//SimpleDateFormat changedFormat = new SimpleDateFormat("dd-MMM-yy");
+			
+
+
+			Date e = formatter2.parse(dataFormatted2);
+			java.sql.Date sqlDate2 = new java.sql.Date(b.getTime());
+			SimpleDateFormat changedFormat2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			System.out.println("dataFormattedXXX   ->            "  +changedFormat2.format(sqlDate2));
+
+			//System.out.println("dataFormatted1   ->            "  +sqlDate );
+			Date b1 = sqlDate;
+			System.out.println("dataFormattedXAAAAAAAA   ->            "  +b1);
+
+			Date e1 = sqlDate2;
+
+
+			
+
+
+			/*
+            if (dataFormatted1 != null)
+                b = formatter1.parse(dataFormatted1);
+            if (dataFormatted2 != null)
+				e = formatter2.parse(dataFormatted2);
+			*/
+			//Date date1 = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse(keywordDate1);
+			//Date date2 = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse(keywordDate2);
+
+
+			List<Date> allDates = new ArrayList<>();
+			for (SensorData sd : allSensorsData) {
+				//System.out.println("\n\n\nDate BD  -> "  + sd.getTimestamp() );
+
+                if (b1 != null)
+					// se a data for menor que o 'begin', tirar
+					//System.out.println("\n\n\nDate BD INSIDEE -> "  + sd.getTimestamp()  );
+
+                    if (sd.getTimestamp().compareTo(b1) < 0)
+                        continue;
+                
+                if (e1 != null)
+                    // se a data for maior q o 'end', tambem tirar
+                    if (sd.getTimestamp().compareTo(e1)>0)
+						continue;
+				
+				allDates.add(sd.getTimestamp());
+								
+
+			}
+			System.out.println("\n\n\n\nSENSORES  -> "  + allDates);
+
+			
+
+
+
+					
+			
+
+		}
+
 	return "redirect:/roomStatsBuildingCO2/{id}";		
 
 	}
 
+	/*
 
+	public static long idRoomForSearch = 0;
+	@GetMapping("/searchRoomStats/{id}")
+	public void searchRoomStats(@PathVariable ( value = "id") long id) {
+		idRoomForSearch = id;
 
-
-
+	}
+	*/
 	//GRAPHS ########################################################################################################
+
 
 	//Para o graphStatsCO2
 	@GetMapping("/roomStatsBuildingCO2/{id}")
@@ -359,11 +515,14 @@ public class BuildingController {
 
 
         Set<SensorData> allSensorsData = new HashSet<>();
-    
+		
+		//rooms info
+		ArrayList<Room> roomsInfo = new ArrayList<>();
 
 		Set<Room> rooms = allRooms;
 		if(rooms.size() != 0){
 			for(Room r : rooms){
+				roomsInfo.add(r);
 				
 				Set<Sensor> sensors = r.getSensors();
 
@@ -377,11 +536,25 @@ public class BuildingController {
 				}
 			}
 		}
-        }
+
+		model.addAttribute("roomsInfoCO2", roomsInfo);
+
+		}
+		
 
 
+		//bar chart and pie chart
 		Map<String, Integer> graphDataX = new TreeMap<>();
+
+		//IDEAS
+		//map area chart
+		//Map<Long, Arr
+
+
+
+
 		ArrayList<String> alerts = new ArrayList<>();
+
         for (SensorData sd : allSensorsData) {
             Co2 co2Object= null;
 
@@ -389,21 +562,28 @@ public class BuildingController {
                 co2Object= co2Repository.findById(sd.getId()).get();
             }catch(Exception e){
                 continue;
-            }
+			}
+			long roomId_ = sd.getSensor().getRoom().getId();
+
+
+			
+
 
             if(sd.getWarn()){
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
-				long roomId = sd.getSensor().getRoom().getId();
-                String y = formattedDate + roomId + "W" ;
+                String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
+				long roomId = sd.getSensor().getRoom().getRoom_number();
+
+                String y = formattedDate +"/"+ roomId +"/"+ "W" ;
 				graphDataX.put(y, (int)co2Object.getValue());
 				
+
 				String alert = "Alert: Room " + roomId + " with high levels of Co2 at " +  formattedDate;
 				alerts.add(alert);
 			
 			}else{
-				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
-				long roomId = sd.getSensor().getRoom().getId();
-                String y = formattedDate +  roomId;
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
+				long roomId = sd.getSensor().getRoom().getRoom_number();
+                String y = formattedDate +"/" + roomId;
 
                 graphDataX.put(y, (int)co2Object.getValue());  
             }
@@ -446,6 +626,11 @@ public class BuildingController {
 	}
 
 
+	
+
+
+
+
 
 
 	public static int numcolumnsPC = 0;
@@ -460,6 +645,9 @@ public class BuildingController {
 			}
 	return "redirect:/roomStatsBuildingPC/{id}";		
 	}
+
+
+
 
 
 	//Para o graphStatsPeopleCounter
@@ -490,10 +678,12 @@ public class BuildingController {
 
         Set<SensorData> allSensorsData = new HashSet<>();
     
+		ArrayList<Room> roomsInfo = new ArrayList<>();
 
 		Set<Room> rooms = allRooms;
 		if(rooms.size() != 0){
 			for(Room r : rooms){
+				roomsInfo.add(r);
 				
 				Set<Sensor> sensors = r.getSensors();
 
@@ -523,16 +713,18 @@ public class BuildingController {
 
             if(sd.getWarn()){
                 String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
-				long roomId = sd.getSensor().getRoom().getId();
-                String y = formattedDate + roomId + "W" ;
+				long roomId = sd.getSensor().getRoom().getRoom_number();
+
+				String y = formattedDate +"/"+ roomId +"/"+ "W" ;
+			
 				graphDataX.put(y, (int)pcObject.getValue());
 				
 				String alert = "Alert: Room " + roomId + " with too many people inside at " +  formattedDate;
 				alerts.add(alert);
             }else{
 				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
-				long roomId = sd.getSensor().getRoom().getId();
-                String y = formattedDate +  roomId;
+				long roomId = sd.getSensor().getRoom().getRoom_number();
+                String y = formattedDate +"/" + roomId;
 
                 graphDataX.put(y, (int)pcObject.getValue());  
             }
@@ -568,6 +760,8 @@ public class BuildingController {
 		}
 		model.addAttribute("graphDataPC_id", id);//DELbuildingName
 		model.addAttribute("alertPC", alerts);
+		model.addAttribute("roomsInfoPC", roomsInfo);
+
 
 
 		return "graphStatsPeopleCounter";
@@ -621,10 +815,12 @@ public class BuildingController {
 
         Set<SensorData> allSensorsData = new HashSet<>();
     
+		ArrayList<Room> roomsInfo = new ArrayList<>();
 
 		Set<Room> rooms = allRooms;
 		if(rooms.size() != 0){
 			for(Room r : rooms){
+				roomsInfo.add(r);
 				
 				Set<Sensor> sensors = r.getSensors();
 
@@ -654,15 +850,17 @@ public class BuildingController {
 
             if(sd.getWarn()){
                 String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
-				long roomId = sd.getSensor().getRoom().getId();
-                String y = formattedDate + roomId + "W" ;
+				long roomId = sd.getSensor().getRoom().getRoom_number();
+
+				String y = formattedDate +"/"+ roomId +"/"+ "W" ;
 				graphDataX.put(y, (int)co2Object.getValue());
+
 				String alert = "Alert: Room " + roomId + " with people with high temperature at " +  formattedDate;
 				alerts.add(alert);
             }else{
 				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
-				long roomId = sd.getSensor().getRoom().getId();
-                String y = formattedDate +  roomId;
+				long roomId = sd.getSensor().getRoom().getRoom_number();
+                String y = formattedDate +"/" + roomId;
 
                 graphDataX.put(y, (int)co2Object.getValue());  
             }
@@ -697,6 +895,8 @@ public class BuildingController {
 		}
 		model.addAttribute("graphDataBT_id", id);//DELbuildingName
 		model.addAttribute("alertBT", alerts);
+		model.addAttribute("roomsInfoBT", roomsInfo);
+
 
 
 		return "graphStatsBT";
