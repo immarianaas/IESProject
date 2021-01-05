@@ -306,7 +306,26 @@ public class BuildingController {
 	
 
 
+	public static int numcolumnsCo2 = 0;
+	@GetMapping("/roomStatsSearchMoreCO2Results/{id}")
+	public String numColumnsCo2(@PathVariable (value = "id") long id, String keyword) {
+			try {
+				numcolumnsCo2 = Integer.parseInt(keyword);
+			}
+			catch (NumberFormatException e)
+			{
+				numcolumnsCo2 =0;
+			}
+	return "redirect:/roomStatsBuildingCO2/{id}";		
+	}
 
+
+	@GetMapping("/roomStatsSearchDate/{id}")
+	public String numColumnsDate( @PathVariable (value = "id") long id, String keyword, String keyword1) {
+			System.out.println(  keyword + "  sSS" + keyword1 + "  ###########");	
+	return "redirect:/roomStatsBuildingCO2/{id}";		
+
+	}
 
 
 
@@ -323,15 +342,18 @@ public class BuildingController {
         Set<Building> buildings =  ux.getBuildings();
 
 		Set<Room> allRooms = new HashSet<>();
-   
+		String buildingName ="";
         for(Building b : buildings){
 			if(b.getId() == id){
+				buildingName = b.getBuildingName();
 				Set<Room> rooms = b.getRooms();
 				allRooms.addAll(rooms);
 
 			}
 		
 		}
+		model.addAttribute("graphDataCO2BC_buildingName", buildingName);
+
 		//model.addAttribute("showRoomsbyBuilging", allRooms);
 
 
@@ -358,7 +380,8 @@ public class BuildingController {
         }
 
 
-        Map<String, Integer> graphDataX = new TreeMap<>();
+		Map<String, Integer> graphDataX = new TreeMap<>();
+		ArrayList<String> alerts = new ArrayList<>();
         for (SensorData sd : allSensorsData) {
             Co2 co2Object= null;
 
@@ -369,12 +392,16 @@ public class BuildingController {
             }
 
             if(sd.getWarn()){
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getId();
                 String y = formattedDate + roomId + "W" ;
-                graphDataX.put(y, (int)co2Object.getValue());
-            }else{
-				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+				graphDataX.put(y, (int)co2Object.getValue());
+				
+				String alert = "Alert: Room " + roomId + " with high levels of Co2 at " +  formattedDate;
+				alerts.add(alert);
+			
+			}else{
+				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getId();
                 String y = formattedDate +  roomId;
 
@@ -382,9 +409,15 @@ public class BuildingController {
             }
             System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
 
-            if(graphDataX.size() == 10){
+			int x;
+			if(numcolumnsCo2 == 0 ){
+				x =10;
+			}else{
+				x = numcolumnsCo2;
+			}
+
+            if(graphDataX.size() == x){
                 System.out.println(graphDataX + "  FINAL");//DEL
-                model.addAttribute("graphDataCO2BC", graphDataX);//DEL
 
 				//pie graph
                 Map<Integer, Integer> resultMap = new TreeMap<>();
@@ -402,11 +435,31 @@ public class BuildingController {
                 break;
             }
 
-        }
+		}
+		
+		model.addAttribute("graphDataCO2BC", graphDataX);//DEL
+		model.addAttribute("alertCO2", alerts);
+
+
+		model.addAttribute("graphDataCO2BC_id", id);//DELbuildingName
 		return "graphStatsCO2";
 	}
 
 
+
+
+	public static int numcolumnsPC = 0;
+	@GetMapping("/roomStatsSearchMorePCResults/{id}")
+	public String num(@PathVariable (value = "id") long id, String keyword) {
+			try {
+				numcolumnsPC = Integer.parseInt(keyword);
+			}
+			catch (NumberFormatException e)
+			{
+				numcolumnsPC =0;
+			}
+	return "redirect:/roomStatsBuildingPC/{id}";		
+	}
 
 
 	//Para o graphStatsPeopleCounter
@@ -418,8 +471,10 @@ public class BuildingController {
         Set<Building> buildings =  ux.getBuildings();
 
 		Set<Room> allRooms = new HashSet<>();
-   
+		String buildingName = "";
         for(Building b : buildings){
+			buildingName = b.getBuildingName();
+
 			if(b.getId() == id){
 				Set<Room> rooms = b.getRooms();
 				allRooms.addAll(rooms);
@@ -427,6 +482,8 @@ public class BuildingController {
 			}
 		
 		}
+		model.addAttribute("graphDataPC_buildingName", buildingName);
+
 		//model.addAttribute("showRoomsbyBuilging", allRooms);
 
 
@@ -452,6 +509,7 @@ public class BuildingController {
 		}
         }
 
+		ArrayList<String> alerts = new ArrayList<>();
 
         Map<String, Integer> graphDataX = new TreeMap<>();
         for (SensorData sd : allSensorsData) {
@@ -464,20 +522,29 @@ public class BuildingController {
             }
 
             if(sd.getWarn()){
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getId();
                 String y = formattedDate + roomId + "W" ;
-                graphDataX.put(y, (int)pcObject.getValue());
+				graphDataX.put(y, (int)pcObject.getValue());
+				
+				String alert = "Alert: Room " + roomId + " with too many people inside at " +  formattedDate;
+				alerts.add(alert);
             }else{
-				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getId();
                 String y = formattedDate +  roomId;
 
                 graphDataX.put(y, (int)pcObject.getValue());  
             }
             System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
+			int x;
+			if(numcolumnsPC == 0 ){
+				x =10;
+			}else{
+				x = numcolumnsPC;
+			}
 
-            if(graphDataX.size() == 10){
+            if(graphDataX.size() == x){
                 System.out.println(graphDataX + "  FINAL");
                 model.addAttribute("graphDataPC", graphDataX);
 
@@ -493,15 +560,37 @@ public class BuildingController {
                         resultMap.put(value, 1);
                     }
                 }
-                model.addAttribute("graphDataPC_pie", resultMap);
+				model.addAttribute("graphDataPC_pie", resultMap);
+
                 break;
             }
 
-        }
+		}
+		model.addAttribute("graphDataPC_id", id);//DELbuildingName
+		model.addAttribute("alertPC", alerts);
+
+
 		return "graphStatsPeopleCounter";
 	}
 
 
+
+
+
+
+
+	public static int numcolumnsBT = 0;
+	@GetMapping("/roomStatsSearchMoreBTResults/{id}")
+	public String numColumnsBT(@PathVariable (value = "id") long id, String keyword) {
+			try {
+				numcolumnsBT = Integer.parseInt(keyword);
+			}
+			catch (NumberFormatException e)
+			{
+				numcolumnsBT =0;
+			}
+	return "redirect:/roomStatsBuildingBT/{id}";		
+	}
 
 
 	//Para o graphStatsBodyTemperature
@@ -513,8 +602,10 @@ public class BuildingController {
         Set<Building> buildings =  ux.getBuildings();
 
 		Set<Room> allRooms = new HashSet<>();
-   
+		String buildingName = "";
         for(Building b : buildings){
+			buildingName = b.getBuildingName();
+
 			if(b.getId() == id){
 				Set<Room> rooms = b.getRooms();
 				allRooms.addAll(rooms);
@@ -522,6 +613,8 @@ public class BuildingController {
 			}
 		
 		}
+		model.addAttribute("graphDataBT_buildingName", buildingName);
+
 		//model.addAttribute("showRoomsbyBuilging", allRooms);
 
 
@@ -547,6 +640,7 @@ public class BuildingController {
 		}
         }
 
+		ArrayList<String> alerts = new ArrayList<>();
 
         Map<String, Integer> graphDataX = new TreeMap<>();
         for (SensorData sd : allSensorsData) {
@@ -559,12 +653,14 @@ public class BuildingController {
             }
 
             if(sd.getWarn()){
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getId();
                 String y = formattedDate + roomId + "W" ;
-                graphDataX.put(y, (int)co2Object.getValue());
+				graphDataX.put(y, (int)co2Object.getValue());
+				String alert = "Alert: Room " + roomId + " with people with high temperature at " +  formattedDate;
+				alerts.add(alert);
             }else{
-				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm").format(sd.getTimestamp());
+				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getId();
                 String y = formattedDate +  roomId;
 
@@ -572,7 +668,13 @@ public class BuildingController {
             }
             System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
 
-            if(graphDataX.size() == 10){
+			int x;
+			if(numcolumnsBT == 0 ){
+				x =10;
+			}else{
+				x = numcolumnsBT;
+			}
+            if(graphDataX.size() == x){
                 System.out.println(graphDataX + "  FINAL");//DEL
                 model.addAttribute("graphDataBT", graphDataX);//DEL
 
@@ -592,7 +694,11 @@ public class BuildingController {
                 break;
             }
 
-        }
+		}
+		model.addAttribute("graphDataBT_id", id);//DELbuildingName
+		model.addAttribute("alertBT", alerts);
+
+
 		return "graphStatsBT";
 	}
 

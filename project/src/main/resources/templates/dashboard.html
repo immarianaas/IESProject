@@ -4,6 +4,8 @@
         <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+        
+
         <!-- BOOTSTRAP STYLES-->
         <link href="/css/bootstrap.css" rel="stylesheet" />
         <!-- FONTAWESOME STYLES-->
@@ -16,7 +18,10 @@
         <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
             
 </head>
-<body>
+<body >
+  
+
+
     <div id="wrapper">
         <nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
@@ -49,7 +54,7 @@
                         <div class="user-img-div">
 
                             <div sec:authorize="isAuthenticated()">
-                                <h4>Welcome!</br> <span sec:authentication="name" ></span> </br>
+                                <h4 style="font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Welcome!  <span sec:authentication="name" ></span> </br>
                                 </br>
                                 Today: <span id="date"></span> </h4>
                             </div>
@@ -80,6 +85,8 @@
             </div>
 
         </nav>
+
+ 
        
          
         <!-- /. NAV SIDE  -->
@@ -583,6 +590,8 @@
         d = n.getDate();
         document.getElementById("date").innerHTML = d + "/" + m + "/" + y;
     </script>
+
+
 
 </body>
 </html>

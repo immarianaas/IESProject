@@ -51,7 +51,7 @@
                         <div class="user-img-div">
 
                             <div sec:authorize="isAuthenticated()">
-                                <h4>Welcome!</br> <span sec:authentication="name" ></span> </br>
+                                <h4 style="font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Welcome!  <span sec:authentication="name" ></span> </br>
                                 </br>
                                 Today: <span id="date"></span> </h4>
                             </div>
@@ -99,10 +99,7 @@
                 </div>
                 <!-- /. ROW  -->
 
-                <div  class="alert alert-danger">
-                    <a href="#" class="close" data-dismiss="alert">&times;</a>
-                    <strong>Alert:    </strong> Amount of CO2 above healthy values.
-                </div>
+            
 
                 
 <!-- ----------------------------------------------------_BUILDING LIST.............................
@@ -142,7 +139,11 @@
 
 
 
+<form th:action="@{/roomStatsSearchMoreBTResults/{id}(id=${graphDataBT_id})}"   method="get">
+    <input placeholder="Write a number to see more " id="txtSearch" type="text" name="keyword">
+    <button  type="submit">Search More Results</button>
 
+</form>
 
 
 <!-- --------------------------------------CHARTS--------.............................................------>
@@ -150,7 +151,8 @@
 
 
         <div align="center" style="width: 1000px;">
-            <h2>Air Quality Control</h2>
+            <h2>Body Temperature Control</h2>
+
             <div id="chart_div"  style="width: 1500px; height: 500px;" ></div>
             <div id="piechart" style="width: 1100px; height: 550px;  margin-left: 300px;"></div>
         </div>
@@ -158,6 +160,32 @@
 
     <!-- ---------------------------------------------------->
 
+                 <!-- ---------------------------------------------------->
+                 <h2>Alerts</h2>
+
+                 <table style="width: 65%; margin-left: 36px;" class="table table-striped table-bordered table-hover">
+                 <thead>
+                     <tr>
+                         <th>
+                             
+                                 Building Name
+                         </th>
+                         
+                     </tr>
+                 </thead>
+                 <tbody>
+                     <tr th:each="bt : ${alertBT}"
+                     <div  class="alert alert-danger">
+                         <td th:text="${bt}"></td>
+             
+                       
+                     </div>
+                
+             
+                      
+                     </tr>
+                 </tbody>
+             </table>
              
 
 
@@ -302,10 +330,10 @@
                 console.log(warn);
                 
                 if(warn == "W"){
-                    data.addRow([key.substring(0, key.length - 1).concat("  \n Room ").concat(key.charAt(key.length-2)) , real_data[key],  "color:#d9534f"]);
+                    data.addRow([key.substring(0, key.length - 5).concat("  \n Room ").concat(key.charAt(key.length-2)) , real_data[key],  "color:#d9534f"]);
 
                 }else{
-                    data.addRow([ key, real_data[key],  "#4c7f1a"]);
+                    data.addRow([ key.substring(0, key.length - 1).concat("  \n Room ").concat(key.charAt(key.length-1)) , real_data[key],  "#4c7f1a"]);
 
                 }
             });
