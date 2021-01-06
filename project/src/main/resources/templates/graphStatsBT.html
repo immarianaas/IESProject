@@ -195,35 +195,42 @@
     <!-- ---------------------------------------------------->
 
                  <!-- ---------------------------------------------------->
-                 <h2>Alerts</h2>
+        <div class="alertDiv">
+            <h2>Alerts</h2>
 
-                 <table style="width: 65%; margin-left: 36px;" class="table table-striped table-bordered table-hover">
-                 <thead>
-                     <tr>
-                         <th>
-                             
-                                 Building Name
-                         </th>
-                         
-                     </tr>
-                 </thead>
-                 <tbody>
-                     <tr th:each="bt : ${alertBT}"
-                     <div  class="alert alert-danger">
-                         <td th:text="${bt}"></td>
-             
-                       
-                     </div>
+            <table style="width: 65%; margin-left: 36px;" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        
+                            Building Name
+                    </th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="bt : ${alertBT}"
+                <div  class="alert alert-danger">
+                    <td th:text="${bt}"></td>
+        
                 
-             
-                      
-                     </tr>
-                 </tbody>
-             </table>
-             
+                </div>
+        
+        
+                
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
 
 
+<!------------------------------------------------------------------------------------------------>
+    <div class ="alert" style="position:absolute; left: 1650px; top:130px;">
+        <label>Alert! See more below</label>
+        <img style=" position: relative   " src="/img/alert.png" alt="alert" height="42" width="42">
 
+    </div>
 
                                        
 <!-- ------------------Buildings and Rooms---------------------------------->
@@ -337,6 +344,14 @@
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+    <script>
+        $(document).ready(function () { 
+            $('.alert').hide();
+            $('.alertDiv').hide();
+
+        });
+        
+    </script>
 
     
 
@@ -358,6 +373,7 @@
             data.addColumn('number', 'ºC');
             data.addColumn({type: 'string', role: 'style'});
 
+            var alert = false;
 
             Object.keys(real_data).forEach(function(key) {
                 const warn = key.slice(key.length-1);
@@ -372,6 +388,12 @@
                     var res = key.split("/");
 
                     data.addRow( [res[0].concat("\n Room: " +res[1]) , real_data[key],  "#4c7f1a"]);
+
+                }
+
+                if(alert){
+                    $(".alert").show();
+                    $(".alertDiv").show();
 
                 }
             });
