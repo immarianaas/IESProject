@@ -1194,6 +1194,8 @@ public class BuildingController {
 		} catch (Exception e ) { s = null; }
 		
 		if (s != null) {
+			s.getRoom().getSensors().remove(s);
+			sensorDataRepository.deleteAll(s.getSensorsData());
 			sensorRepository.delete(s);
 		}
 
