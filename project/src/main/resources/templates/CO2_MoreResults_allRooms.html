@@ -257,41 +257,43 @@
             <h2>Air Quality Control</h2>
          
 
-        
+ <!-- --------------------------------------Average all Results--------.............................................------>
+       
             <div id="chart_div"  style="width: 1500px; height: 500px;" ></div>
             <div id="piechart" style="width: 1100px; height: 550px;  margin-left: 300px;"></div>
         </div>
 
+        <div  style="position:absolute; left: 880px;">
+            <table  class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>        
+                        Average (ppm): Co2 results of the all rooms
+                        </th>     
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td th:text="${co2_average}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            </div>
+            
+
 <!-- --------------------------------------Average--------.............................................------>
 
 
+<div align="center" style="width: 1000px;">
+ 
 
-<div  style="position:absolute; left: 880px;">
-<table  class="table table-striped table-bordered table-hover">
-    <thead>
-        <tr>
-           
-            <th>
-        
-                   
-            Average (ppm): Co2 results of the all rooms
-            </th>
-        
-           
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td th:text="${co2_average}"></td>
-           
 
-      
-
-        </tr>
-    </tbody>
-</table>
-
+    <div id="chart_divAverage"  style="width: 1500px; height: 500px;" ></div>
+    
 </div>
+
+<!------------------------------------------------------------------------------------------------------------>
 
 
 
@@ -467,6 +469,9 @@
             google.charts.setOnLoadCallback(drawColumnChart);
             
             google.charts.setOnLoadCallback(drawPieChart);
+            
+            google.charts.setOnLoadCallback(drawColumnChartAvg);
+
         });
  
         function drawColumnChart() {
@@ -503,7 +508,8 @@
             
             
             var options = {
-                title : '',
+                title : 'CO2 Concentration Stats (all rooms)',
+
                 hAxis : {
                     title : 'Date(MM-dd-yyyy HH:mm)',
                 },
@@ -533,13 +539,68 @@
                     data.addRow([ key, real_data_pie[key] ]);
                 });
                 var options = {
-                    title : 'CO2 concentration stats'
+                    title : 'CO2 Concentration Stats'
                 };
                 var chart = new google.visualization.PieChart(document
                         .getElementById('piechart'));
                 chart.draw(data, options);
             }
+
+
+            //<!--AVERAGE-->
+            var real_dataAvg = /*[[${dates_averageValuesCO2}]]*/'noValue';
+
+            function drawColumnChartAvg() {
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Date');
+                data.addColumn('number', 'Co2');
+                data.addColumn({type: 'string', role: 'style'});
+    
+                var alert = false;
+                Object.keys(real_dataAvg).forEach(function(key) {
+                
+                   
+                    data.addRow([key , real_dataAvg[key],  "color:#DE9233"]);
+    
+                  
+                 
+                });
+                
+                
+                
+                var options = {
+                    title : 'CO2 Average Concentration Stats (ppm)',
+                    hAxis : {
+                        title : 'Date (hour range)',
+                    },
+                    vAxis : {
+                        title : 'Co2 Average Concentration  (ppm)'
+                    }
+                };
+    
+    
+    
+                var chart = new google.visualization.ColumnChart(document
+                        .getElementById('chart_divAverage'));
+                chart.draw(data, options);
+            }
     </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

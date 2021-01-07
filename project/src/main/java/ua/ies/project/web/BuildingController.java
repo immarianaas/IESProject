@@ -46,6 +46,7 @@ import ua.ies.project.repository.UserRepository;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 @Controller
 public class BuildingController {
@@ -695,15 +696,14 @@ public class BuildingController {
 		Map<String, Integer> graphDataX = new TreeMap<>();
 
 		//for average
-		ArrayList<Long> allDates_avg = new ArrayList<>(); //DELETE
-		ArrayList<Integer> co2Values = new ArrayList<>(); //DELETE
+		
+		Map<Long, Integer> dates_and_co2Values = new TreeMap<>();
 
 		//alerts list
 		ArrayList<String> alerts = new ArrayList<>();
 		
         for (SensorData sd : allSensorsData) {
 			Co2 co2Object= null;
-			allDates_avg.add(sd.getTimestamp().getTime()); //DELETE
 
 			
 
@@ -714,7 +714,9 @@ public class BuildingController {
                 continue;
 			}
 
-			co2Values.add((int)co2Object.getValue() );
+			
+
+			dates_and_co2Values.put(sd.getTimestamp().getTime(),(int)co2Object.getValue());
 
 
 
@@ -747,19 +749,15 @@ public class BuildingController {
 
             if(graphDataX.size() == x){
 				//average
-				int sum = 0;
+				double sum = 0;
 				for (String key: graphDataX.keySet())
 					sum += graphDataX.get(key);
 				
-				int media = 0;
+				double media = 0;
 				media = sum / graphDataX.size() ;
 				
 				model.addAttribute("co2_average", media);//DEL
-				//------------
 
-
-
-                System.out.println(graphDataX + "  FINAL");//DEL
 
 				//pie graph
                 Map<Integer, Integer> resultMap = new TreeMap<>();
@@ -779,90 +777,57 @@ public class BuildingController {
 
 		}
 
-		Collections.sort(allDates_avg);
+		//AVERAGE DATES
 
-		//average dates
-		System.out.println("allDates _D  "+ allDates_avg);
-		/*
-		Map<String, Double> map = new HashMap<>();
+	 	ArrayList<Long> allDates = new ArrayList<>();
+		ArrayList<Integer> co2Values = new ArrayList<>(); 
+	 	for(Entry<Long, Integer> entry:dates_and_co2Values.entrySet()) {
+			allDates.add(entry.getKey());
+			co2Values.add(entry.getValue());
+		}
+
+
+
+		Map<String, Double> dates_averageValues = new HashMap<>();
 		int a = 0;
+		System.out.println("CO2 list size "+co2Values.size() + " mapListtSize " + allDates.size());
+
 		for(int i =0; i< allDates.size(); i++) {
 			//1h = 3600000ms
-			double d = allDates.get(i)-allDates.get(a);
-			System.out.println("DATESS _D SUBTRACTION  "+d);
-			
 			if(allDates.get(i)-allDates.get(a)>=3600000) {
 				double d1 = allDates.get(i)-allDates.get(a);
-
 				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
 
 
 				double sumValues = 0;
+				int cont =0;
 				for(int y =a; y<=i;y++) {
-					sumValues+=allDates.get(y);	
+					sumValues+=co2Values.get(y);
+					cont++;	
 				}
 
-				double media = sumValues/(double)(allDates.get(i)-allDates.get(a));
+				double media = sumValues/cont;
 
+
+				//date format
 				Date dateEnd = new Date(allDates.get(i));
 				DateFormat dE = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
-				Date dateInit = new Date(allDates.get(i));
+				Date dateInit = new Date(allDates.get(a));
 				DateFormat dI = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
 				
-				map.put(dE.format(dateEnd) + "-" +dI.format(dateInit), media);
+				dates_averageValues.put(dE.format(dateInit) + "   ---   " +dI.format(dateEnd), media);
 				a = i;
+				sumValues=0;
+				media=0;
 				
 			}
 		}
-		System.out.println("DATESS _D  "+ map);
-		*/
-
-	 //PROBLEMA COMO SORT
-
-		Map<String, Double> map = new HashMap<>();
-		int a = 0;
-		System.out.println("CO2 list size "+co2Values.size() + " mapListtSize " + allDates_avg.size());
-
-		for(int i =0; i< allDates_avg.size(); i++) {
-			//1h = 3600000ms
-			if(allDates_avg.get(i)-allDates_avg.get(a)>=3600000) {
-				double d1 = allDates_avg.get(i)-allDates_avg.get(a);
-				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
-
-
-				double sumValues = 0;
-				for(int y =a; y<=i;y++) {
-					sumValues+=co2Values.get(y);	
-				}
-
-				double media = sumValues/(double)(co2Values.get(i)-co2Values.get(a));
-
-
-				Date dateEnd = new Date(allDates_avg.get(i));
-				DateFormat dE = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-
-				Date dateInit = new Date(allDates_avg.get(i));
-				DateFormat dI = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-
-				
-				map.put(dE.format(dateEnd) + "-" +dI.format(dateInit), media);
-				a = i;
-				
-			}
-		}
-		System.out.println("DATESS _D  "+ map);
-
-
-
-
-		
-		model.addAttribute("graphDataCO2BC", graphDataX);//DEL
+		model.addAttribute("dates_averageValuesCO2", dates_averageValues);
+		model.addAttribute("graphDataCO2BC", graphDataX);
 		model.addAttribute("alertCO2", alerts);
-
-
-		model.addAttribute("graphDataCO2BC_id", id);//DELbuildingName
+		model.addAttribute("graphDataCO2BC_id", id);
 		return "CO2_MoreResults_allRooms";
 	}
 
