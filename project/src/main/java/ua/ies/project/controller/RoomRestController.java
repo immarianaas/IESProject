@@ -122,9 +122,8 @@ public class RoomRestController {
             throws BadAttributeValueExpException {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
 
-        if (!(newsensor.getType().equals("CO2") || newsensor.getType().equals("PEOPLE_COUNTER") || newsensor.getType().equals("BODY_TEMPERATURE")))
-            throw new BadAttributeValueExpException("400 invalid parameter value in 'type'");
 
+        
         Room r = roomrep.findById(id).get();
         newsensor.setRoom(r);
 
