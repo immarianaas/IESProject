@@ -91,7 +91,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <h1 class="page-head-line">Air Quality</h1>
-                        <h1 class="page-subhead-line">Here you can see all the existing co2 in the air as well as your access history and a brief description of the co2 values.</h1>
+                        <h1 class="page-subhead-line">Choose a Building!</h1>
 
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                     <td  width= 10%; th:text="${building.buildingName}"></td>
                    
 
-                    <td width= 9%; > <a th:href="@{/roomStatsBuildingCO2/{id}(id=${building.id})}" class="btn btn-primary"> rooms Info</a>
+                    <td width= 9%; > <a th:href="@{/roomStatsBuildingCO2/{id}(id=${building.id})}" class="btn btn-primary"> Rooms Info</a>
                        
 
                     </td>

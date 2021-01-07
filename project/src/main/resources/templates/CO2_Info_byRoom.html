@@ -140,7 +140,7 @@
     </div>
 -->
 
-<!------------------------------------------------------------------------------------------------------------------> 
+<!--------------------------------------------------------------------------------------------------------------
 
      
 
@@ -175,21 +175,20 @@
             <td th:text="${room.room_number}"></td>
             <td th:text="${room.floorNumber}"></td>
             <td th:text="${room.maxLevelCo2}"></td>
-            <td > <a th:href="@{/searchByRoom/{id}(id=${room.id})}" class="btn btn-primary">See graphical info</a>
+            <td > <a th:href="@{/searchGraphicalInfoRoom/{id}(id=${room.id})}" class="btn btn-primary">See graphical info</a>
 
 
       
 
         </tr>
     </tbody>
-</table>
+</table>----> 
 
  
 
 
-<!------------------------------------------------------------------------------------------------------------------> 
-
-    <form th:action="@{/roomStatsSearchMoreCO2Results/{id}(id=${graphDataCO2BC_id})}"   method="get">
+<!-----------------------------------SEARCH MORE----------------------------------------------------------------------------
+    <form th:action="@{/roomStatsSearchMoreCO2Results/{id}(id=${graphDataCO2Room_id})}"   method="get">
         <input placeholder="Write a number to see more " id="txtSearch" type="text" name="keyword">
         <button type="submit">Search More Results</button>
 
@@ -199,12 +198,14 @@
     <br/>
     <br>
     <br/>
-    <br>
+    <br>---> 
+
     
-    <form th:action="@{/roomStatsSearchDate/{id}(id=${graphDataCO2BC_id})}"   method="get">
+<!------------------------------------------------------DATES---------------------------------------------------------------------->
+    <form th:action="@{/searchGraphicalInfoRoom/{id}(id=${graphDataCO2Room_id})}"   method="get">
         <div class="form-group"  style="width:30%">
             <div class='input-group date' id='datetimepicker1'>
-               <input type='text' class="form-control" name="keywordDate1" />
+               <input type='text' class="form-control" name="dateInit" />
                <span class="input-group-addon">
                <span class="glyphicon glyphicon-calendar"></span>
                </span>
@@ -213,7 +214,7 @@
 
          <div class="form-group" style="width:30%">
             <div class='input-group date' id='datetimepicker2'>
-               <input type='text' class="form-control" name="keywordDate2" />
+               <input type='text' class="form-control" name="dateEnd" />
                <span class="input-group-addon">
                <span class="glyphicon glyphicon-calendar"></span>
                </span>
@@ -221,7 +222,7 @@
          </div>
 
 
-        <button type="submit">DATE</button>
+        <button type="submit">Seach by range dates</button>
 
     </form>
     
@@ -272,7 +273,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="co2 : ${alertCO2}"
+                    <tr th:each="co2 : ${alert_CO2_room}"
 
                     <div  class="alert alert-danger">
                         <td th:text="${co2}"> </td>
@@ -290,6 +291,7 @@
             </table>
     </div>
 
+    <!------------------------------------------------------->
 
 
 
@@ -410,7 +412,7 @@
     
 
     <script th:inline="javascript">
-        var real_data = /*[[${graphDataCO2BC}]]*/'noValue';
+        var real_data = /*[[${roomsInfoCO2ByDates_room}]]*/'noValue';
  
         $(document).ready(function() {
             google.charts.load('current', {
@@ -475,7 +477,7 @@
 
 
 
-            var real_data_pie = /*[[${graphDataCO2_pieBC}]]*/'noValue';
+            var real_data_pie = /*[[${graphDataCO2_pieBCByDates_room}]]*/'noValue';
             
             function drawPieChart() {
                 var data = new google.visualization.DataTable();
