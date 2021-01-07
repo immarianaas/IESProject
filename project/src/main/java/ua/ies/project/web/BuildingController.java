@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -692,16 +694,29 @@ public class BuildingController {
 		//bar chart and pie chart
 		Map<String, Integer> graphDataX = new TreeMap<>();
 
+		//for average
+		ArrayList<Long> allDates_avg = new ArrayList<>(); //DELETE
+		ArrayList<Integer> co2Values = new ArrayList<>(); //DELETE
+
+		//alerts list
 		ArrayList<String> alerts = new ArrayList<>();
 		
         for (SensorData sd : allSensorsData) {
-            Co2 co2Object= null;
+			Co2 co2Object= null;
+			allDates_avg.add(sd.getTimestamp().getTime()); //DELETE
+
+			
+
 
             try{
                 co2Object= co2Repository.findById(sd.getId()).get();
             }catch(Exception e){
                 continue;
 			}
+
+			co2Values.add((int)co2Object.getValue() );
+
+
 
             if(sd.getWarn()){
                 String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
@@ -763,6 +778,82 @@ public class BuildingController {
             }
 
 		}
+
+		Collections.sort(allDates_avg);
+
+		//average dates
+		System.out.println("allDates _D  "+ allDates_avg);
+		/*
+		Map<String, Double> map = new HashMap<>();
+		int a = 0;
+		for(int i =0; i< allDates.size(); i++) {
+			//1h = 3600000ms
+			double d = allDates.get(i)-allDates.get(a);
+			System.out.println("DATESS _D SUBTRACTION  "+d);
+			
+			if(allDates.get(i)-allDates.get(a)>=3600000) {
+				double d1 = allDates.get(i)-allDates.get(a);
+
+				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
+
+
+				double sumValues = 0;
+				for(int y =a; y<=i;y++) {
+					sumValues+=allDates.get(y);	
+				}
+
+				double media = sumValues/(double)(allDates.get(i)-allDates.get(a));
+
+				Date dateEnd = new Date(allDates.get(i));
+				DateFormat dE = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+				Date dateInit = new Date(allDates.get(i));
+				DateFormat dI = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+				
+				map.put(dE.format(dateEnd) + "-" +dI.format(dateInit), media);
+				a = i;
+				
+			}
+		}
+		System.out.println("DATESS _D  "+ map);
+		*/
+
+	 //PROBLEMA COMO SORT
+
+		Map<String, Double> map = new HashMap<>();
+		int a = 0;
+		System.out.println("CO2 list size "+co2Values.size() + " mapListtSize " + allDates_avg.size());
+
+		for(int i =0; i< allDates_avg.size(); i++) {
+			//1h = 3600000ms
+			if(allDates_avg.get(i)-allDates_avg.get(a)>=3600000) {
+				double d1 = allDates_avg.get(i)-allDates_avg.get(a);
+				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
+
+
+				double sumValues = 0;
+				for(int y =a; y<=i;y++) {
+					sumValues+=co2Values.get(y);	
+				}
+
+				double media = sumValues/(double)(co2Values.get(i)-co2Values.get(a));
+
+
+				Date dateEnd = new Date(allDates_avg.get(i));
+				DateFormat dE = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+				Date dateInit = new Date(allDates_avg.get(i));
+				DateFormat dI = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+				
+				map.put(dE.format(dateEnd) + "-" +dI.format(dateInit), media);
+				a = i;
+				
+			}
+		}
+		System.out.println("DATESS _D  "+ map);
+
 
 
 
