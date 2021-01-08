@@ -107,7 +107,7 @@ public class BuildingController {
 	}
 
 	@GetMapping("/newSensorForm/{id}") //este id vai ser o id do room
-	public String shownewSensorForm(@PathVariable ( value = "id") long id, Model model,@CurrentSecurityContext(expression="authentication.name") String username) {
+	public String shownewSensorForm(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
 		Room r = roomRepository.getOne(id);
 		Sensor s = new Sensor();
 		model.addAttribute("room", r);
@@ -115,6 +115,32 @@ public class BuildingController {
 		return "newSensor";
 	}
 
+	@GetMapping("/addUserToBuilding/{id}")
+	public String addUserToBuilding(@PathVariable(value="id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+		Building b = buildingRepository.getOne(id);
+		model.addAttribute("building", b);
+		model.addAttribute("error", "");
+		return "add_user";  // TODO PAGE
+	}
+
+	@PostMapping("/addUserToBuildingPost/{id}")
+	public String addUserToBuildingPost(@PathVariable(value="id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody String user) {
+		Building b = buildingRepository.getOne(id);
+		User u = userRepository.findByUsername(user.replace("username=", ""));
+		model.addAttribute("building", b);
+		
+		System.out.println("\n\n\nuser received: " + user.replace("username=", "") + "\n\n\n\n");
+		if (u == null) {
+			model.addAttribute("error", "There is no user with that username.");
+			return "add_user";
+		}
+		model.addAttribute("error", "");
+		u.addBuilding(b);
+		b.addUser(u);
+		userRepository.save(u);
+		buildingRepository.save(b);
+		return "add_user";
+	}
 
 
 	@GetMapping("/newRoomForm/{id}")
@@ -1168,16 +1194,17 @@ public class BuildingController {
 	}
     
 	
-	@GetMapping("/deleteBuilding/{id}")
-	public String deleteBuilding(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
+	@GetMapping("/removeBuilding/{id}")
+	public String removeBuilding(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
 		Building b = getBuildingById(id);
-
+		User user = userRepository.findByUsername(username);
 		// tirar o building de todos os users q o tem
 		for (User u : b.getUsers()) {
 			u.getBuildings().remove(b);
 			userRepository.save(u);
 		}
 
+		/* // nao elimina!! (antes eliminava - o q ta comentado...)
 		for (Room r : b.getRooms()) {
             for (Sensor s : r.getSensors()) {
 				// apagar todos os dados dos sensores
@@ -1191,7 +1218,9 @@ public class BuildingController {
 		roomRepository.deleteAll(b.getRooms());
 
 		this.buildingRepository.deleteById(id);
-	
+		*/
+		// tirar o user dele...
+		b.getUsers().remove(user);
 		return "redirect:/dashboard";
 	}
 

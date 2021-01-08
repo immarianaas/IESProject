@@ -88,7 +88,7 @@
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">New room for building {(meter isto n sei como se faz:) building.getName()}</h1>
+                        <h1 class="page-head-line">New sensor for room no. <span th:text="${room.room_number}"></span> of building <span th:text="${room.building.buildingName}"></span></h1>
                         <h1 class="page-subhead-line">Create a new room</h1>
 
                     </div>
@@ -107,11 +107,17 @@
                                          class="form-control mb-4 col-4">
 
                                         <label>Type:</label><br>
-                                        <input type="text" th:field="*{type}"
-                                        class="form-control mb-4 col-4">
+                                        <select th:field="*{type}">
+                                            <option value="CO2">CO2</option>
+                                            <option value="PEOPLE_COUNTER">PEOPLE COUNTER</option>
+                                            <option value="BODY_TEMPERATURE">BODY TEMPERATURE</option>
+                                        </select>
+                                        <!--<input type="text" th:field="*{type}"
+                                        class="form-control mb-4 col-4">-->
 
                                         <br/>
                                         <button type="submit" class="btn btn-info col-4">Save Sensor</button>
+                                        <a th:href="@{/dashboard}" class="btn btn-info col-4">Go Back</a>
             
             
                                 </form>

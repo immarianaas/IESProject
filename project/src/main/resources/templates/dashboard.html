@@ -140,25 +140,13 @@
                             <table style="width: 95%; margin-left: 36px;" class="table table-striped table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th>
-                                            
-                                                Building Name
-                                        </th>
-                                        <th>
-                                       
-                                                Country
-                                        </th>
-                                        <th>
-                                      
-                                                City
-                                        </th>
-                                        <th>
-                                                Street
-                                        </th>
-                                        <th>
-                                                Door Number
-                                        </th>
-                                        <th> Actions </th>
+                                        <th>Building Name</th>
+                                        <th>Country</th>
+                                        <th>City</th>
+                                        <th>Street</th>
+                                        <th>Door Number</th>
+                                        <th>Users</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -168,9 +156,15 @@
                                         <td width= 7%; th:text="${building.city}"></td>
                                         <td width= 7%; th:text="${building.street}"></td>
                                         <td  width= 3%; th:text="${building.door_number}"></td>
+                                        <td style="width:3%;">
+                                            <ul th:each="u : ${building.users}">
+                                                <ul th:text="${u.username}"></ul>
+                                            </ul>
+                                            <a th:href="@{/addUserToBuilding/{id}(id=${building.id})}" class="btn btn-info">add user</a>
+                                        </td>
 
                                         <td width= 9%; > <a th:href="@{/updateBuilding/{id}(id=${building.id})}" class="btn btn-primary">Update</a>
-                                            <a th:href="@{/deleteBuilding/{id}(id=${building.id})}" class="btn btn-danger">Delete</a>
+                                            <a th:href="@{/removeBuilding/{id}(id=${building.id})}" class="btn btn-danger">Remove</a>
                                             <a th:href="@{/newRoomForm/{id}(id=${building.id})}" class="btn btn-info">Add Room</a>
 
                                         </td>
@@ -201,7 +195,6 @@
 
 
 
--->
                                      
             <!-- ------------------Buildings and Rooms---------------------------------->
             <div class="col-md-11">

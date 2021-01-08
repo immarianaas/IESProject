@@ -88,7 +88,7 @@
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">New room for building {(meter isto n sei como se faz:) building.getName()}</h1>
+                        <h1 class="page-head-line">New room for building: <span th:text="${building.buildingName}"></span></h1>
                         <h1 class="page-subhead-line">Create a new room</h1>
 
                     </div>
@@ -123,6 +123,7 @@
                                         class="form-control mb-4 col-4">
                                         <br/>
                                         <button type="submit" class="btn btn-info col-4">Save Room</button>
+                                        <a th:href="@{/dashboard}" class="btn btn-info col-4">Go Back</a>
             
             
                                 </form>

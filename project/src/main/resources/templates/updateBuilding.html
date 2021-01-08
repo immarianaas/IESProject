@@ -84,7 +84,7 @@
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Update building</h1>
+                        <h1 class="page-head-line">Update building: <span th:text="${building.buildingName}"></span></h1>
                         <h1 class="page-subhead-line">Building Update</h1>
 
                     </div>
@@ -118,7 +118,9 @@
 					
 						
 									
-									<button type="submit" class="btn btn-info col-2"> Update Employee</button>
+                                    <button type="submit" class="btn btn-info col-2">Update Building</button>
+                                    <a th:href="@{/dashboard}" class="btn btn-info col-4">Go Back</a>
+                                    
 							</form>
                             </div>
             
