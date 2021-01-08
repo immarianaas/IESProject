@@ -6,10 +6,7 @@ import threading
 
 import fake_data_generators_nd as gen
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
-channel = connection.channel()
-
-salas = ['loja_s7', 'hosp_s22', 'hosp_s33', 'escola_s1', 'escola_s2']
+# salas = ['loja_s7', 'hosp_s22', 'hosp_s33', 'escola_s1', 'escola_s2']
 
 sensores = [
         {'type': 'people_counter', 'sensor_id': 22222, 'center': 10},
@@ -28,7 +25,8 @@ sensores = [
 
 
 
-def thread_function(sensor):
+def thread_function(sensor, connection, channel):
+
     offset = random.uniform(0, 7)
     time.sleep(offset)
     period = random.uniform(1, 7)
@@ -43,19 +41,39 @@ def thread_function(sensor):
 
         elif sensor['type'] == 'body_temperature':
             data = gen.fake_body_temp(sensor['sensor_id'])
-            random_sleep_seconds = random.uniform(period-2, period+2)
+            random_sleep_seconds = random.uniform(period-2 if period-2>=0 else 0, period+2)
             time.sleep(random_sleep_seconds)
 
-        #print(data) 
-        channel.basic_publish(
-            exchange='',
-            routing_key= sensor['type'],
-            body= str(data)
-        )
+        try:
+            #print(data) 
+            channel.basic_publish(
+                exchange='',
+                routing_key= sensor['type'],
+                body= str(data)
+            )
+        except:
+            connection.close()
+            time.sleep(5)
 
+            connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
+            channel = connection.channel()
         
         
+def execute():
+    connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
+    channel = connection.channel()
 
-for s in sensores:
-    x = threading.Thread(target=thread_function, args=(s,))
-    x.start()
+    for s in sensores:
+        x = threading.Thread(target=thread_function, args=(s, connection, channel))
+        x.start()
+
+
+def main():
+    while True:
+        try:
+            execute()
+        except Exception:
+            
+            time.sleep(10)
+
+main()
