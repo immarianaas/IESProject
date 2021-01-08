@@ -216,15 +216,15 @@
             <div class="table-responsive">
 
                 <table  style=" width: 150%; margin-left: 60px; " class="table table-striped table-bordered table-hover" th:each="element : ${mapbuildingsAndRooms}">
+                    <h4 style=" margin-left: 36px;">Rooms of building <strong><span th:text="${element.key}"></span></strong>:</h4>                     
+
                     <tr th:each="anews : ${element.value}">
                     
                         <table  style=" width: 150%; margin-left: 36px; " class="table table-striped table-bordered table-hover">
-                            <h4 style=" margin-left: 36px;">Rooms of building <strong><span th:text="${element.key}"></span></strong>:</h4>                     
 
                             <thead>
                                 <tr>
                                     <!--<th>Building Name</th>-->
-                                    <th>Room ID</th>
                                     <th>Room Number</th>
                                     <th>Floor Number</th>
                                     <th>Max. level co2</th>
@@ -242,7 +242,6 @@
                                 <!--<tr th:each="anews : ${element.value}">-->
                                 <!--<td th:text="${element.key}"></td>-->
 
-                                <td width= 5%; th:text="${anews.getId}"></td>
                                 <td width= 6%; th:text="${anews.getRoom_number}"></td>
                                 <td width= 7%; th:text="${anews.getFloorNumber}"></td>
                                 <td width= 6%; th:text="${anews.getMaxLevelCo2}"></td>
@@ -353,8 +352,6 @@
 
                             <thead>
                                 <tr>
-                                    <!--<th>Building Name</th>-->
-                                    <th>Room ID</th>
                                     <th>Room Number</th>
                                     <th>Floor Number</th>
                                     <th>Max. level co2</th>
@@ -372,7 +369,6 @@
                                 <!--<tr th:each="anews : ${element.value}">-->
                                 <!--<td th:text="${element.key}"></td>-->
 
-                                <td th:text="${anews.getId}"></td>
                                 <td th:text="${anews.getRoom_number}"></td>
                                 <td th:text="${anews.getFloorNumber}"></td>
                                 <td th:text="${anews.getMaxLevelCo2}"></td>

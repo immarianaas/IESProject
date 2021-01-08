@@ -1198,11 +1198,9 @@ public class BuildingController {
 	public String removeBuilding(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
 		Building b = getBuildingById(id);
 		User user = userRepository.findByUsername(username);
-		// tirar o building de todos os users q o tem
-		for (User u : b.getUsers()) {
-			u.getBuildings().remove(b);
-			userRepository.save(u);
-		}
+		// tirar o building deste user apenas
+		user.getBuildings().remove(b);
+		userRepository.save(user);
 
 		/* // nao elimina!! (antes eliminava - o q ta comentado...)
 		for (Room r : b.getRooms()) {

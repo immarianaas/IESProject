@@ -61,7 +61,6 @@ public class WebController {
     
     @GetMapping("/dashboard")
     public String dashboard(Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
-
         /* // isto tem mm de ser alterado
         Co2 co2 = co2rep.findTopByOrderByIdDesc();
         BodyTemperature bt = bodytemprep.findTopByOrderByIdDesc();
@@ -75,6 +74,7 @@ public class WebController {
         //load buildings
 
         User u = userRepository.findByUsername(username);
+        if (u == null) return "redirect:/login";
         model.addAttribute("listBuildings", u.getBuildings());
         
         //buildings and rooms of user
