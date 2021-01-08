@@ -86,6 +86,8 @@ public class WebController {
         Map<Room, Set<Sensor>> mapRoomSensor = new HashMap<Room, Set<Sensor>>();
         Map<Sensor, Object[]> mapSensorLastValueRec = new HashMap<Sensor, Object[]>();
 
+        Set<Sensor> sensorsWarning = new HashSet<Sensor>();
+
         for(Building b :u.getBuildings()){
             mapbuildingsAndRooms.put(b.getBuildingName(), b.getRooms());
             for (Room r : b.getRooms()) {
@@ -106,6 +108,8 @@ public class WebController {
                     }
                     Object[] data =  getLastValueRecieved(s);
                     mapSensorLastValueRec.put(s, data);
+                    if (data != null && (boolean) data[2])
+                        sensorsWarning.add(s);
                 }
 
                 mapNrSensorsPerRoom.put(r, no_sensors);
@@ -116,6 +120,8 @@ public class WebController {
         model.addAttribute("mapNrSensors", mapNrSensorsPerRoom);
         model.addAttribute("mapRoomSensorsLastVal", mapSensorLastValueRec);
         model.addAttribute("mapRoomSensor", mapRoomSensor);
+
+        model.addAttribute("mapSensorWarning", sensorsWarning);
 
         
         return "dashboard";

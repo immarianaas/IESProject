@@ -99,6 +99,20 @@
 
                     </div>
                 </div>
+
+                <!-- --- WARNINGS HERE --- -->
+                <div th:each="s : ${mapSensorWarning}">
+                    <div class="alert alert-danger">
+                        <p>
+                            <strong>WARNING:</strong>
+                            sensor of type <span th:text="${s.type}"></span> with id=<span th:text="${s.sensorId}"></span>
+                            detected warning values in the <strong>room no. <span th:text="${s.room.room_number}"></span>
+                            of building <span th:text="${s.room.building.buildingName}"></span></strong>.
+                        </p>
+                        <!--<p th:text="${s}"></p>-->
+                    </div>
+                </div>
+
                 <!-- /. ROW  -->
                 <div class="row">
                     <div class="col-md-4">
