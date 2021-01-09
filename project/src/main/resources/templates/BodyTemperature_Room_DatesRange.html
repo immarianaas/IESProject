@@ -91,93 +91,18 @@
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Body temperature control </h1>
-                        <h1 class="page-subhead-line">
-                            Here you can people's body temperatures </h1>
+                        <h1 class="page-head-line">Body Temperature Control </h1> <h3><p th:text="'Room: ' + ${roomID_bt} " /></h3>
+                     
+
+                        <h1 class="page-subhead-line">Here you can see all body temperatures inside a room</h1>
 
                     </div>
                 </div>
                 <!-- /. ROW  -->
 
-            
-
-                
-<!-- ----------------------------------------------------_BUILDING LIST.............................
-    <h3 style=" width: 51%; margin-left: 36px; " >           Buildings List</h3>
-    
-   
-    
-        <table style="width: 95%; margin-left: 36px;" class="table table-striped table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>
-                        
-                            Building Name
-                    </th>
-                   
-                    <th> Actions </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="building : ${listBuildingsAQ}">
-                    <td  width= 10%; th:text="${building.buildingName}"></td>
-                   
-
-                    <td width= 9%; > <a th:href="@{/showRoomsbyBuilging/{id}(id=${building.id})}" class="btn btn-primary"> rooms Info</a>
-                       
-
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <br/>
-
-    </div>
--->
-
-
-    <!-------------------------------------ROOMS INFO ------------------------------------------------------------------->
-
-    <h4>Building rooms info:</h4>
-
-    <table style="table-layout: fixed ; width: 60%;" class="table table-striped table-bordered table-hover">
-    <thead>
-        <tr>
            
-            <th>
-        
-                    Room number
-            </th>
-            <th>
-                    Floor Number
-                    
-            </th>
-            <th>
-        
-                    Max. body temperature inside room allowed
-            </th>
-           
-        </tr>
-    </thead>
-    <tbody>
-        <tr th:each="room : ${roomsInfoBT}">
-            <td th:text="${room.room_number}"></td>
-            <td th:text="${room.floorNumber}"></td>
-            <td th:text="${room.maxTemperature}"></td>
 
-      
 
-        </tr>
-    </tbody>
-</table>
-<!------------------------------------------------------------------------------------------>
-
-<form th:action="@{/roomStatsSearchMoreBTResults/{id}(id=${graphDataBT_id})}"   method="get">
-    <input placeholder="Write a number to see more " id="txtSearch" type="text" name="keyword">
-    <button  type="submit">Search More Results</button>
-
-</form>
 
 
 <!-- --------------------------------------CHARTS--------.............................................------>
@@ -185,18 +110,24 @@
 
 
         <div align="center" style="width: 1000px;">
-            <h2>Body Temperature Control</h2>
 
             <div id="chart_div"  style="width: 1500px; height: 500px;" ></div>
             <div id="piechart" style="width: 1100px; height: 550px;  margin-left: 300px;"></div>
         </div>
 
 
+
     <!-- ---------------------------------------------------->
 
-                 <!-- ---------------------------------------------------->
-        <div class="alertDiv">
-            <h2>Alerts</h2>
+
+        <div class ="alert" style="position:absolute; left: 1640px; top:110px;">
+            <label>Alert! See more below</label>
+            <img style=" position: relative   " src="/img/alert.png" alt="alert" height="42" width="42">
+    
+        </div>
+      <!------------------------------------------------------->
+      <div class="alertsDiv">
+        <h2>Alerts</h2>
 
             <table style="width: 65%; margin-left: 36px;" class="table table-striped table-bordered table-hover">
             <thead>
@@ -209,97 +140,35 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="bt : ${alertBT}"
+                <tr th:each="bt : ${alertRoom_BT}"
+
                 <div  class="alert alert-danger">
-                    <td th:text="${bt}"></td>
-        
+                    <td th:text="${bt}"> </td>
+                
+                    
+                    
+
                 
                 </div>
         
-        
+
                 
                 </tr>
             </tbody>
         </table>
-    </div>
-    
-
-
-<!------------------------------------------------------------------------------------------------>
-    <div class ="alert" style="position:absolute; left: 1650px; top:130px;">
-        <label>Alert! See more below</label>
-        <img style=" position: relative   " src="/img/alert.png" alt="alert" height="42" width="42">
-
-    </div>
-
-                                       
-<!-- ------------------Buildings and Rooms---------------------------------->
-<!--
-<div class="table-responsive">
-
-    <table >
-        <tr th:each="element : ${mapbuildingsAndRooms}">
-           
-            
-
-            <table style="table-layout: fixed; width:60%; " class="table table-striped table-bordered table-hover">
-                <h4 >Building Rooms Info: </h3>                     
-
-                <thead>
-                    <tr>
-                        <th>
-                            
-                            Building Name
-                         </th>
-                      
-                        
-                        <th>
-                            
-                            Room ID
-                         </th>
-                        
-                        <th>
-                            
-                                Room Number
-                        </th>
-                        <th>
-                       
-                                Floor Number
-                        </th>
-                        <th>
-                      
-                                Maximum Co2 level
-                        </th>
-                       
-                    </tr>
-                </thead>
-               <tbody>
-                <tr th:each="anews : ${element.value}">
-                    <td th:text="${element.key}">x</td>
-
-                    <td th:text="${anews.getId}">x</td>
-                    <td th:text="${anews.getRoom_number}">x</td>
-                    <td th:text="${anews.getFloorNumber}">x</td>
-                    <td th:text="${anews.getMaxLevelCo2}">x</td>
-            
-                </tr>
-                </tbody>
-            </table>
-        </tr>
-    </table>
 </div>
--->
 
-                     
 
+
+
+
+
+                     </div>
          
                 </div>
                 
         </div>
                 <!------------------------------------------------------------------------------------------------->
-           
-
- 
             </div>
             <!-- /. PAGE INNER  -->
         </div>
@@ -343,20 +212,17 @@
     </script>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
     <script>
         $(document).ready(function () { 
             $('.alert').hide();
-            $('.alertDiv').hide();
-
+            $('.alertsDiv').hide();
         });
         
     </script>
 
-    
 
     <script th:inline="javascript">
-        var real_data = /*[[${graphDataBT}]]*/'noValue';
+        var real_data = /*[[${roomInfoBTByDates}]]*/'noValue';
  
         $(document).ready(function() {
             google.charts.load('current', {
@@ -370,7 +236,7 @@
         function drawColumnChart() {
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Date');
-            data.addColumn('number', 'ºC');
+            data.addColumn('number', 'People');
             data.addColumn({type: 'string', role: 'style'});
 
             var alert = false;
@@ -380,10 +246,12 @@
                 console.log(warn);
                 
                 if(warn == "W"){
+                    alert= true;
                     var res = key.split("/");
 
                     console.log(res[0]);
                     data.addRow([res[0].concat("\n Room: " +res[1]) , real_data[key],  "color:#d9534f"]);
+
                 }else{
                     var res = key.split("/");
 
@@ -393,8 +261,7 @@
 
                 if(alert){
                     $(".alert").show();
-                    $(".alertDiv").show();
-
+                    $('.alertsDiv').show();
                 }
             });
             
@@ -406,7 +273,7 @@
                     title : 'Date(MM-dd-yyyy HH:mm)',
                 },
                 vAxis : {
-                    title : 'Body temperatures'
+                    title : 'People Inside Room'
                 }
             };
 
@@ -421,17 +288,17 @@
 
 
 
-            var real_data_pie = /*[[${graphDataBT_pie}]]*/'noValue';
+            var real_data_pie = /*[[${roomBT_pie}]]*/'noValue';
             
             function drawPieChart() {
                 var data = new google.visualization.DataTable();
                 data.addColumn('string', 'Year');
-                data.addColumn('number', 'ºC');
+                data.addColumn('number', 'Views');
                 Object.keys(real_data_pie).forEach(function(key) {
                     data.addRow([ key, real_data_pie[key] ]);
                 });
                 var options = {
-                    title : 'Body temperatures stats'
+                    title : 'People inside room'
                 };
                 var chart = new google.visualization.PieChart(document
                         .getElementById('piechart'));
@@ -439,6 +306,22 @@
             }
     </script>
 
+
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/2.14.1/moment.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker1').datetimepicker();
+        });
+        $(function () {
+            $('#datetimepicker2').datetimepicker();
+        });
+     </script>
 
 </body>
 </html>

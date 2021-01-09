@@ -4,18 +4,14 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -279,132 +274,44 @@ public class BuildingController {
 		return building;
 	}
 
-	/*
-	@PutMapping("/updateBuilding/{id}")
-	public String showFormForUpdate(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username, @RequestBody Building newbuilding) {
-		Building building = getBuildingById(id);
-		model.addAttribute("building", building);
-		
-		//user authenticated
-		User user = userRepository.findByUsername(username);
-		
-		//save building
-		newbuilding = buildingRepository.save(newbuilding);
-		
-		//add new building to user
-		user.addBuilding(newbuilding);
-		
-		//save user in building table
-        user = userRepository.save(user); // faz update!
-
-		newbuilding.addUser(user);
-		//save new building
-		buildingRepository.save(building);
-
-
-		List<Building> listBuildings = buildingRepository.findAll();
-		
-		model.addAttribute("listBuildings", listBuildings);
-		
-		return "updateBuilding";
-	}
-	*/
-
-
-	/*
-	@PostMapping("/api/buildings/{id}/users")
-    public List<EntityModel<Map<String, Object>>> addUserToBuilding(
-        @CurrentSecurityContext(expression="authentication.name") String username, 
-        @PathVariable Long id, 
-        @RequestBody Map<String, Object> rec ) {
-            Building b = buildrep.getOne(id);
-
-            User u = null;
-            if (rec.keySet().contains("id")) {
-                u = userrep.getOne((Long) rec.get("id"));
-            } else if (rec.keySet().contains("username")) {
-                u = userrep.findByUsername((String) rec.get("username"));
-            }
-
-            if (u == null && b == null) return null; // TODO meter um erro qq
-
-            u.addBuilding(b);
-            b.addUser(userrep.save(u));
-            b = buildrep.save(b);
-
-            List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
-            for (User us : b.getUsers()) {
-                l.add(UserRestController.getUserEntityModel(us));
-            }
-            return l;
-		}
-		
-		*/
+	
 	
 
+//-------------------------------------------__AIR__QUALITY---------------------------------------------------------------------------------
 
-	public static int numcolumnsCo2 = 0;
-	@GetMapping("/roomStatsSearchMoreCO2Results/{id}")
-	public String numColumnsCo2(@PathVariable (value = "id") long id, String keyword) {
-			try {
-				numcolumnsCo2 = Integer.parseInt(keyword);
-			}
-			catch (NumberFormatException e)
-			{
-				numcolumnsCo2 =0;
-			}
-	return "redirect:/roomStatsBuildingCO2/{id}";		
-	}
-
-
-
-
-
-
-
-	//SEARCH ROOMS BY DATE
+	//SEARCH ROOMS BY DATE; CO2_Building_RoomByDates
 	@GetMapping("/roomsStatsSearchByDateBuilding/{id}")
 	public String roomsStatsSearchByDateBuilding( @PathVariable (value = "id") long id, Model model, 
 	@CurrentSecurityContext(expression="authentication.name") String username,  
 	@RequestParam(required = false) String dateInit, 
 	@RequestParam(required = false) String dateEnd) throws ParseException {
+			model.addAttribute("buildingID", id);
 
 			System.out.println( "DATE1     " + dateInit + "     DATE2             " + dateEnd );	
 
 			User ux = userRepository.findByUsername(username);
 			Set<Building> buildings =  ux.getBuildings();
-
 			Set<Room> allRooms = new HashSet<>();
 			for(Building b : buildings){
 				if(b.getId() == id){
 					Set<Room> rooms = b.getRooms();
-					
 					allRooms.addAll(rooms);
-
 				}
 			}
-
 			Set<SensorData> allSensorsData = new HashSet<>();
-    
-
 			Set<Room> rooms = allRooms;
 			if(rooms.size() != 0){
 				for(Room r : rooms){
-					
 					Set<Sensor> sensors = r.getSensors();
-
 					if(sensors.size() != 0){
 						for(Sensor s : sensors){
 							System.out.println("TYEP  " + s.getType());
-		
 							if(s.getType().equals("CO2")){
 								allSensorsData.addAll(s.getSensorsData());
 						}
 					}
 				}
 			}
-
-
 			//format data 1
 			String[] allDate1 = dateInit.split(" "); 
 			String[] date01 = allDate1[0].split("/"); 
@@ -417,11 +324,9 @@ public class BuildingController {
 			String[] allDate2 = dateEnd.split(" ");
 			String[] date02 = allDate2[0].split("/"); 
 			String[] hours02 = allDate2[1].split(":"); 
-			//2021-01-07 18:29:36
 			String dataFormatted2 = date02[2] + "-"+date02[0] + "-"+ date02[1] + " " + hours02[0]+":"+hours02[1]+":00.0"; 
 
 			Date dateEnd1= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dataFormatted2);
-			//Map<String, Integer> graphDataX = new TreeMap<>();
 
 			Co2 co2Object= null;
 
@@ -437,8 +342,6 @@ public class BuildingController {
 				System.out.println("\n\n\nDate BD  -> "  + dateBD + "  Date 1  -> " + dateInit + "  Date 2  -> "+ dateEnd1);
 
                 if (dateInit1 != null)
-			
-
                     if (dateBD.compareTo(dateInit1) < 0)
                         continue;
                 
@@ -446,7 +349,6 @@ public class BuildingController {
                     // se a data for maior q o 'end', tambem tirar
                     if (dateBD.compareTo(dateEnd1)>0)
 						continue;
-				
 				try{
 					co2Object= co2Repository.findById(sd.getId()).get();
 				}catch(Exception e){
@@ -472,6 +374,14 @@ public class BuildingController {
 					graphXCO2_date.put(y, (int)co2Object.getValue());  
 				}
 
+				//average -> times
+				double sum = 0;
+				for (String key: graphXCO2_date.keySet())
+					sum += graphXCO2_date.get(key);
+				
+				double media = 0;
+				media = sum / graphXCO2_date.size() ;
+				model.addAttribute("co2_average_byDates", media);
 
 
 				//pie graph
@@ -486,197 +396,49 @@ public class BuildingController {
 						resultMapCO2_pieBCByDates.put(value, 1);
 					}
 				}
-				model.addAttribute("graphDataCO2_pieBCByDates", resultMapCO2_pieBCByDates);
+				model.addAttribute("graphPieCO2Building_byDates", resultMapCO2_pieBCByDates);
 				break;
-				
-								
-
 			}
 
-			model.addAttribute("roomsInfoCO2ByDates", graphXCO2_date);
-			model.addAttribute("alert_CO2", alerts);
+			model.addAttribute("graph_Bars_CO2Building_byDates", graphXCO2_date);
+			model.addAttribute("alerts_CO2Building_byDates", alerts);
 
 
-			System.out.println("\n\n\n\nSENSORES  -> "  + graphXCO2_date + "alerts -> " + alerts);
 		}
 
-		return "CO2_Rooms_Building_Dates";		
-
+		return "CO2_Building_RoomByDates";		
+		//CO2_Info_byRoom
 	}
 
-	/*
+
+//-------------------------------------------------------
+
+
+	//CO2_Building.html
+	@GetMapping("/roomsStatsCO2Building/{id}")
+	public String showRoomsBuildingCo2(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username,
+	@RequestParam(required = false) String numColms,
+	@RequestParam(required = false) String timesAvg ) {	
+		model.addAttribute("buildingID", id);
 	
-	//pesquisa de graficos por um quarto em especifico
-	@GetMapping("/searchGraphicalInfoRoom/{id}")
-	public String search_graphicalInfoRoom( @PathVariable (value = "id") long id, Model model, 
-	@CurrentSecurityContext(expression="authentication.name") String username,  
-	@RequestParam(required = false) String dateInit, 
-	@RequestParam(required = false) String dateEnd) throws ParseException {
-
-
-		System.out.println( "DATE1     " + dateInit + "     DATE2             " + dateEnd );	
-
-			User ux = userRepository.findByUsername(username);
-			Set<Building> buildings =  ux.getBuildings();
-
-			Set<Room> allRooms = new HashSet<>();
-			for(Building b : buildings){
-				if(b.getId() == id){
-					Set<Room> rooms = b.getRooms();
-					
-					allRooms.addAll(rooms);
-
-				}
-			}
-
-			Set<SensorData> allSensorsData = new HashSet<>();
-    
-
-			Set<Room> rooms = allRooms;
-			if(rooms.size() != 0){
-				for(Room r : rooms){
-					if(r.getId() == id){
-						System.out.println("\n\n\n\nSENSORES r.getId()  -> "  + r.getId() + "ID    -> " + id);
-
-
-					
-					
-					Set<Sensor> sensors = r.getSensors();
-
-					if(sensors.size() != 0){
-						for(Sensor s : sensors){
-							System.out.println("TYEP  " + s.getType());
-		
-							if(s.getType().equals("CO2")){
-								allSensorsData.addAll(s.getSensorsData());
-						}
-					}
-				}
-			}
-			}
-
-
-			//format data 1
-			String[] allDate1 = dateInit.split(" "); 
-			String[] date01 = allDate1[0].split("/"); 
-			String[] hours01 = allDate1[1].split(":"); 
-			//2021-01-07 18:29:36
-			String dataFormatted1 = date01[2] + "-"+date01[0] + "-"+ date01[1] + " " + hours01[0]+":"+hours01[1]+":00.0";
-			Date dateInit1= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dataFormatted1);
-
-			//format data 2
-			String[] allDate2 = dateEnd.split(" ");
-			String[] date02 = allDate2[0].split("/"); 
-			String[] hours02 = allDate2[1].split(":"); 
-			//2021-01-07 18:29:36
-			String dataFormatted2 = date02[2] + "-"+date02[0] + "-"+ date02[1] + " " + hours02[0]+":"+hours02[1]+":00.0"; 
-
-			Date dateEnd1= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dataFormatted2);
-			//Map<String, Integer> graphDataX = new TreeMap<>();
-
-			Co2 co2Object= null;
-
-			ArrayList<String> alerts = new ArrayList<>();
-
-			Map<String, Integer> graphXCO2_date = new TreeMap<>();
-
-
-			for (SensorData sd : allSensorsData) {
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");  
-				String strDate = dateFormat.format(sd.getTimestamp());  
-				Date dateBD= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(strDate);
-				System.out.println("\n\n\nDate BD  -> "  + dateBD + "  Date 1  -> " + dateInit + "  Date 2  -> "+ dateEnd1);
-
-                if (dateInit1 != null)
-			
-
-                    if (dateBD.compareTo(dateInit1) < 0)
-                        continue;
-                
-                if (dateEnd1 != null)
-                    // se a data for maior q o 'end', tambem tirar
-                    if (dateBD.compareTo(dateEnd1)>0)
-						continue;
-				
-				try{
-					co2Object= co2Repository.findById(sd.getId()).get();
-				}catch(Exception e){
-					continue;
-				}
-
-				if(sd.getWarn()){
-					String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
-					long roomId = sd.getSensor().getRoom().getRoom_number();
-	
-					String y = formattedDate +"/"+ roomId +"/"+ "W" ;
-					graphXCO2_date.put(y, (int)co2Object.getValue());
-					
-	
-					String alert = "Alert: Room " + roomId + " with high levels of Co2 at " +  formattedDate;
-					alerts.add(alert);
-				
-				}else{
-					String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
-					long roomId = sd.getSensor().getRoom().getRoom_number();
-					String y = formattedDate +"/" + roomId;
-	
-					graphXCO2_date.put(y, (int)co2Object.getValue());  
-				}
-
-
-
-				//pie graph
-				Map<Integer, Integer> resultMapCO2_pieBCByDates = new TreeMap<>();
-
-				for (String key : graphXCO2_date.keySet()) {
-					Integer value = graphXCO2_date.get(key);
-					
-					if (resultMapCO2_pieBCByDates.containsKey(value)) {
-						resultMapCO2_pieBCByDates.put(value, resultMapCO2_pieBCByDates.get(value) + 1);
-					} else {
-						resultMapCO2_pieBCByDates.put(value, 1);
-					}
-				}
-				model.addAttribute("graphDataCO2_pieBCByDates_room", resultMapCO2_pieBCByDates);
-				break;
-				
-								
-
-			}
-
-			model.addAttribute("roomsInfoCO2ByDates_room", graphXCO2_date);
-			model.addAttribute("alert_CO2_room", alerts);
-			model.addAttribute("graphDataCO2Room_id", id);//DELbuildingName
-
-
-
-			System.out.println("\n\n\n\nSENSORES to o ROOM  -> "  + graphXCO2_date + "alerts -> " + alerts);
+		int numcolumnsCo2 = 0;
+		try {
+			numcolumnsCo2 = Integer.parseInt(numColms);
+		}
+		catch (NumberFormatException e)
+		{
+			numcolumnsCo2 =0;
 		}
 
-		return "roomsCO2graphicalStats";		
-	
+		int timesAverage = 0;
+		try {
+			timesAverage = Integer.parseInt(timesAvg);
+		}
+		catch (NumberFormatException e)
+		{
+			timesAverage =0;
+		}
 
-	}
-	
-	*/
-
-
-
-
-
-
-
-
-
-
-	//GRAPHS ########################################################################################################
-
-
-	//Para os graficos do graphStatsCO2.html
-	@GetMapping("/roomStatsBuildingCO2/{id}")
-	public String showRoomsBuildingCo2(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
-		System.out.println("Building ID " + id);
-		
 		User ux = userRepository.findByUsername(username);
         Set<Building> buildings =  ux.getBuildings();
 
@@ -687,13 +449,10 @@ public class BuildingController {
 				buildingName = b.getBuildingName();
 				Set<Room> rooms = b.getRooms();
 				allRooms.addAll(rooms);
-
 			}
-		
 		}
 		model.addAttribute("graphDataCO2BC_buildingName", buildingName);
         Set<SensorData> allSensorsData = new HashSet<>();
-		
 		//rooms info
 		ArrayList<Room> roomsInfo = new ArrayList<>();
 
@@ -706,7 +465,6 @@ public class BuildingController {
 
 				if(sensors.size() != 0){
 					for(Sensor s : sensors){
-						System.out.println("TYEP  " + s.getType());
 	
 						if(s.getType().equals("CO2")){
 							allSensorsData.addAll(s.getSensorsData());
@@ -720,59 +478,39 @@ public class BuildingController {
 		
 		//bar chart and pie chart
 		Map<String, Integer> graphDataX = new TreeMap<>();
-
 		//for average
-		
 		Map<Long, Integer> dates_and_co2Values = new TreeMap<>();
-
 		//alerts list
 		ArrayList<String> alerts = new ArrayList<>();
 		
         for (SensorData sd : allSensorsData) {
 			Co2 co2Object= null;
-
-			
-
-
             try{
                 co2Object= co2Repository.findById(sd.getId()).get();
             }catch(Exception e){
                 continue;
 			}
-
-			
-
 			dates_and_co2Values.put(sd.getTimestamp().getTime(),(int)co2Object.getValue());
-
-
-
             if(sd.getWarn()){
                 String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getRoom_number();
-
                 String y = formattedDate +"/"+ roomId +"/"+ "W" ;
 				graphDataX.put(y, (int)co2Object.getValue());
-				
-
 				String alert = "Alert: Room " + roomId + " with high levels of Co2 at " +  formattedDate;
 				alerts.add(alert);
-			
 			}else{
 				String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getRoom_number();
                 String y = formattedDate +"/" + roomId;
-
                 graphDataX.put(y, (int)co2Object.getValue());  
             }
-            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
-
+            System.out.println("  SIZE MAP ---" + graphDataX.size() );
 			int x;
 			if(numcolumnsCo2 == 0 ){
 				x =10;
 			}else{
 				x = numcolumnsCo2;
 			}
-
             if(graphDataX.size() == x){
 				//average
 				double sum = 0;
@@ -782,148 +520,242 @@ public class BuildingController {
 				double media = 0;
 				media = sum / graphDataX.size() ;
 				
-				model.addAttribute("co2_average", media);//DEL
-
-
+				model.addAttribute("co2_average", media);
 				//pie graph
                 Map<Integer, Integer> resultMap = new TreeMap<>();
-
                 for (String key : graphDataX.keySet()) {
                     Integer value = graphDataX.get(key);
-                    
                     if (resultMap.containsKey(value)) {
                         resultMap.put(value, resultMap.get(value) + 1);
                     } else {
                         resultMap.put(value, 1);
                     }
                 }
-                model.addAttribute("graphDataCO2_pieBC", resultMap);
+                model.addAttribute("graphPieCO2Building", resultMap);
                 break;
             }
-
 		}
-
 		//AVERAGE DATES
-
 	 	ArrayList<Long> allDates = new ArrayList<>();
 		ArrayList<Integer> co2Values = new ArrayList<>(); 
 	 	for(Entry<Long, Integer> entry:dates_and_co2Values.entrySet()) {
 			allDates.add(entry.getKey());
 			co2Values.add(entry.getValue());
 		}
-
-
-
 		Map<String, Double> dates_averageValues = new HashMap<>();
 		int a = 0;
 		System.out.println("CO2 list size "+co2Values.size() + " mapListtSize " + allDates.size());
-
 		for(int i =0; i< allDates.size(); i++) {
-			//1h = 3600000ms
-			if(allDates.get(i)-allDates.get(a)>=3600000) {
+			//ESTÁ PARA 15 min
+			int tAvg=0;
+			if(timesAverage != 0){
+				tAvg = timesAverage*60000;
+			}else{
+				tAvg = 900000;
+			}
+			if(allDates.get(i)-allDates.get(a)>=tAvg) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
-
-
 				double sumValues = 0;
 				int cont =0;
 				for(int y =a; y<=i;y++) {
 					sumValues+=co2Values.get(y);
 					cont++;	
 				}
-
 				double media = sumValues/cont;
-
-
 				//date format
 				Date dateEnd = new Date(allDates.get(i));
 				DateFormat dE = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
 				Date dateInit = new Date(allDates.get(a));
 				DateFormat dI = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-
-				
 				dates_averageValues.put(dE.format(dateInit) + "   ---   " +dI.format(dateEnd), media);
 				a = i;
 				sumValues=0;
 				media=0;
-				
 			}
 		}
-		model.addAttribute("dates_averageValuesCO2", dates_averageValues);
-		model.addAttribute("graphDataCO2BC", graphDataX);
-		model.addAttribute("alertCO2", alerts);
-		model.addAttribute("graphDataCO2BC_id", id);
-		return "CO2_MoreResults_allRooms";
+		model.addAttribute("datesCO2_AvgByRange", dates_averageValues);
+		model.addAttribute("graph_Bars_CO2Building", graphDataX);
+		model.addAttribute("alerts_CO2Building", alerts);
+		model.addAttribute("buildingCO2_id", id);
+		return "CO2_Building";
 	}
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
 
 
 	//#################################################PEOPLE_COUNTER###############################################################
+	//SEARCH ROOMS BY DATE; CO2_Building_RoomByDates
+	@GetMapping("/roomsStatsSearchByDatePCBuilding/{id}")
+	public String roomsStatsSearchByDateBuildingPC( @PathVariable (value = "id") long id, Model model, 
+	@CurrentSecurityContext(expression="authentication.name") String username,  
+	@RequestParam(required = false) String dateInit, 
+	@RequestParam(required = false) String dateEnd) throws ParseException {
+			model.addAttribute("buildingID", id);
+
+			System.out.println( "DATE1     " + dateInit + "     DATE2             " + dateEnd );	
+
+			User ux = userRepository.findByUsername(username);
+			Set<Building> buildings =  ux.getBuildings();
+			Set<Room> allRooms = new HashSet<>();
+			for(Building b : buildings){
+				if(b.getId() == id){
+					Set<Room> rooms = b.getRooms();
+					allRooms.addAll(rooms);
+				}
+			}
+			Set<SensorData> allSensorsData = new HashSet<>();
+			Set<Room> rooms = allRooms;
+			if(rooms.size() != 0){
+				for(Room r : rooms){
+					Set<Sensor> sensors = r.getSensors();
+					if(sensors.size() != 0){
+						for(Sensor s : sensors){
+							if(s.getType().equals("PEOPLE_COUNTER")){
+								allSensorsData.addAll(s.getSensorsData());
+						}
+					}
+				}
+			}
+			//format data 1
+			String[] allDate1 = dateInit.split(" "); 
+			String[] date01 = allDate1[0].split("/"); 
+			String[] hours01 = allDate1[1].split(":"); 
+			//2021-01-07 18:29:36
+			String dataFormatted1 = date01[2] + "-"+date01[0] + "-"+ date01[1] + " " + hours01[0]+":"+hours01[1]+":00.0";
+			Date dateInit1= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dataFormatted1);
+
+			//format data 2
+			String[] allDate2 = dateEnd.split(" ");
+			String[] date02 = allDate2[0].split("/"); 
+			String[] hours02 = allDate2[1].split(":"); 
+			String dataFormatted2 = date02[2] + "-"+date02[0] + "-"+ date02[1] + " " + hours02[0]+":"+hours02[1]+":00.0"; 
+
+			Date dateEnd1= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dataFormatted2);
+
+			PeopleCounter pcObject= null;
+
+			ArrayList<String> alerts = new ArrayList<>();
+
+			Map<String, Integer> graphXPC_date = new TreeMap<>();
 
 
-	public static int numcolumnsPC = 0;
-	@GetMapping("/roomStatsSearchMorePCResults/{id}")
-	public String num(@PathVariable (value = "id") long id, String keyword) {
-			try {
-				numcolumnsPC = Integer.parseInt(keyword);
+			for (SensorData sd : allSensorsData) {
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");  
+				String strDate = dateFormat.format(sd.getTimestamp());  
+				Date dateBD= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(strDate);
+				System.out.println("\n\n\nDate BD  -> "  + dateBD + "  Date 1  -> " + dateInit + "  Date 2  -> "+ dateEnd1);
+
+                if (dateInit1 != null)
+                    if (dateBD.compareTo(dateInit1) < 0)
+                        continue;
+                
+                if (dateEnd1 != null)
+                    // se a data for maior q o 'end', tambem tirar
+                    if (dateBD.compareTo(dateEnd1)>0)
+						continue;
+				try{
+					pcObject= pcRepository.findById(sd.getId()).get();
+				}catch(Exception e){
+					continue;
+				}
+
+				if(sd.getWarn()){
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
+					long roomId = sd.getSensor().getRoom().getRoom_number();
+	
+					String y = formattedDate +"/"+ roomId +"/"+ "W" ;
+					graphXPC_date.put(y, (int)pcObject.getValue());
+					
+	
+					String alert = "Alert: Room " + roomId + " total people inside not allowed " +  formattedDate;
+					alerts.add(alert);
+				
+				}else{
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
+					long roomId = sd.getSensor().getRoom().getRoom_number();
+					String y = formattedDate +"/" + roomId;
+	
+					graphXPC_date.put(y, (int)pcObject.getValue());  
+				}
+
+				//average -> times
+				double sum = 0;
+				for (String key: graphXPC_date.keySet())
+					sum += graphXPC_date.get(key);
+				
+				double media = 0;
+				media = sum / graphXPC_date.size() ;
+				model.addAttribute("pc_average_byDates", media);
+
+
+				//pie graph
+				Map<Integer, Integer> resultMapPC_pieBCByDates = new TreeMap<>();
+
+				for (String key : graphXPC_date.keySet()) {
+					Integer value = graphXPC_date.get(key);
+					
+					if (resultMapPC_pieBCByDates.containsKey(value)) {
+						resultMapPC_pieBCByDates.put(value, resultMapPC_pieBCByDates.get(value) + 1);
+					} else {
+						resultMapPC_pieBCByDates.put(value, 1);
+					}
+				}
+				model.addAttribute("graphPiePCBuilding_byDates", resultMapPC_pieBCByDates);
+				break;
 			}
-			catch (NumberFormatException e)
-			{
-				numcolumnsPC =0;
-			}
-	return "redirect:/roomStatsBuildingPC/{id}";		
+
+			model.addAttribute("graph_Bars_PCBuilding_byDates", graphXPC_date);
+			model.addAttribute("alerts_PCBuilding_byDates", alerts);
+
+
+		}
+
+		return "PeopleCounter_Building_RoomByDates";		
+		//CO2_Info_byRoom
 	}
+//-------------------------------------------------------
 
 
+	//CO2_Building.html
+	@GetMapping("/roomsStatsPeopleCounterBuilding/{id}")
+	public String showRoomsBuildingPeopleCounter(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username,
+	@RequestParam(required = false) String numResults,
+	@RequestParam(required = false) String timesAvg ) {	
+		model.addAttribute("buildingIDPC", id);
+	
+		int numcolumns = 0;
+		try {
+			numcolumns = Integer.parseInt(numResults);
+		}
+		catch (NumberFormatException e)
+		{
+			numcolumns =0;
+		}
 
+		int timesAverage = 0;
+		try {
+			timesAverage = Integer.parseInt(timesAvg);
+		}
+		catch (NumberFormatException e)
+		{
+			timesAverage =0;
+		}
 
-
-	//Para o graphStatsPeopleCounter
-	@GetMapping("/roomStatsBuildingPC/{id}")
-	public String showRoomsBuildingPC(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
-		System.out.println("Room ->>>>>>> ID " + id);
-		
 		User ux = userRepository.findByUsername(username);
         Set<Building> buildings =  ux.getBuildings();
 
 		Set<Room> allRooms = new HashSet<>();
-		String buildingName = "";
+		String buildingName ="";
         for(Building b : buildings){
-			buildingName = b.getBuildingName();
-
 			if(b.getId() == id){
+				buildingName = b.getBuildingName();
 				Set<Room> rooms = b.getRooms();
 				allRooms.addAll(rooms);
-
 			}
-		
 		}
 		model.addAttribute("graphDataPC_buildingName", buildingName);
-
-		//model.addAttribute("showRoomsbyBuilging", allRooms);
-
-
-
         Set<SensorData> allSensorsData = new HashSet<>();
-    
+		//rooms info
 		ArrayList<Room> roomsInfo = new ArrayList<>();
 
 		Set<Room> rooms = allRooms;
@@ -935,7 +767,6 @@ public class BuildingController {
 
 				if(sensors.size() != 0){
 					for(Sensor s : sensors){
-						System.out.println("TYEP  " + s.getType());
 	
 						if(s.getType().equals("PEOPLE_COUNTER")){
 							allSensorsData.addAll(s.getSensorsData());
@@ -943,124 +774,290 @@ public class BuildingController {
 				}
 			}
 		}
-        }
 
+		model.addAttribute("roomsInfoPC", roomsInfo);
+		}
+		
+		//bar chart and pie chart
+		Map<String, Integer> graphDataX = new TreeMap<>();
+		//for average
+		Map<Long, Integer> dates_and_co2Values = new TreeMap<>();
+		//alerts list
 		ArrayList<String> alerts = new ArrayList<>();
-
-        Map<String, Integer> graphDataX = new TreeMap<>();
+		
         for (SensorData sd : allSensorsData) {
-            PeopleCounter pcObject= null;
-
+			PeopleCounter pcObject= null;
             try{
                 pcObject= pcRepository.findById(sd.getId()).get();
             }catch(Exception e){
                 continue;
-            }
-
+			}
+			dates_and_co2Values.put(sd.getTimestamp().getTime(),(int)pcObject.getValue());
             if(sd.getWarn()){
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
+                String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getRoom_number();
-
-				String y = formattedDate +"/"+ roomId +"/"+ "W" ;
-			
+                String y = formattedDate +"/"+ roomId +"/"+ "W" ;
 				graphDataX.put(y, (int)pcObject.getValue());
-				
-				String alert = "Alert: Room " + roomId + " with too many people inside at " +  formattedDate;
+				String alert = "Alert: Room " + roomId + "  people inside not allowed at " +  formattedDate;
 				alerts.add(alert);
-            }else{
-				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
+			}else{
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getRoom_number();
                 String y = formattedDate +"/" + roomId;
-
                 graphDataX.put(y, (int)pcObject.getValue());  
             }
-            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
+            System.out.println("  SIZE MAP ---" + graphDataX.size() );
 			int x;
-			if(numcolumnsPC == 0 ){
+			if(numcolumns == 0 ){
 				x =10;
 			}else{
-				x = numcolumnsPC;
+				x = numcolumns;
 			}
-
             if(graphDataX.size() == x){
-                System.out.println(graphDataX + "  FINAL");
-                model.addAttribute("graphDataPC", graphDataX);
-
+				//average
+				double sum = 0;
+				for (String key: graphDataX.keySet())
+					sum += graphDataX.get(key);
+				
+				double media = 0;
+				media = sum / graphDataX.size() ;
+				
+				model.addAttribute("pc_average", media);
 				//pie graph
                 Map<Integer, Integer> resultMap = new TreeMap<>();
-
                 for (String key : graphDataX.keySet()) {
                     Integer value = graphDataX.get(key);
-                    
                     if (resultMap.containsKey(value)) {
                         resultMap.put(value, resultMap.get(value) + 1);
                     } else {
                         resultMap.put(value, 1);
                     }
                 }
-				model.addAttribute("graphDataPC_pie", resultMap);
-
+                model.addAttribute("graphPiePCBuilding", resultMap);
                 break;
             }
+		}
+		//AVERAGE DATES
+	 	ArrayList<Long> allDates = new ArrayList<>();
+		ArrayList<Integer> co2Values = new ArrayList<>(); 
+	 	for(Entry<Long, Integer> entry:dates_and_co2Values.entrySet()) {
+			allDates.add(entry.getKey());
+			co2Values.add(entry.getValue());
+		}
+		Map<String, Double> dates_averageValues = new HashMap<>();
+		int a = 0;
+		System.out.println("PC list size "+co2Values.size() + " mapListtSize " + allDates.size());
+		for(int i =0; i< allDates.size(); i++) {
+			//ESTÁ PARA 15 min
+			int tAvg=0;
+			if(timesAverage != 0){
+				tAvg = timesAverage*60000;
+			}else{
+				tAvg = 900000;
+			}
+			if(allDates.get(i)-allDates.get(a)>=tAvg) {
+				double d1 = allDates.get(i)-allDates.get(a);
+				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
+				double sumValues = 0;
+				int cont =0;
+				for(int y =a; y<=i;y++) {
+					sumValues+=co2Values.get(y);
+					cont++;	
+				}
+				double media = sumValues/cont;
+				//date format
+				Date dateEnd = new Date(allDates.get(i));
+				DateFormat dE = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+				Date dateInit = new Date(allDates.get(a));
+				DateFormat dI = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+				dates_averageValues.put(dE.format(dateInit) + "   ---   " +dI.format(dateEnd), media);
+				a = i;
+				sumValues=0;
+				media=0;
+			}
+		}
+		model.addAttribute("datesPC_AvgByRange", dates_averageValues);
+		model.addAttribute("graph_Bars_PCBuilding", graphDataX);
+		model.addAttribute("alerts_PCBuilding", alerts);
+		model.addAttribute("buildingPC_id", id);
+		return "PeopleCounter_Building";
+	}
+
+
+	//#################################################TEMPERATURES CONTROL###############################################################
+
+	//SEARCH ROOMS BY DATE; CO2_Building_RoomByDates
+	@GetMapping("/roomsStatsSearchByDateBodyTemperaturesControlBuilding/{id}")
+	public String roomsStatsSearchByDateBuildingTC( @PathVariable (value = "id") long id, Model model, 
+	@CurrentSecurityContext(expression="authentication.name") String username,  
+	@RequestParam(required = false) String dateInit, 
+	@RequestParam(required = false) String dateEnd) throws ParseException {
+			model.addAttribute("buildingID", id);
+
+			System.out.println( "DATE1     " + dateInit + "     DATE2             " + dateEnd );	
+
+			User ux = userRepository.findByUsername(username);
+			Set<Building> buildings =  ux.getBuildings();
+			Set<Room> allRooms = new HashSet<>();
+			for(Building b : buildings){
+				if(b.getId() == id){
+					Set<Room> rooms = b.getRooms();
+					allRooms.addAll(rooms);
+				}
+			}
+			Set<SensorData> allSensorsData = new HashSet<>();
+			Set<Room> rooms = allRooms;
+			if(rooms.size() != 0){
+				for(Room r : rooms){
+					Set<Sensor> sensors = r.getSensors();
+					if(sensors.size() != 0){
+						for(Sensor s : sensors){
+							if(s.getType().equals("BODY_TEMPERATURE")){
+								allSensorsData.addAll(s.getSensorsData());
+						}
+					}
+				}
+			}
+			//format data 1
+			String[] allDate1 = dateInit.split(" "); 
+			String[] date01 = allDate1[0].split("/"); 
+			String[] hours01 = allDate1[1].split(":"); 
+			String dataFormatted1 = date01[2] + "-"+date01[0] + "-"+ date01[1] + " " + hours01[0]+":"+hours01[1]+":00.0";
+			Date dateInit1= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dataFormatted1);
+
+			//format data 2
+			String[] allDate2 = dateEnd.split(" ");
+			String[] date02 = allDate2[0].split("/"); 
+			String[] hours02 = allDate2[1].split(":"); 
+			String dataFormatted2 = date02[2] + "-"+date02[0] + "-"+ date02[1] + " " + hours02[0]+":"+hours02[1]+":00.0"; 
+
+			Date dateEnd1= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dataFormatted2);
+
+			BodyTemperature btObject= null;
+
+			ArrayList<String> alerts = new ArrayList<>();
+
+			Map<String, Integer> graphX_date = new TreeMap<>();
+
+
+			for (SensorData sd : allSensorsData) {
+				DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");  
+				String strDate = dateFormat.format(sd.getTimestamp());  
+				Date dateBD= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(strDate);
+				System.out.println("\n\n\nDate BD  -> "  + dateBD + "  Date 1  -> " + dateInit + "  Date 2  -> "+ dateEnd1);
+
+                if (dateInit1 != null)
+                    if (dateBD.compareTo(dateInit1) < 0)
+                        continue;
+                
+                if (dateEnd1 != null)
+                    // se a data for maior q o 'end', tambem tirar
+                    if (dateBD.compareTo(dateEnd1)>0)
+						continue;
+				try{
+					btObject= btRepository.findById(sd.getId()).get();
+				}catch(Exception e){
+					continue;
+				}
+
+				if(sd.getWarn()){
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
+					long roomId = sd.getSensor().getRoom().getRoom_number();
+	
+					String y = formattedDate +"/"+ roomId +"/"+ "W" ;
+					graphX_date.put(y, (int)btObject.getValue());
+					
+	
+					String alert = "Alert: Room " + roomId + " body temperature not allowed detected at " +  formattedDate;
+					alerts.add(alert);
+				
+				}else{
+					String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
+					long roomId = sd.getSensor().getRoom().getRoom_number();
+					String y = formattedDate +"/" + roomId;
+	
+					graphX_date.put(y, (int)btObject.getValue());  
+				}
+
+				//average -> times
+				double sum = 0;
+				for (String key: graphX_date.keySet())
+					sum += graphX_date.get(key);
+				
+				double media = 0;
+				media = sum / graphX_date.size() ;
+				model.addAttribute("BT_average_byDates", media);
+
+
+				//pie graph
+				Map<Integer, Integer> resultMapBT_pieByDates = new TreeMap<>();
+
+				for (String key : graphX_date.keySet()) {
+					Integer value = graphX_date.get(key);
+					
+					if (resultMapBT_pieByDates.containsKey(value)) {
+						resultMapBT_pieByDates.put(value, resultMapBT_pieByDates.get(value) + 1);
+					} else {
+						resultMapBT_pieByDates.put(value, 1);
+					}
+				}
+				model.addAttribute("graphPieBTBuilding_byDates", resultMapBT_pieByDates);
+				break;
+			}
+
+			model.addAttribute("graph_Bars_BTBuilding_byDates", graphX_date);
+			model.addAttribute("alerts_PCBuilding_byDates", alerts);
+
 
 		}
-		model.addAttribute("graphDataPC_id", id);//DELbuildingName
-		model.addAttribute("alertPC", alerts);
-		model.addAttribute("roomsInfoPC", roomsInfo);
 
-
-
-		return "graphStatsPeopleCounter";
+		return "BodyTemperatures_Building_RoomByDates";		
+		//CO2_Info_byRoom
 	}
+//-------------------------------------------------------
 
 
+	//CO2_Building.html
+	@GetMapping("/roomsStatsBodyTemperaturesControlBuilding/{id}")
+	public String showRoomsBuildingBodyTemperature(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username,
+	@RequestParam(required = false) String numResults,
+	@RequestParam(required = false) String timesAvg ) {	
+		model.addAttribute("buildingIDBT", id);
+	
+		int numcolumns = 0;
+		try {
+			numcolumns = Integer.parseInt(numResults);
+		}
+		catch (NumberFormatException e)
+		{
+			numcolumns =0;
+		}
 
+		int timesAverage = 0;
+		try {
+			timesAverage = Integer.parseInt(timesAvg);
+		}
+		catch (NumberFormatException e)
+		{
+			timesAverage =0;
+		}
 
-
-
-
-	public static int numcolumnsBT = 0;
-	@GetMapping("/roomStatsSearchMoreBTResults/{id}")
-	public String numColumnsBT(@PathVariable (value = "id") long id, String keyword) {
-			try {
-				numcolumnsBT = Integer.parseInt(keyword);
-			}
-			catch (NumberFormatException e)
-			{
-				numcolumnsBT =0;
-			}
-	return "redirect:/roomStatsBuildingBT/{id}";		
-	}
-
-
-	//Para o graphStatsBodyTemperature
-	@GetMapping("/roomStatsBuildingBT/{id}")
-	public String showRoomsBuildingBT(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
-		System.out.println("Building ID " + id);
-		
 		User ux = userRepository.findByUsername(username);
         Set<Building> buildings =  ux.getBuildings();
 
 		Set<Room> allRooms = new HashSet<>();
-		String buildingName = "";
+		String buildingName ="";
         for(Building b : buildings){
-			buildingName = b.getBuildingName();
-
 			if(b.getId() == id){
+				buildingName = b.getBuildingName();
 				Set<Room> rooms = b.getRooms();
 				allRooms.addAll(rooms);
-
 			}
-		
 		}
 		model.addAttribute("graphDataBT_buildingName", buildingName);
-
-		//model.addAttribute("showRoomsbyBuilging", allRooms);
-
-
-
         Set<SensorData> allSensorsData = new HashSet<>();
-    
+		//rooms info
 		ArrayList<Room> roomsInfo = new ArrayList<>();
 
 		Set<Room> rooms = allRooms;
@@ -1072,7 +1069,6 @@ public class BuildingController {
 
 				if(sensors.size() != 0){
 					for(Sensor s : sensors){
-						System.out.println("TYEP  " + s.getType());
 	
 						if(s.getType().equals("BODY_TEMPERATURE")){
 							allSensorsData.addAll(s.getSensorsData());
@@ -1080,150 +1076,116 @@ public class BuildingController {
 				}
 			}
 		}
-        }
 
+		model.addAttribute("roomsInfoBT", roomsInfo);
+		}
+		
+		//bar chart and pie chart
+		Map<String, Integer> graphDataX = new TreeMap<>();
+		//for average
+		Map<Long, Integer> dates_and_Values = new TreeMap<>();
+		//alerts list
 		ArrayList<String> alerts = new ArrayList<>();
-
-        Map<String, Integer> graphDataX = new TreeMap<>();
+		
         for (SensorData sd : allSensorsData) {
-            BodyTemperature co2Object= null;
-
+			BodyTemperature btObject= null;
             try{
-                co2Object= btRepository.findById(sd.getId()).get();
+                btObject= btRepository.findById(sd.getId()).get();
             }catch(Exception e){
                 continue;
-            }
-
+			}
+			dates_and_Values.put(sd.getTimestamp().getTime(),(int)btObject.getValue());
             if(sd.getWarn()){
-                String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
+                String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getRoom_number();
-
-				String y = formattedDate +"/"+ roomId +"/"+ "W" ;
-				graphDataX.put(y, (int)co2Object.getValue());
-
-				String alert = "Alert: Room " + roomId + " with people with high temperature at " +  formattedDate;
+                String y = formattedDate +"/"+ roomId +"/"+ "W" ;
+				graphDataX.put(y, (int)btObject.getValue());
+				String alert = "Alert: Room " + roomId + " body temperature not allowed detected at " +  formattedDate;
 				alerts.add(alert);
-            }else{
-				String formattedDate = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(sd.getTimestamp());
+			}else{
+				String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());
 				long roomId = sd.getSensor().getRoom().getRoom_number();
                 String y = formattedDate +"/" + roomId;
-
-                graphDataX.put(y, (int)co2Object.getValue());  
+                graphDataX.put(y, (int)btObject.getValue());  
             }
-            System.out.println("  SIZZE MAP ------------------------" + graphDataX.size() );
-
+            System.out.println("  SIZE MAP ---" + graphDataX.size() );
 			int x;
-			if(numcolumnsBT == 0 ){
+			if(numcolumns == 0 ){
 				x =10;
 			}else{
-				x = numcolumnsBT;
+				x = numcolumns;
 			}
             if(graphDataX.size() == x){
-                System.out.println(graphDataX + "  FINAL");//DEL
-                model.addAttribute("graphDataBT", graphDataX);//DEL
-
+				//average
+				double sum = 0;
+				for (String key: graphDataX.keySet())
+					sum += graphDataX.get(key);
+				
+				double media = 0;
+				media = sum / graphDataX.size() ;
+				
+				model.addAttribute("bt_average", media);
 				//pie graph
                 Map<Integer, Integer> resultMap = new TreeMap<>();
-
                 for (String key : graphDataX.keySet()) {
                     Integer value = graphDataX.get(key);
-                    
                     if (resultMap.containsKey(value)) {
                         resultMap.put(value, resultMap.get(value) + 1);
                     } else {
                         resultMap.put(value, 1);
                     }
                 }
-                model.addAttribute("graphDataBT_pie", resultMap);
+                model.addAttribute("graphPieBTBuilding", resultMap);
                 break;
             }
-
 		}
-		model.addAttribute("graphDataBT_id", id);//DELbuildingName
-		model.addAttribute("alertBT", alerts);
-		model.addAttribute("roomsInfoBT", roomsInfo);
-
-
-
-		return "graphStatsBT";
-	}
-
-	
-
-	
-
-
-	
-
-
-
-
-
-	
-
-
-
-
-
-
-	@GetMapping("/deleteRoom/{id}")
-	public String deleteRoom(@PathVariable(value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
-		Room r = roomRepository.getOne(id);
-        for (Sensor s : r.getSensors()) {
-            sensorDataRepository.deleteAll(s.getSensorsData());
-        }
-        sensorRepository.deleteAll(r.getSensors());
-		roomRepository.delete(r);
-		return "redirect:/dashboard";
-	}
-
-	@GetMapping("/deleteSensor/{id}")
-	public String deleteSensor(@PathVariable(value="id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
-		Sensor s;
-		try {
-			s = sensorRepository.getOne(id);
-		} catch (Exception e ) { s = null; }
-		
-		if (s != null) {
-			s.getRoom().getSensors().remove(s);
-			sensorDataRepository.deleteAll(s.getSensorsData());
-			sensorRepository.delete(s);
+		//AVERAGE DATES
+	 	ArrayList<Long> allDates = new ArrayList<>();
+		ArrayList<Integer> co2Values = new ArrayList<>(); 
+	 	for(Entry<Long, Integer> entry:dates_and_Values.entrySet()) {
+			allDates.add(entry.getKey());
+			co2Values.add(entry.getValue());
 		}
-
-		return "redirect:/dashboard";
-	}
-    
-	
-	@GetMapping("/removeBuilding/{id}")
-	public String removeBuilding(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username) {
-		Building b = getBuildingById(id);
-		User user = userRepository.findByUsername(username);
-		// tirar o building deste user apenas
-		user.getBuildings().remove(b);
-		userRepository.save(user);
-
-		/* // nao elimina!! (antes eliminava - o q ta comentado...)
-		for (Room r : b.getRooms()) {
-            for (Sensor s : r.getSensors()) {
-				// apagar todos os dados dos sensores
-                sensorDataRepository.deleteAll(s.getSensorsData());
+		Map<String, Double> dates_averageValues = new HashMap<>();
+		int a = 0;
+		System.out.println("BT list size "+co2Values.size() + " mapListtSize " + allDates.size());
+		for(int i =0; i< allDates.size(); i++) {
+			int tAvg=0;
+			if(timesAverage != 0){
+				tAvg = timesAverage*60000;
+			}else{
+				tAvg = 900000;
 			}
-			// e tambem todos os sensores associados...
-            sensorRepository.deleteAll(r.getSensors());
-		}
-		
-		// eliminar todas as salas relacionadas c ele
-		roomRepository.deleteAll(b.getRooms());
+			if(allDates.get(i)-allDates.get(a)>=tAvg) {
+				double d1 = allDates.get(i)-allDates.get(a);
+				double sumValues = 0;
+				int cont =0;
+				for(int y =a; y<=i;y++) {
+					sumValues+=co2Values.get(y);
+					cont++;	
+				}
+				double media = sumValues/cont;
+				//date format
+				Date dateEnd = new Date(allDates.get(i));
+				DateFormat dE = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
-		this.buildingRepository.deleteById(id);
-		*/
-		// tirar o user dele...
-		b.getUsers().remove(user);
-		return "redirect:/dashboard";
+				Date dateInit = new Date(allDates.get(a));
+				DateFormat dI = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+				dates_averageValues.put(dE.format(dateInit) + "   ---   " +dI.format(dateEnd), media);
+				a = i;
+				sumValues=0;
+				media=0;
+			}
+		}
+		model.addAttribute("datesBT_AvgByRange", dates_averageValues);
+		model.addAttribute("graph_Bars_BTBuilding", graphDataX);
+		model.addAttribute("alerts_BTBuilding", alerts);
+		model.addAttribute("buildingBT_id", id);
+		return "BodyTemperatures_Building";
 	}
 
 
-	//----------- QUERIES--------------------
+
 
 
 
