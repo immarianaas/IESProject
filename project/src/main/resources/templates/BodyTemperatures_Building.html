@@ -102,7 +102,7 @@
             </thead>
             <tbody>
                 <tr th:each="room : ${roomsInfoBT}">
-                    <td th:text="${room.room_number}"></td>
+                    <td th:text="${room.id}"></td>
                     <td th:text="${room.floorNumber}"></td>
                     <td th:text="${room.maxTemperature}"></td>
                     <td > <a th:href="@{/searchStatsBodyTempControlRoom/{id}(id=${room.id})}" class="btn btn-primary">Room graphical info</a>
@@ -262,9 +262,12 @@
  
 
     
-    <!-- /. WRAPPER  -->
     <div id="footer-sec">
+        &copy; 2020/2021 SMART BUILDING - IES - UA 
+
+        <!--<span th:text="${data}"></span> (isto foi so pra experimentar)-->
     </div>
+
     <!-- /. FOOTER  -->
     <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
     <!-- JQUERY SCRIPTS -->
