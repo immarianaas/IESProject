@@ -1,16 +1,11 @@
 package ua.ies.project.web;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +19,6 @@ import ua.ies.project.model.Sensor;
 import ua.ies.project.model.SensorData;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.BodyTemperatureRepository;
-import ua.ies.project.repository.BuildingRepository;
 import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.PeopleCounterRepository;
 import ua.ies.project.repository.SensorDataRepository;
@@ -43,15 +37,9 @@ public class WebController {
     @Autowired
     PeopleCounterRepository peoplecountrep;
 
-
-	@Autowired
-    private BodyTemperatureRepository btRepository;
-    
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private Co2Repository co2Repository;
-    
+  
 
 
     @GetMapping("/")

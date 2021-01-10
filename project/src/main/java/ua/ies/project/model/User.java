@@ -97,6 +97,10 @@ public class User {
         //hm.put("passwordConfirm", passwordConfirm);
         return hm;
     }
+
+	public User orElseThrow(Object object) {
+		return null;
+	}
 }
 
 

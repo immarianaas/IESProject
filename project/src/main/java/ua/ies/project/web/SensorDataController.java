@@ -2,17 +2,12 @@ package ua.ies.project.web;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,11 +20,8 @@ import ua.ies.project.model.SensorData;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.SensorDataRepository;
-import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.UserRepository;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -37,11 +29,7 @@ public class SensorDataController {
 
     @Autowired
     private SensorDataRepository sensorDataRepository;
-   
-    @Autowired
-    private SensorRepository sensorRepository;
-    
-        
+
     @Autowired
     private UserRepository userRepository;
     

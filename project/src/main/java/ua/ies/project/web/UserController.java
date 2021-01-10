@@ -1,19 +1,12 @@
 package ua.ies.project.web;
 
 import ua.ies.project.UserDetailsServiceImpl;
-import ua.ies.project.model.Role;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.RoleRepository;
 import ua.ies.project.repository.UserRepository;
 
-
-import java.util.HashSet;
-import java.util.Set;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,9 +31,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Controller
 public class UserController {
-
-
-
     @Autowired
     private UserValidator userValidator;
     @Autowired
@@ -58,9 +48,6 @@ public class UserController {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
-
-
-
 
     //Security
     public boolean isAuthenticated() {

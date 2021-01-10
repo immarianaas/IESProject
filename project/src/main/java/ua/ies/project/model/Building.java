@@ -1,10 +1,6 @@
 package ua.ies.project.model;
 
 import javax.persistence.*;
-
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import java.util.*;
 
 

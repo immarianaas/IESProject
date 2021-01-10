@@ -17,7 +17,6 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,29 +50,28 @@ public class RoomController {
 	
 	@Autowired
 	private PeopleCounterRepository pcRepository;
-	
+
+	public static int numcolumns = 10;
+	public static int timesAverage = 900000;
 	@GetMapping("/searchStatsAirQualityRoom/{id}")
 	public String search_graphicalInfoRoomCo2( @PathVariable (value = "id") long id,  Model model, 
 	@CurrentSecurityContext(expression="authentication.name") String username,
 	@RequestParam(required = false) String numColms,
 	@RequestParam(required = false) String timesAvgRoom){
 		model.addAttribute("roomIDCo2", id);
+		try {
+			numcolumns = Integer.parseInt(numColms);
+		}
+		catch (NumberFormatException e)
+		{		}
 
-		int numcolumnsCo2 = 0;
 		try {
-			numcolumnsCo2 = Integer.parseInt(numColms);
+			timesAverage = Integer.parseInt(timesAvgRoom)*60000;
+			
 		}
 		catch (NumberFormatException e)
 		{
-			numcolumnsCo2 =0;
-		}
-		int timesAverage = 0;
-		try {
-			timesAverage = Integer.parseInt(timesAvgRoom);
-		}
-		catch (NumberFormatException e)
-		{
-			timesAverage =0;
+		
 		}
 		
 		Room rx = roomRepository.findById(id).orElseThrow();
@@ -123,13 +121,8 @@ public class RoomController {
 
                 graphDataX.put(y, (int)co2Object.getValue());  
 			}
-			int x;
-			if(numcolumnsCo2 == 0 ){
-				x =10;
-			}else{
-				x = numcolumnsCo2;
-			}
-            if(graphDataX.size() == x){
+		
+            if(graphDataX.size() ==numcolumns){
 				//average
 				double sum = 0;
 				for (String key: graphDataX.keySet())
@@ -171,15 +164,9 @@ public class RoomController {
 		int a = 0;
 		System.out.println("CO2 list size "+co2Values.size() + " mapListtSize " + allDates.size());
 		for(int i =0; i< allDates.size(); i++) {
-			int tAvg=0;
-			if(timesAverage != 0){
-				tAvg = timesAverage*60000;
-			}else{
-				tAvg = 900000;
-			}
-			if(allDates.get(i)-allDates.get(a)>=tAvg) {
+			
+			if(allDates.get(i)-allDates.get(a)>=timesAverage -300000 && allDates.get(i)-allDates.get(a)<=timesAverage +300000) {
 				double d1 = allDates.get(i)-allDates.get(a);
-				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
 				double sumValues = 0;
 				int cont =0;
 				for(int y =a; y<=i;y++) {
@@ -319,7 +306,8 @@ public class RoomController {
 	}
 
 	//###########################################PEOPLE COUNTER#################################################################
-
+	public static int numcolumnspc = 10;
+	public static int timesAveragepc = 900000;
 	@GetMapping("/searchStatsPeopleCounterRoom/{id}")
 	public String search_graphicalInfoRoomCPC( @PathVariable (value = "id") long id,  Model model, 
 	@CurrentSecurityContext(expression="authentication.name") String username,
@@ -327,21 +315,19 @@ public class RoomController {
 	@RequestParam(required = false) String timesAvgRoom){
 		model.addAttribute("roomIDPC", id);
 
-		int numcolumns = 0;
 		try {
-			numcolumns = Integer.parseInt(numColms);
+			numcolumnspc = Integer.parseInt(numColms);
+		}
+		catch (NumberFormatException e)
+		{		}
+
+		try {
+			timesAveragepc = Integer.parseInt(timesAvgRoom)*60000;
+			
 		}
 		catch (NumberFormatException e)
 		{
-			numcolumns =0;
-		}
-		int timesAverage = 0;
-		try {
-			timesAverage = Integer.parseInt(timesAvgRoom);
-		}
-		catch (NumberFormatException e)
-		{
-			timesAverage =0;
+		
 		}
 		
 		Room rx = roomRepository.findById(id).orElseThrow();
@@ -391,13 +377,8 @@ public class RoomController {
 
                 graphDataX.put(y, (int)pcObject.getValue());  
 			}
-			int x;
-			if(numcolumns == 0 ){
-				x =10;
-			}else{
-				x = numcolumns;
-			}
-            if(graphDataX.size() == x){
+			
+            if(graphDataX.size() == numcolumnspc){
 				//average
 				double sum = 0;
 				for (String key: graphDataX.keySet())
@@ -439,13 +420,8 @@ public class RoomController {
 		int a = 0;
 		System.out.println("PC list size "+pcValues.size() + " mapListtSize " + allDates.size());
 		for(int i =0; i< allDates.size(); i++) {
-			int tAvg=0;
-			if(timesAverage != 0){
-				tAvg = timesAverage*60000;
-			}else{
-				tAvg = 900000;
-			}
-			if(allDates.get(i)-allDates.get(a)>=tAvg) {
+			
+			if(allDates.get(i)-allDates.get(a)>=timesAveragepc -300000 && allDates.get(i)-allDates.get(a)<=timesAveragepc +300000) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
 				double sumValues = 0;
@@ -586,6 +562,8 @@ public class RoomController {
 
 	//###########################################BODY TEMPERATURE#################################################################
 
+	public static int numcolumnsbt = 10;
+	public static int timesAveragebt = 900000;
 	@GetMapping("/searchStatsBodyTempControlRoom/{id}")
 	public String searchStatsBodyTempControlRoom( @PathVariable (value = "id") long id,  Model model, 
 	@CurrentSecurityContext(expression="authentication.name") String username,
@@ -593,22 +571,21 @@ public class RoomController {
 	@RequestParam(required = false) String timesAvgRoom){
 		model.addAttribute("roomIDPC", id);
 
-		int numcolumns = 0;
 		try {
-			numcolumns = Integer.parseInt(numColms);
+			numcolumnsbt = Integer.parseInt(numColms);
+		}
+		catch (NumberFormatException e)
+		{		}
+
+		try {
+			timesAveragebt = Integer.parseInt(timesAvgRoom)*60000;
+			
 		}
 		catch (NumberFormatException e)
 		{
-			numcolumns =0;
+		
 		}
-		int timesAverage = 0;
-		try {
-			timesAverage = Integer.parseInt(timesAvgRoom);
-		}
-		catch (NumberFormatException e)
-		{
-			timesAverage =0;
-		}
+
 		
 		Room rx = roomRepository.findById(id).orElseThrow();
 		model.addAttribute("roomBT_id", rx.getId());
@@ -656,13 +633,8 @@ public class RoomController {
 
                 graphDataX.put(y, (int)btObject.getValue());  
 			}
-			int x;
-			if(numcolumns == 0 ){
-				x =10;
-			}else{
-				x = numcolumns;
-			}
-            if(graphDataX.size() == x){
+			
+            if(graphDataX.size() == numcolumnsbt){
 				//average
 				double sum = 0;
 				for (String key: graphDataX.keySet())
@@ -704,13 +676,8 @@ public class RoomController {
 		int a = 0;
 		System.out.println("BT list size "+pcValues.size() + " mapListtSize " + allDates.size());
 		for(int i =0; i< allDates.size(); i++) {
-			int tAvg=0;
-			if(timesAverage != 0){
-				tAvg = timesAverage*60000;
-			}else{
-				tAvg = 900000;
-			}
-			if(allDates.get(i)-allDates.get(a)>=tAvg) {
+			
+			if(allDates.get(i)-allDates.get(a)>=timesAveragebt -300000 && allDates.get(i)-allDates.get(a)<=timesAveragebt +300000) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
 				double sumValues = 0;

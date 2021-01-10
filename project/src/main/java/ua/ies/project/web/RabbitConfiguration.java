@@ -1,7 +1,6 @@
 package ua.ies.project.web;
 
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.AMQP.Queue;
+
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;

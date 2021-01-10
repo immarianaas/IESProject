@@ -1,19 +1,7 @@
 package ua.ies.project.model;
 
-
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-
 import javax.persistence.*;
-import javax.swing.text.DateFormatter;
-
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "co2")

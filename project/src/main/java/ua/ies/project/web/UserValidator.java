@@ -15,12 +15,12 @@ import org.springframework.validation.Validator;
 
 @Component
 public class UserValidator implements Validator {
- 
-
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private RoleRepository roleRepository;
+    
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 

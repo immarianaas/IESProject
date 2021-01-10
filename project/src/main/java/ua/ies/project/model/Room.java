@@ -1,9 +1,7 @@
 package ua.ies.project.model;
 
 import java.util.*;
-
 import javax.persistence.*;
-
 
 @Entity
 @Table(name = "room")

@@ -4,7 +4,6 @@ import javax.transaction.Transactional;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import ua.ies.project.model.Co2;
 import ua.ies.project.model.PeopleCounter;
 import ua.ies.project.model.Room;
 import ua.ies.project.model.Sensor;
-import ua.ies.project.model.SensorData;
 import ua.ies.project.repository.Co2Repository;
 import ua.ies.project.repository.PeopleCounterRepository;
 import ua.ies.project.repository.SensorDataRepository;

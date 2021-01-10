@@ -1,19 +1,15 @@
 package ua.ies.project.controller;
 
-import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,10 +22,8 @@ import ua.ies.project.model.Building;
 import ua.ies.project.model.Role;
 import ua.ies.project.model.Room;
 import ua.ies.project.model.Sensor;
-import ua.ies.project.model.SensorData;
 import ua.ies.project.model.User;
 import ua.ies.project.repository.BuildingRepository;
-import ua.ies.project.repository.RoleRepository;
 import ua.ies.project.repository.RoomRepository;
 import ua.ies.project.repository.SensorDataRepository;
 import ua.ies.project.repository.SensorRepository;

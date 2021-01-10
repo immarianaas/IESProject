@@ -278,18 +278,14 @@ public class BuildingController {
 	
 
 //-------------------------------------------__AIR__QUALITY---------------------------------------------------------------------------------
-
-	//SEARCH ROOMS BY DATE; CO2_Building_RoomByDates
 	@GetMapping("/roomsStatsSearchByDateBuilding/{id}")
 	public String roomsStatsSearchByDateBuilding( @PathVariable (value = "id") long id, Model model, 
 	@CurrentSecurityContext(expression="authentication.name") String username,  
 	@RequestParam(required = false) String dateInit, 
 	@RequestParam(required = false) String dateEnd) throws ParseException {
 			model.addAttribute("buildingID", id);
-
-			System.out.println( "DATE1     " + dateInit + "     DATE2             " + dateEnd );	
-
 			User ux = userRepository.findByUsername(username);
+			
 			Set<Building> buildings =  ux.getBuildings();
 			Set<Room> allRooms = new HashSet<>();
 			for(Building b : buildings){
@@ -305,7 +301,6 @@ public class BuildingController {
 					Set<Sensor> sensors = r.getSensors();
 					if(sensors.size() != 0){
 						for(Sensor s : sensors){
-							System.out.println("TYEP  " + s.getType());
 							if(s.getType().equals("CO2")){
 								allSensorsData.addAll(s.getSensorsData());
 						}
@@ -316,7 +311,6 @@ public class BuildingController {
 			String[] allDate1 = dateInit.split(" "); 
 			String[] date01 = allDate1[0].split("/"); 
 			String[] hours01 = allDate1[1].split(":"); 
-			//2021-01-07 18:29:36
 			String dataFormatted1 = date01[2] + "-"+date01[0] + "-"+ date01[1] + " " + hours01[0]+":"+hours01[1]+":00.0";
 			Date dateInit1= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dataFormatted1);
 
@@ -409,11 +403,12 @@ public class BuildingController {
 		return "CO2_Building_RoomByDates";		
 		//CO2_Info_byRoom
 	}
-
+	
 
 //-------------------------------------------------------
 
-
+	public static int numcolumns = 10;
+	public static int timesAverage = 900000;
 	//CO2_Building.html
 	@GetMapping("/roomsStatsCO2Building/{id}")
 	public String showRoomsBuildingCo2(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username,
@@ -421,22 +416,20 @@ public class BuildingController {
 	@RequestParam(required = false) String timesAvg ) {	
 		model.addAttribute("buildingID", id);
 	
-		int numcolumnsCo2 = 0;
+		
 		try {
-			numcolumnsCo2 = Integer.parseInt(numColms);
+			numcolumns = Integer.parseInt(numColms);
 		}
 		catch (NumberFormatException e)
-		{
-			numcolumnsCo2 =0;
-		}
+		{		}
 
-		int timesAverage = 0;
 		try {
-			timesAverage = Integer.parseInt(timesAvg);
+			timesAverage = Integer.parseInt(timesAvg)*60000;
+			
 		}
 		catch (NumberFormatException e)
 		{
-			timesAverage =0;
+		
 		}
 
 		User ux = userRepository.findByUsername(username);
@@ -482,7 +475,6 @@ public class BuildingController {
 		Map<Long, Integer> dates_and_co2Values = new TreeMap<>();
 		//alerts list
 		ArrayList<String> alerts = new ArrayList<>();
-		
         for (SensorData sd : allSensorsData) {
 			Co2 co2Object= null;
             try{
@@ -505,13 +497,9 @@ public class BuildingController {
                 graphDataX.put(y, (int)co2Object.getValue());  
             }
             System.out.println("  SIZE MAP ---" + graphDataX.size() );
-			int x;
-			if(numcolumnsCo2 == 0 ){
-				x =10;
-			}else{
-				x = numcolumnsCo2;
-			}
-            if(graphDataX.size() == x){
+			
+			
+            if(graphDataX.size() == numcolumns){
 				//average
 				double sum = 0;
 				for (String key: graphDataX.keySet())
@@ -545,17 +533,13 @@ public class BuildingController {
 		Map<String, Double> dates_averageValues = new HashMap<>();
 		int a = 0;
 		System.out.println("CO2 list size "+co2Values.size() + " mapListtSize " + allDates.size());
+
+	
 		for(int i =0; i< allDates.size(); i++) {
 			//ESTÁ PARA 15 min
-			int tAvg=0;
-			if(timesAverage != 0){
-				tAvg = timesAverage*60000;
-			}else{
-				tAvg = 900000;
-			}
-			if(allDates.get(i)-allDates.get(a)>=tAvg) {
+
+			if(allDates.get(i)-allDates.get(a)>=timesAverage -300000 && allDates.get(i)-allDates.get(a)<=timesAverage +300000 ) {
 				double d1 = allDates.get(i)-allDates.get(a);
-				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
 				double sumValues = 0;
 				int cont =0;
 				for(int y =a; y<=i;y++) {
@@ -715,31 +699,32 @@ public class BuildingController {
 	}
 //-------------------------------------------------------
 
-
+	public static int numcolumnspc = 10;
+	public static int timesAveragepc = 900000;
 	//CO2_Building.html
 	@GetMapping("/roomsStatsPeopleCounterBuilding/{id}")
 	public String showRoomsBuildingPeopleCounter(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username,
 	@RequestParam(required = false) String numResults,
 	@RequestParam(required = false) String timesAvg ) {	
 		model.addAttribute("buildingIDPC", id);
-	
-		int numcolumns = 0;
+
+		
 		try {
-			numcolumns = Integer.parseInt(numResults);
+			numcolumnspc = Integer.parseInt(numResults);
+		}
+		catch (NumberFormatException e)
+		{		}
+
+		try {
+			timesAveragepc = Integer.parseInt(timesAvg)*60000;
+			
 		}
 		catch (NumberFormatException e)
 		{
-			numcolumns =0;
+		
 		}
 
-		int timesAverage = 0;
-		try {
-			timesAverage = Integer.parseInt(timesAvg);
-		}
-		catch (NumberFormatException e)
-		{
-			timesAverage =0;
-		}
+		
 
 		User ux = userRepository.findByUsername(username);
         Set<Building> buildings =  ux.getBuildings();
@@ -807,13 +792,8 @@ public class BuildingController {
                 graphDataX.put(y, (int)pcObject.getValue());  
             }
             System.out.println("  SIZE MAP ---" + graphDataX.size() );
-			int x;
-			if(numcolumns == 0 ){
-				x =10;
-			}else{
-				x = numcolumns;
-			}
-            if(graphDataX.size() == x){
+		
+            if(graphDataX.size() == numcolumnspc){
 				//average
 				double sum = 0;
 				for (String key: graphDataX.keySet())
@@ -849,13 +829,8 @@ public class BuildingController {
 		System.out.println("PC list size "+co2Values.size() + " mapListtSize " + allDates.size());
 		for(int i =0; i< allDates.size(); i++) {
 			//ESTÁ PARA 15 min
-			int tAvg=0;
-			if(timesAverage != 0){
-				tAvg = timesAverage*60000;
-			}else{
-				tAvg = 900000;
-			}
-			if(allDates.get(i)-allDates.get(a)>=tAvg) {
+			
+			if(allDates.get(i)-allDates.get(a)>=timesAveragepc -300000 && allDates.get(i)-allDates.get(a)<=timesAveragepc +300000) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
 				double sumValues = 0;
@@ -1017,7 +992,8 @@ public class BuildingController {
 	}
 //-------------------------------------------------------
 
-
+	public static int numcolumnsbt = 10;
+	public static int timesAveragebt = 900000;
 	//CO2_Building.html
 	@GetMapping("/roomsStatsBodyTemperaturesControlBuilding/{id}")
 	public String showRoomsBuildingBodyTemperature(@PathVariable (value = "id") long id,  Model model, @CurrentSecurityContext(expression="authentication.name") String username,
@@ -1025,22 +1001,20 @@ public class BuildingController {
 	@RequestParam(required = false) String timesAvg ) {	
 		model.addAttribute("buildingIDBT", id);
 	
-		int numcolumns = 0;
-		try {
-			numcolumns = Integer.parseInt(numResults);
-		}
-		catch (NumberFormatException e)
-		{
-			numcolumns =0;
-		}
 
-		int timesAverage = 0;
 		try {
-			timesAverage = Integer.parseInt(timesAvg);
+			numcolumnsbt = Integer.parseInt(numResults);
+		}
+		catch (NumberFormatException e)
+		{		}
+
+		try {
+			timesAveragebt = Integer.parseInt(timesAvg)*60000;
+			
 		}
 		catch (NumberFormatException e)
 		{
-			timesAverage =0;
+		
 		}
 
 		User ux = userRepository.findByUsername(username);
@@ -1109,13 +1083,8 @@ public class BuildingController {
                 graphDataX.put(y, (int)btObject.getValue());  
             }
             System.out.println("  SIZE MAP ---" + graphDataX.size() );
-			int x;
-			if(numcolumns == 0 ){
-				x =10;
-			}else{
-				x = numcolumns;
-			}
-            if(graphDataX.size() == x){
+		
+            if(graphDataX.size() ==numcolumnsbt){
 				//average
 				double sum = 0;
 				for (String key: graphDataX.keySet())
@@ -1148,15 +1117,9 @@ public class BuildingController {
 		}
 		Map<String, Double> dates_averageValues = new HashMap<>();
 		int a = 0;
-		System.out.println("BT list size "+co2Values.size() + " mapListtSize " + allDates.size());
 		for(int i =0; i< allDates.size(); i++) {
-			int tAvg=0;
-			if(timesAverage != 0){
-				tAvg = timesAverage*60000;
-			}else{
-				tAvg = 900000;
-			}
-			if(allDates.get(i)-allDates.get(a)>=tAvg) {
+		
+			if(allDates.get(i)-allDates.get(a)>=timesAveragebt -300000 && allDates.get(i)-allDates.get(a)<=timesAveragebt +300000) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				double sumValues = 0;
 				int cont =0;
