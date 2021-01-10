@@ -23,9 +23,12 @@ sensores = [
         {'type': 'body_temperature', 'sensor_id': 14444}
     ]
 
+lock = threading.Lock()
 
 
-def thread_function(sensor, connection, channel):
+def thread_function(sensor, dictt, connection=None, channel=None):
+    # connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
+    # channel = connection.channel()
 
     offset = random.uniform(0, 7)
     time.sleep(offset)
@@ -44,21 +47,25 @@ def thread_function(sensor, connection, channel):
             random_sleep_seconds = random.uniform(period-2 if period-2>=0 else 0, period+2)
             time.sleep(random_sleep_seconds)
 
+        lock.acquire()
         try:
-            #print(data) 
-            channel.basic_publish(
+            #channel.basic_publish(
+            dictt[sensor['sensor_id']]['channel'].basic_publish(
                 exchange='',
                 routing_key= sensor['type'],
                 body= str(data)
             )
-        except:
-            connection.close()
-            time.sleep(5)
-
-            connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
-            channel = connection.channel()
-        
-        
+            print('sent ' + sensor['type'] +' to sensorid: ' + str(sensor['sensor_id']), ' \t\tvalue: ' + str(data['value']) )
+        except Exception as e:
+            print('exception here')
+            print(e)
+            # connection.close()
+            # time.sleep(5)
+# 
+            # connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
+            # channel = connection.channel()
+        lock.release()
+'''    
 def execute():
     connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
     channel = connection.channel()
@@ -66,14 +73,28 @@ def execute():
     for s in sensores:
         x = threading.Thread(target=thread_function, args=(s, connection, channel))
         x.start()
+'''
+
+def execute():
+    d = {}
+    for s in sensores:
+        connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
+        channel = connection.channel()
+        d[s['sensor_id']] = {'connection': connection, 'channel': channel }
+
+    for s in sensores:
+
+        x = threading.Thread(target=thread_function, args=(s, d))
+        x.start()
 
 
 def main():
     while True:
         try:
             execute()
-        except Exception:
-            
-            time.sleep(10)
+        except Exception as e:
+            print(e)
+            print('exception in main')
+            time.sleep(1)
 
 main()
