@@ -2,12 +2,14 @@ package ua.ies.project.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import ua.ies.project.model.Role;
 import ua.ies.project.model.Sensor;
@@ -65,8 +67,12 @@ public class SensorDataRestController {
     @GetMapping("/api/sensordata/{id}") // -> admin ou meu
     public EntityModel<Map<String, Object>> sensordataById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
-
-        SensorData sd = sensdatarep.getOne(id);
+        SensorData sd;
+        try {
+            sd = sensdatarep.getOne(id);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);    
+        }
         return getSensorDataEntityModel(username, sd);
     }
 
@@ -94,14 +100,23 @@ public class SensorDataRestController {
 
     @GetMapping("/api/sensor/{id}/data/latest") 
     public EntityModel<Map<String, Object>> getLatestFromId(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
-        
-        Sensor s = sensrep.findById(id).get();
+        // ver. do user em baixo!
+        Sensor s;
+        try {
+            s = sensrep.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         return getLatestFromSensor(username, s);
     }
 
     @GetMapping("/api/sensor/sensorid/{id}/data/latest") 
     public EntityModel<Map<String, Object>> getLatestFromSensorId(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
+        // ver. do user em baixo!
+        
         Sensor s = sensrep.findOneBySensorId(id);        
+        if (s==null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
         return getLatestFromSensor(username, s);
     }
 
@@ -124,13 +139,26 @@ public class SensorDataRestController {
         ) {
             if (!(checkIfAdmin(username)) && !(checkIfSensorIsMine(username, id))) throw new AccessDeniedException("403 returned");
 
-            Sensor s = sensrep.getOne(id);
+            Sensor s;
+            try {
+                s = sensrep.findById(id).get();
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
             Date b = null;
             Date e = null;
+
+            try {
             if (begin != null)
                 b = SensorData.parseDate(begin);
             if (end != null)
                 e = SensorData.parseDate(end);
+
+            } catch (Exception ex) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            if (type != null && !(type.equals("CO2") || type.equals("PEOPLE_COUNTER") || type.equals("BODY_TEMPERATURE")))
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
             List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
             List<SensorData> datalist = sensdatarep.findBySensorIdOrderByTimestampAsc(s.getSensorId());

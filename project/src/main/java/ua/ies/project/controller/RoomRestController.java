@@ -8,6 +8,7 @@ import javax.management.BadAttributeValueExpException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 
@@ -78,8 +81,12 @@ public class RoomRestController {
     @GetMapping("/api/rooms/{id}") // -> admin e meu
     public EntityModel<Map<String, Object>> roomById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
-
-        Room r = roomrep.findById(id).orElseThrow();
+        Room r = null;
+        try {
+        r = roomrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         return getRoomEntityModel(username, r);
     }
 
@@ -89,15 +96,24 @@ public class RoomRestController {
     public EntityModel<Map<String, Object>> getRoomBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
 
-        Room r = roomrep.findById(id).orElseThrow();
+        Room r = null;
+        try {
+        r = roomrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         return BuildingRestController.getBuildingEntityModel(username, r.getBuilding());
     }
 
     @GetMapping("/api/rooms/{id}/sensors") // -> admin ou meu
     public List<EntityModel<Map<String, Object>>> getRoomSensorsById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
-
-        Room r = roomrep.findById(id).orElseThrow();
+        Room r = null;
+        try {
+        r = roomrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Sensor s : r.getSensors()) {
             l.add(SensorRestController.getSensorEntityModel(username, s));
@@ -115,9 +131,17 @@ public class RoomRestController {
             throws BadAttributeValueExpException {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
 
+        Room r = null;
+        try {
+        r = roomrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
-        
-        Room r = roomrep.findById(id).get();
+        if (!(newsensor.getType().equals("CO2") || newsensor.getType().equals("PEOPLE_COUNTER") || newsensor.getType().equals("BODY_TEMPERATURE") )) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         newsensor.setRoom(r);
 
         r.addSensor(sensrep.save(newsensor));
@@ -130,11 +154,18 @@ public class RoomRestController {
         return l;
     }
 
-    // ------ PUT (UPDATE) ------ (ainda n tem permissoes certas (da todos))
+    // ------ PUT (UPDATE) ------
 
     @PutMapping("/api/rooms/{id}")
     public EntityModel<Map<String, Object>> updateRoomById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Room newroom) {
-        Room r = roomrep.findById(id).get();
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+        
+        Room r = null;
+        try {
+        r = roomrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         // devia verificar se é null ou nao mas como sao 'ints'/'doubles' nao dá pq n sao objs.
         r.setRoom_number(newroom.getRoom_number());
@@ -146,11 +177,19 @@ public class RoomRestController {
         return getRoomEntityModel(username, roomrep.save(r));
     }
 
-    // ------ DELETE ------ (ainda n tem permissoes certas (da todos))
+    // ------ DELETE ------
 
     @DeleteMapping("/api/rooms/{id}")
     public void deleteRoomById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
-        Room r = roomrep.getOne(id);
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+        
+        Room r = null;
+        try {
+        r = roomrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
         for (Sensor s : r.getSensors()) {
             sensdatarep.deleteAll(s.getSensorsData());
         }

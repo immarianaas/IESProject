@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import ua.ies.project.model.Building;
 import ua.ies.project.model.Role;
@@ -74,8 +75,12 @@ public class BuildingRestController {
     @GetMapping("/api/buildings/{id}") // -> admin ou meu
     public EntityModel<Map<String, Object>> buildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
-
-        Building b = buildrep.findById(id).orElseThrow();
+        Building b = null;
+        try {
+            b = buildrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);   
+        }
         return getBuildingEntityModel(username, b);
     }
 
@@ -105,8 +110,12 @@ public class BuildingRestController {
     @GetMapping("/api/buildings/{id}/rooms") // -> admin ou meu
     public List<EntityModel<Map<String, Object>>> roomsByBuilding(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
-
-        Building b = buildrep.findById(id).orElseThrow();
+        Building b;
+        try {
+            b = buildrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);   
+        }
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Room r : b.getRooms()) {
             l.add(RoomRestController.getRoomEntityModel(username, r));
@@ -193,7 +202,13 @@ public class BuildingRestController {
 
     @PutMapping("/api/buildings/{id}")
     public EntityModel<Map<String, Object>> updateBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Building newbuilding) {
-        Building b = buildrep.findById(id).get();
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+        Building b = null;
+        try {
+            b = buildrep.findById(id).get();
+        } catch ( Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         if (newbuilding.getBuildingName() != null) b.setBuildingName(newbuilding.getBuildingName());
         if (newbuilding.getCountry() != null) b.setCountry(newbuilding.getCountry());
@@ -208,7 +223,14 @@ public class BuildingRestController {
 
     @DeleteMapping("/api/buildings/{id}")
     public void deleteBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
-        Building b = buildrep.findById(id).get();
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+        
+        Building b = null;
+        try {
+            b = buildrep.findById(id).get();
+        } catch ( Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         for (User u : b.getUsers()) {
             u.getBuildings().remove(b);
@@ -228,8 +250,15 @@ public class BuildingRestController {
     // nao elimino nada, mas desassocio 
     @DeleteMapping("/api/buildings/{id}/users/{userid}")
     public List<EntityModel<Map<String, Object>>> removeUserFromBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @PathVariable long userid) {
-        User u = userrep.findById(userid).get();
-        Building b = buildrep.findById(id).get();
+        User u = null;
+        Building b = null;
+        try {
+            u = userrep.findById(userid).get();
+            b = buildrep.findById(id).get();
+        } catch( Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        }
         u.getBuildings().remove(b);
         b.getUsers().remove(u);
         userrep.save(u);

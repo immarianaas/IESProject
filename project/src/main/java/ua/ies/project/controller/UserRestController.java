@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -68,15 +70,25 @@ public class UserRestController {
     
     @GetMapping("/api/users/{id}") // -> todos
     public EntityModel<Map<String, Object>> userById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
-        User u = userrep.findById(id)
-            .orElseThrow();
+        User u = null;
+        try {
+            u = userrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         return getUserEntityModel(username, u);
         }
 
 
     @GetMapping("/api/users/{id}/roles") // -> todos
     public List<EntityModel<Map<String, Object>>> rolesByUserId(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
-        User u = userrep.findById(id).orElseThrow();
+        User u = null;
+        try {
+        u = userrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Role r : u.getRoles()) {
             l.add(RoleRestController.getRoleEntityModel(username, r));
@@ -88,8 +100,12 @@ public class UserRestController {
     @GetMapping("/api/users/{id}/buildings") // -> meu ou admin
     public List<EntityModel<Map<String, Object>>> buildingsByUser(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
-
-        User u = userrep.findById(id).orElseThrow();
+        User u = null;
+        try {
+        u = userrep.findById(id).orElseThrow();
+        } catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (Building b : u.getBuildings()) {
             l.add(BuildingRestController.getBuildingEntityModel(username, b));
@@ -101,6 +117,9 @@ public class UserRestController {
     @GetMapping("/api/users/username/{uname}") // -> todos
     public EntityModel<Map<String, Object>> userByUname(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable String uname) {
         User u = userrep.findByUsername(uname);
+        if (u == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
         return getUserEntityModel(username, u);
     }
 

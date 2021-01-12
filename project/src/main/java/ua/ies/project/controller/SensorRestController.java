@@ -6,6 +6,7 @@ import javax.management.BadAttributeValueExpException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import ua.ies.project.model.Role;
 import ua.ies.project.model.Sensor;
@@ -92,6 +94,8 @@ public class SensorRestController {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
 
         Sensor s = sensrep.findOneBySensorId(id);
+        if (s == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         return getSensorEntityModel(username, s);
     }
     
@@ -100,7 +104,12 @@ public class SensorRestController {
     public EntityModel<Map<String, Object>> sensorById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
 
-        Sensor s = sensrep.findById(id).orElseThrow();
+        Sensor s;
+        try {
+        s = sensrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND);    
+        }
         return getSensorEntityModel(username, s);
     }
 
@@ -109,7 +118,12 @@ public class SensorRestController {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
 
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
-        Sensor s = sensrep.findById(id).orElseThrow();
+        Sensor s;
+        try {
+        s = sensrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND);    
+        }
         for (SensorData sd : s.getSensorsData()) {
             l.add(SensorDataRestController.getSensorDataEntityModel(username, sd));
         }
@@ -122,19 +136,30 @@ public class SensorRestController {
 
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         Sensor s = sensrep.findOneBySensorId(id);
+        if (s==null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);    
+
         for (SensorData sd : s.getSensorsData()) {
             l.add(SensorDataRestController.getSensorDataEntityModel(username, sd));
         }
         return l;
     }
 
+    /*
     // ------- UPDATE ------- (falta permissoes)
 
     @PutMapping("/api/sensors/{id}")
     public EntityModel<Map<String, Object>> updateSensorById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Sensor newsensor)
             throws BadAttributeValueExpException {
-        Sensor s = sensrep.findById(id).get();
-        if (!(newsensor.getType().equals("CO2") || newsensor.getType().equals("PEOPLE_COUNTER") || newsensor.getType().equals("BODY_TEMPERATURE")))
+                if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+        
+                Sensor s;
+                try {
+                s = sensrep.findById(id).orElseThrow();
+                } catch (Exception e) {
+                   throw new ResponseStatusException(HttpStatus.NOT_FOUND);    
+                }
+            if (!(newsensor.getType().equals("CO2") || newsensor.getType().equals("PEOPLE_COUNTER") || newsensor.getType().equals("BODY_TEMPERATURE")))
         throw new BadAttributeValueExpException("400 invalid parameter value in 'type'");
 
 
@@ -143,12 +168,20 @@ public class SensorRestController {
 
         return getSensorEntityModel(username, sensrep.save(s));
     }
+    */
 
 
     // ------- DELETE ------- (falta permissoes)
     @DeleteMapping("/api/sensors/{id}")
     public void deleteSensorById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
-        Sensor s = sensrep.findById(id).get();
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+        
+        Sensor s;
+        try {
+        s = sensrep.findById(id).orElseThrow();
+        } catch (Exception e) {
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND);    
+        }
         sensdatarep.deleteAll(s.getSensorsData());
         s.getRoom().getSensors().remove(s);
         sensrep.delete(s);

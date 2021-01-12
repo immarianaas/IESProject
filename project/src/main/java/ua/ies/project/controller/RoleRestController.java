@@ -2,6 +2,7 @@ package ua.ies.project.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import ua.ies.project.repository.RoleRepository;
 import ua.ies.project.repository.UserRepository;
@@ -50,15 +52,25 @@ public class RoleRestController {
 
     @GetMapping("/api/roles/{id}") // -> todos
     public EntityModel<Map<String, Object>> roleById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
-        Role r = rolerep.findById(id)
+        Role r = null;
+        try {
+            r = rolerep.findById(id)
             .orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         return getRoleEntityModel(username, r);
     }
 
     @GetMapping("/api/roles/{id}/users") // -> todos
     public List<EntityModel<Map<String, Object>>> usersInRoleById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
-        Role r = rolerep.findById(id)
+        Role r = null;
+        try {
+            r = rolerep.findById(id)
             .orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
         for (User u:  r.getUsers()) {
             l.add(UserRestController.getUserEntityModel(username, u));
@@ -82,7 +94,13 @@ public class RoleRestController {
     public List<EntityModel<Map<String, Object>>> addUserToRole(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id, @RequestBody Map<String, Object> map) {
         if (!checkIfAdmin(username)) throw new AccessDeniedException("403 returned");
 
-        Role r = rolerep.getOne(id);
+        Role r = null;
+        try {
+            r = rolerep.findById(id)
+            .orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         User u = null;
         if (map.containsKey("id")) {
             u = userrep.getOne((Long) map.get("id"));
@@ -107,7 +125,15 @@ public class RoleRestController {
     // ------- PUT -------
     @PutMapping("/api/roles/{id}")
     public EntityModel<Map<String, Object>> updateRoleById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody Role newrole) {
-        Role r = rolerep.getOne(id);
+        if (!checkIfAdmin(username)) throw new AccessDeniedException("403 returned");
+        
+        Role r = null;
+        try {
+            r = rolerep.findById(id)
+            .orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         if (newrole.getName() != null) r.setName(newrole.getName());
         return getRoleEntityModel(username, rolerep.save(r));
@@ -117,7 +143,15 @@ public class RoleRestController {
     // ------- DELETE ------
     @DeleteMapping("/api/roles/{id}")
     public void deleteRoleById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id) {
-        Role r = rolerep.getOne(id);
+        if (!checkIfAdmin(username)) throw new AccessDeniedException("403 returned");
+        
+        Role r = null;
+        try {
+            r = rolerep.findById(id)
+            .orElseThrow();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         for (User u : r.getUsers()) {
             u.getRoles().remove(r);
@@ -128,8 +162,18 @@ public class RoleRestController {
 
     @DeleteMapping("/api/roles/{id}/users/{userid}")
     public void removeUserFromRole(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @PathVariable long userid) {
-        Role r = rolerep.getOne(id);
-        User u = userrep.getOne(userid);
+        if (!checkIfAdmin(username)) throw new AccessDeniedException("403 returned");
+        
+        Role r = null;
+        User u = null;
+        try {
+            r = rolerep.findById(id)
+            .orElseThrow();
+            u = userrep.findById(userid).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
         if (r == null || u == null) return;
         u.getRoles().remove(r);
         u = userrep.save(u);

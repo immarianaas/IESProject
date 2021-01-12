@@ -45,6 +45,8 @@ public class SensorData {
             // System.out.println("\n\n\nbefore: "+date);
             Date d = formatter.parse(date);
             // System.out.println("after: "+ d + "\n\n\n");
+
+            System.out.println("\n\n\n\n" + d + "\n\n\n\n\n");
             return d;
         } catch( Exception e) {
             e.printStackTrace();
