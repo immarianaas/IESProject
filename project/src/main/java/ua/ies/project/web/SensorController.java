@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -88,6 +89,41 @@ public class SensorController {
 		
     return "dashboard";
     }
+
+
+    @GetMapping("/moreInfoSensor/{id}")
+    public String moreInfoSensor(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username){
+        User ux = userRepository.findByUsername(username);
+			
+			Set<Building> buildings =  ux.getBuildings();
+			Set<Room> allRooms = new HashSet<>();
+			for(Building b : buildings){
+					Set<Room> rooms = b.getRooms();
+					allRooms.addAll(rooms);
+				
+			}
+			Set<SensorData> allSensorsData = new HashSet<>();
+			Set<Room> rooms = allRooms;
+			if(rooms.size() != 0){
+				for(Room r : rooms){
+					Set<Sensor> sensors = r.getSensors();
+					if(sensors.size() != 0){
+						for(Sensor s : sensors){
+                                if(s.getId() == id){
+                                    allSensorsData.addAll(s.getSensorsData());
+                                }
+						    }
+					    }
+				    }
+                }
+            
+
+            model.addAttribute("sensorInfo", allSensorsData);
+
+
+
+        return "sensorInfo";
+            }
     
    
   

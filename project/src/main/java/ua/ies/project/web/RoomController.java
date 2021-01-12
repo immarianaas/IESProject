@@ -165,7 +165,7 @@ public class RoomController {
 		System.out.println("CO2 list size "+co2Values.size() + " mapListtSize " + allDates.size());
 		for(int i =0; i< allDates.size(); i++) {
 			
-			if(allDates.get(i)-allDates.get(a)>=timesAverage -300000 && allDates.get(i)-allDates.get(a)<=timesAverage +300000) {
+			if(allDates.get(i)-allDates.get(a)>=timesAverage) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				double sumValues = 0;
 				int cont =0;
@@ -421,7 +421,7 @@ public class RoomController {
 		System.out.println("PC list size "+pcValues.size() + " mapListtSize " + allDates.size());
 		for(int i =0; i< allDates.size(); i++) {
 			
-			if(allDates.get(i)-allDates.get(a)>=timesAveragepc -300000 && allDates.get(i)-allDates.get(a)<=timesAveragepc +300000) {
+			if(allDates.get(i)-allDates.get(a)>=timesAveragepc) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
 				double sumValues = 0;
@@ -677,7 +677,7 @@ public class RoomController {
 		System.out.println("BT list size "+pcValues.size() + " mapListtSize " + allDates.size());
 		for(int i =0; i< allDates.size(); i++) {
 			
-			if(allDates.get(i)-allDates.get(a)>=timesAveragebt -300000 && allDates.get(i)-allDates.get(a)<=timesAveragebt +300000) {
+			if(allDates.get(i)-allDates.get(a)>=timesAveragebt) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
 				double sumValues = 0;

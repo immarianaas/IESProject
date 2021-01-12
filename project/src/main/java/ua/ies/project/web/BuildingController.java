@@ -538,7 +538,7 @@ public class BuildingController {
 		for(int i =0; i< allDates.size(); i++) {
 			//ESTÁ PARA 15 min
 
-			if(allDates.get(i)-allDates.get(a)>=timesAverage -300000 && allDates.get(i)-allDates.get(a)<=timesAverage +300000 ) {
+			if(allDates.get(i)-allDates.get(a)>=timesAverage) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				double sumValues = 0;
 				int cont =0;
@@ -830,7 +830,7 @@ public class BuildingController {
 		for(int i =0; i< allDates.size(); i++) {
 			//ESTÁ PARA 15 min
 			
-			if(allDates.get(i)-allDates.get(a)>=timesAveragepc -300000 && allDates.get(i)-allDates.get(a)<=timesAveragepc +300000) {
+			if(allDates.get(i)-allDates.get(a)>=timesAveragepc) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				System.out.println("DATESS TRUEEE SUBTRACTION  "+d1);
 				double sumValues = 0;
@@ -1119,7 +1119,7 @@ public class BuildingController {
 		int a = 0;
 		for(int i =0; i< allDates.size(); i++) {
 		
-			if(allDates.get(i)-allDates.get(a)>=timesAveragebt -300000 && allDates.get(i)-allDates.get(a)<=timesAveragebt +300000) {
+			if(allDates.get(i)-allDates.get(a)>=timesAveragebt) {
 				double d1 = allDates.get(i)-allDates.get(a);
 				double sumValues = 0;
 				int cont =0;

@@ -34,7 +34,9 @@ public class SensorDataController {
     private UserRepository userRepository;
     
     @Autowired
-	private Co2Repository co2Repository;
+    private Co2Repository co2Repository;
+    
+    
 	//----------- QUERIES--------------------
     public boolean checkIfMine(String uname, long data_id) {
         SensorData sd = sensorDataRepository.findById(data_id).get();

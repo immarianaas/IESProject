@@ -153,7 +153,7 @@
 
         
             <div id="chart_div"  style="width: 1500px; height: 500px;" ></div>
-            <div id="piechart" style="width: 1100px; height: 550px;  margin-left: 300px;"></div>
+            <div id="piechart" style="width: 1500px; height: 500px; "></div>
         </div>
 
             <!--AVERAGE RESULTS---------------------------------------------------------------------------------------------->
@@ -374,8 +374,7 @@
 
 
 
-
-            var real_data_pie = /*[[${graphPieBTRoom}]]*/'noValue';
+            /*
             
             function drawPieChart() {
                 var data = new google.visualization.DataTable();
@@ -391,7 +390,30 @@
                         .getElementById('piechart'));
                 chart.draw(data, options);
             }
+            */
 
+            var real_data_pie = /*[[${graphPieBTRoom}]]*/'noValue';
+            
+            function drawPieChart() {
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'BT');
+                data.addColumn('number', '%');
+                Object.keys(real_data_pie).forEach(function(key) {
+                    data.addRow([ key, real_data_pie[key]*10 ]);
+                });
+                var options = {
+                    title : 'Body Temperatures inside a room',
+                    hAxis : {
+                        title : 'Body Temperatures',
+                    },
+                    vAxis : {
+                        title : 'Total Occurrences (%)'
+                    }
+                };
+                var chart = new google.visualization.ColumnChart(document
+                        .getElementById('piechart'));
+                chart.draw(data, options);
+            }
 
             //<!--AVERAGE-->
             var real_dataAvg = /*[[${dates_averageValuesBTRoom}]]*/'noValue';
