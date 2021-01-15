@@ -466,15 +466,8 @@
     
                 var alert = false;
                 Object.keys(real_dataAvg).forEach(function(key) {
-                
-                   
                     data.addRow([key , real_dataAvg[key],  "color:#DE9233"]);
-    
-                  
-                 
                 });
-                
-                
                 
                 var options = {
                     title : 'CO2 Average Concentration Stats (ppm)',
@@ -485,13 +478,13 @@
                         title : 'Co2 Average Concentration  (ppm)'
                     }
                 };
-    
-    
-    
                 var chart = new google.visualization.ColumnChart(document
                         .getElementById('chart_divAverage'));
                 chart.draw(data, options);
             }
+
+
+            
     </script>
 
     <script src="assets/js/jquery-1.10.2.js"></script>

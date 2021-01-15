@@ -77,10 +77,11 @@
             <div id="page-inner">
                 <div class="row">
                     <div class="col-md-12">
-                        <h1 class="page-head-line">Sensor History  </h1> <h3><p th:text="'Sensor: ' + ${sensorInfoID} " /></h3>
-                     
+                        <h1 class="page-head-line">Sensor History  </h1> <h4><p th:text="'Sensor: ' + ${sensorInfoID}   " /></h4><h4><p th:text="'Sensor type: ' + ${sensorType}   " /></h4>
+                        <h4><p th:text="'Max. value allowed: ' + ${sensorMaxValue}  " /></h4>
 
                         <h1 class="page-subhead-line"></h1>
+
 
                     </div>
                 </div>
@@ -89,12 +90,10 @@
         <!----BUILDING INFO----------------------------------------------------------------------------------------------------->
 
         
-        <table style="width: 95%; margin-left: 36px;" class="table table-striped table-bordered table-hover">
+        <table style="width: 65%; margin-left: 36px;" class=" table-striped table-bordered table-hover">
             <thead>
                 <tr>
                     <th>Timestamp</th>
-                    <th>Type</th>
-                    <th>Room Number</th>
                     <th>Value</th>
                     <th>Alert</th>
                     
@@ -102,11 +101,9 @@
             </thead>
             <tbody>
                 <tr th:each="s : ${sensorInfo}">
-                    <td  width= 7%; th:text="${s.timestamp}"></td>
-                    <td  width= 7%; th:text="${s.sensor.type}"></td>
-                    <td  width= 7%; th:text="${s.sensor.getRoom().getFloorNumber()}"></td>
-                    <td  width= 3%; th:text="${s.sensor}"></td>
-                    <td width= 4%; th:text="${s.warn}"></td>
+                    <td  width= 2%; th:text="${s.timestamp}"></td>
+                    <td  width= 3%; th:text="${s.value}"></td>
+                    <td width= 2%; th:text="${s.warn}"></td>
                     
                 </tr>
             </tbody>

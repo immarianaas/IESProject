@@ -93,8 +93,41 @@ public class SensorController {
 
     @GetMapping("/moreInfoSensor/{id}")
     public String moreInfoSensor(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username){
+        
         User ux = userRepository.findByUsername(username);
-			
+        model.addAttribute("sensorInfoID", id);
+        Sensor s = sensorRepository.findById(id).get(); 
+
+        List<Object> allSensorsData = new ArrayList<>();
+
+        if(s.getType().equals("CO2")){
+            model.addAttribute("sensorType", "CO2");
+            model.addAttribute("sensorMaxValue", s.getRoom().getMaxLevelCo2());
+            allSensorsData.addAll(s.getSensorsData());
+        }
+        if(s.getType().equals("PEOPLE_COUNTER")){
+            model.addAttribute("sensorType", "PEOPLE_COUNTER");
+            model.addAttribute("sensorMaxValue", s.getRoom().getMaxOccupation());
+            allSensorsData.addAll(s.getSensorsData());
+        }
+        if(s.getType().equals("BODY_TEMPERATURE")){
+            model.addAttribute("sensorType", "BODY_TEMPERATURE");
+            model.addAttribute("sensorMaxValue", s.getRoom().getMaxTemperature());
+            allSensorsData.addAll(s.getSensorsData());            
+        }
+
+        List<Object> allSensorsData_first50Elements = new ArrayList<>();
+        for(int i = 0; i<=50; i++){
+            allSensorsData_first50Elements.add(allSensorsData.get(i));
+            
+        }
+        model.addAttribute("sensorInfo", allSensorsData_first50Elements);
+
+
+
+
+
+        /*
 			Set<Building> buildings =  ux.getBuildings();
 			Set<Room> allRooms = new HashSet<>();
 			for(Building b : buildings){
@@ -102,7 +135,8 @@ public class SensorController {
 					allRooms.addAll(rooms);
 				
 			}
-			Set<SensorData> allSensorsData = new HashSet<>();
+            Set<SensorData> allSensorsData = new HashSet<>();
+            Map<SensorData, Room> infoSensor_ = new HashMap<>();
 			Set<Room> rooms = allRooms;
 			if(rooms.size() != 0){
 				for(Room r : rooms){
@@ -112,16 +146,29 @@ public class SensorController {
                                 if(s.getId() == id){
                                     allSensorsData.addAll(s.getSensorsData());
                                 }
+                                if(s.getType().equals("CO2")){
+
+                                }
+                                if(s.getType().equals("PEOPLE_COUNTER")){
+                                    
+                                }
+                                if(s.getType().equals("BODY_TEMPERATURE")){
+                                    
+                                }
 						    }
 					    }
 				    }
                 }
             
-
+            int i = 0;
+            for(SensorData s : allSensorsData) {
+                System.out.println(s.toString());
+                i++;
+            }
             model.addAttribute("sensorInfo", allSensorsData);
 
 
-
+            */
         return "sensorInfo";
             }
     
