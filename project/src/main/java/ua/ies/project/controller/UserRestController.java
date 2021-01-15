@@ -134,11 +134,18 @@ public class UserRestController {
     }
 
 
-    // ------ PUT (UPDATE) ------ (ainda n tem permissoes certas (da todos))
+    // ------ PUT (UPDATE) ------ 
 
     @PutMapping("/api/users/{id}")
     public EntityModel<Map<String, Object>> updateUserById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody User newuser) {
-        User u = userrep.findById(id).get();
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+        
+        User u = null;
+        try {
+            u = userrep.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         if (newuser.getUsername() != null) u.setUsername(newuser.getUsername());
         if (newuser.getPassword() != null) u.setPassword(bCryptPasswordEncoder.encode(newuser.getPassword()));
 
@@ -150,7 +157,14 @@ public class UserRestController {
 
     @DeleteMapping("/api/users/{id}")
     public void deleteUserById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @RequestBody User newuser) {
-        User u = userrep.findById(id).get();
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+        
+        User u = null;
+        try {
+            u = userrep.findById(id).get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         for (Building b : u.getBuildings()) {
             b.getUsers().remove(u);
             buildrep.save(b);

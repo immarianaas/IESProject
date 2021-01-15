@@ -250,6 +250,8 @@ public class BuildingRestController {
     // nao elimino nada, mas desassocio 
     @DeleteMapping("/api/buildings/{id}/users/{userid}")
     public List<EntityModel<Map<String, Object>>> removeUserFromBuildingById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable long id, @PathVariable long userid) {
+        if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
+        
         User u = null;
         Building b = null;
         try {
