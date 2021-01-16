@@ -88,7 +88,14 @@
                 <!-- /. ROW  -->
 
         <!----BUILDING INFO----------------------------------------------------------------------------------------------------->
-
+        <div div style="display: table-cell;">
+            <strong>Write a number to see more/less items! </strong>
+            <form th:action="@{/moreInfoSensor/{id}(id=${sensor.id})}"   method="get">
+                <input placeholder="Insert a number" id="txtSearch" type="text" name="numItems">
+                <button type="submit">Results</button>
+            </form>
+        </div>
+        <!--
         <p> isto em baixo para mudar nao funciona,
             se conseguires meter ele a passar para a funcao do controller
             estes dados como argumentos, entao vai dar
@@ -102,10 +109,11 @@
 
             <input id="pageToShow" type="number">
         </div>
-        <a th:href="@{/moreInfoSensor/{id}(id=${sensor.id})}"><button>pls help</button></a>
+        <a th:href="@{/moreInfoSensor/{id}(id=${sensor.id})}"><button>pls help</button></a>-->
         <!-- onclick="console.log(document.getElementById('noItemsInPage').value)" -->
         <!--@{/saveUpdatedRoom/{id}(id=${room.id})}-->
-        
+        <br/>
+        <br/>
         <table style="width: 65%; margin-left: 36px;" class=" table-striped table-bordered table-hover">
             <thead>
                 <tr>

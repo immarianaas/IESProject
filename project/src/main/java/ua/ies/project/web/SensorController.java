@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import ua.ies.project.repository.SensorRepository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import ua.ies.project.model.User;
 import ua.ies.project.repository.UserRepository;
@@ -99,13 +101,27 @@ public class SensorController {
     );
     sd = p.get().findFirst().get();
     */
+	public static int num_Items = 50;
+	public static int timesAverage = 900000;
 
     @GetMapping("/moreInfoSensor/{id}")
     public String moreInfoSensor(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username,
             
-    @RequestParam(required = false) Integer pageNo,
-    @RequestParam(required = false) Integer pageSize
-    ){
+    @RequestParam(required = false) String numItems,
+    @RequestParam(required = false) String timesAvg ){
+
+		try {
+			num_Items = Integer.parseInt(numItems);
+		}
+		catch (NumberFormatException e)
+        {		}
+        
+        try {
+			timesAverage = Integer.parseInt(timesAvg)*60000;
+			
+		}
+		catch (NumberFormatException e)
+		{ }
         
         // User ux = userRepository.findByUsername(username);
         model.addAttribute("sensorInfoID", id);
@@ -113,11 +129,11 @@ public class SensorController {
 
         // List<Object> allSensorsData = new ArrayList<>();
 
-        if (pageNo == null) pageNo = 0;
-        if (pageSize == null) pageSize = 50;
+        //if (pageNo == null) pageNo = 0;
+        //if (pageSize == null) pageSize = 50;
 
         Page<SensorData> p = sensorDataRepository.findBySensorId( s.getId(),
-        PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"))
+        PageRequest.of(0, num_Items, Sort.by(Sort.Direction.DESC, "timestamp"))
         );
 
         model.addAttribute("sensor", s);
@@ -128,30 +144,8 @@ public class SensorController {
             model.addAttribute("sensorMaxValue", s.getRoom().getMaxOccupation());
         else if (s.getType().equals("BODY_TEMPERATURE"))
             model.addAttribute("sensorMaxValue", s.getRoom().getMaxTemperature());
-        /*
-        if(s.getType().equals("CO2")){
-            model.addAttribute("sensorType", "CO2");
-            model.addAttribute("sensorMaxValue", s.getRoom().getMaxLevelCo2());
-            allSensorsData.addAll(s.getSensorsData());
-        }
-        if(s.getType().equals("PEOPLE_COUNTER")){
-            model.addAttribute("sensorType", "PEOPLE_COUNTER");
-            model.addAttribute("sensorMaxValue", s.getRoom().getMaxOccupation());
-            allSensorsData.addAll(s.getSensorsData());
-        }
-        if(s.getType().equals("BODY_TEMPERATURE")){
-            model.addAttribute("sensorType", "BODY_TEMPERATURE");
-            model.addAttribute("sensorMaxValue", s.getRoom().getMaxTemperature());
-            allSensorsData.addAll(s.getSensorsData());            
-        }
-        
-        List<Object> allSensorsData_first50Elements = new ArrayList<>();
-        for(int i = 0; i<=50; i++){
-            allSensorsData_first50Elements.add(allSensorsData.get(i));
-            
-        }
-        */
-        // model.addAttribute("sensorInfo", allSensorsData_first50Elements);
+
+       
         model.addAttribute("sensorInfo", p);
 
         return "sensorInfo";
