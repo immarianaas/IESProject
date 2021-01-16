@@ -102,7 +102,7 @@
             </thead>
             <tbody>
                 <tr th:each="room : ${roomsInfoBT}">
-                    <td th:text="${room.id}"></td>
+                    <td th:text="${room.room_number}"></td>
                     <td th:text="${room.floorNumber}"></td>
                     <td th:text="${room.maxTemperature}"></td>
                     <td > <a th:href="@{/searchStatsBodyTempControlRoom/{id}(id=${room.id})}" class="btn btn-primary">Room graphical info</a>

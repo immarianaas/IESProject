@@ -102,7 +102,7 @@
             </thead>
             <tbody>
                 <tr th:each="room : ${roomsInfoPC}">
-                    <td th:text="${room.id}"></td>
+                    <td th:text="${room.room_number}"></td>
                     <td th:text="${room.floorNumber}"></td>
                     <td th:text="${room.maxOccupation}"></td>
                     <td > <a th:href="@{/searchStatsPeopleCounterRoom/{id}(id=${room.id})}" class="btn btn-primary">Room graphical info</a>

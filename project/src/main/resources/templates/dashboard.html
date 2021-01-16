@@ -100,9 +100,11 @@
                 </div>
 
                 <!-- --- WARNINGS HERE --- -->
-                <div th:each="s : ${mapSensorWarning}">
-                    <a th:href="@{/moreInfoSensor/{id}(id=${s.id})}" >
-                        <div class="alert alert-danger">
+                <div th:each="s : ${mapSensorWarning}" >
+                    <!--<button >hide me</button>-->
+                        <div onclick="this.hidden=true" class="alert alert-danger">
+
+                            <a class="alert-danger" th:href="@{/moreInfoSensor/{id}(id=${s.id})}" >
                         
 
                                 <p>
@@ -112,9 +114,12 @@
                                     of building <span th:text="${s.room.building.buildingName}"></span></strong>.
                                 </p>
                         
+                            </a>
                             <!--<p th:text="${s}"></p>-->
+                            <div style="text-align: end;">
+                                <button style="align-items: left;">hide</button> 
+                             </div>
                         </div>
-                    </a>
 
                 </div>
 

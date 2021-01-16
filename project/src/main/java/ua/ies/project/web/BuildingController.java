@@ -433,8 +433,9 @@ public class BuildingController {
 		}
 
 		User ux = userRepository.findByUsername(username);
-        Set<Building> buildings =  ux.getBuildings();
+        //Set<Building> buildings =  ux.getBuildings();
 
+		/*
 		Set<Room> allRooms = new HashSet<>();
 		String buildingName ="";
         for(Building b : buildings){
@@ -444,12 +445,16 @@ public class BuildingController {
 				allRooms.addAll(rooms);
 			}
 		}
-		model.addAttribute("graphDataCO2BC_buildingName", buildingName);
-        Set<SensorData> allSensorsData = new HashSet<>();
+		*/
+		Building b = buildingRepository.findById(id).get();
+		model.addAttribute("graphDataCO2BC_buildingName", b.getBuildingName());
+		
+		Set<SensorData> allSensorsData = new HashSet<>();
 		//rooms info
 		ArrayList<Room> roomsInfo = new ArrayList<>();
 
-		Set<Room> rooms = allRooms;
+		//Set<Room> rooms = allRooms;
+		/*
 		if(rooms.size() != 0){
 			for(Room r : rooms){
 				roomsInfo.add(r);
@@ -465,9 +470,19 @@ public class BuildingController {
 				}
 			}
 		}
-
+		// model.addAttribute("roomsInfoCO2", roomsInfo);
 		model.addAttribute("roomsInfoCO2", roomsInfo);
 		}
+		*/
+		Set<Room> rooms = b.getRooms();
+		model.addAttribute("roomsInfoCO2", rooms);
+		
+		for (Room r : rooms)
+			for (Sensor s: r.getSensors()) {
+
+				if (s.getType().equals("CO2"))
+					allSensorsData.addAll(s.getSensorsData());
+			}
 		
 		//bar chart and pie chart
 		Map<String, Integer> graphDataX = new TreeMap<>();
@@ -476,12 +491,15 @@ public class BuildingController {
 		//alerts list
 		ArrayList<String> alerts = new ArrayList<>();
         for (SensorData sd : allSensorsData) {
+			/*
 			Co2 co2Object= null;
             try{
                 co2Object= co2Repository.findById(sd.getId()).get();
             }catch(Exception e){
                 continue;
-			}
+			}*/
+			Co2 co2Object = (Co2) sd;
+
 			dates_and_co2Values.put(sd.getTimestamp().getTime(),(int)co2Object.getValue());
             if(sd.getWarn()){
                 String formattedDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(sd.getTimestamp());

@@ -102,7 +102,7 @@
             </thead>
             <tbody>
                 <tr th:each="room : ${roomsInfoCO2}">
-                    <td th:text="${room.id}"></td>
+                    <td th:text="${room.room_number}"></td>
                     <td th:text="${room.floorNumber}"></td>
                     <td th:text="${room.maxLevelCo2}"></td>
                     <td > <a th:href="@{/searchStatsAirQualityRoom/{id}(id=${room.id})}" class="btn btn-primary">Room graphical info</a>

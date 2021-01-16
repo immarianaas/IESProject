@@ -5,6 +5,9 @@ import java.util.*;
 import javax.management.BadAttributeValueExpException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -61,7 +65,7 @@ public class SensorRestController {
         Long id = s.getId();
         return EntityModel.of(s_map,
             linkTo(methodOn(RoomRestController.class).roomById(username, s.getRoom().getId())).withRel("room"),
-            linkTo(methodOn(SensorRestController.class).sensordataByIdOfSensor(username, id)).withRel("sensordata"),
+            linkTo(methodOn(SensorRestController.class).sensordataByIdOfSensor(username, id, null, null)).withRel("sensordata"),
             linkTo(methodOn(SensorRestController.class).sensorById(username, id)).withSelfRel() 
             );
         }
@@ -114,7 +118,9 @@ public class SensorRestController {
     }
 
     @GetMapping("/api/sensors/{id}/sensordata") // -> admin ou meu
-    public List<EntityModel<Map<String, Object>>> sensordataByIdOfSensor(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+    public List<EntityModel<Map<String, Object>>> sensordataByIdOfSensor(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id,
+    @RequestParam(required = false) Integer pageNo,
+    @RequestParam(required = false) Integer pageSize) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
 
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
@@ -124,14 +130,22 @@ public class SensorRestController {
         } catch (Exception e) {
            throw new ResponseStatusException(HttpStatus.NOT_FOUND);    
         }
-        for (SensorData sd : s.getSensorsData()) {
+        if (pageNo == null) pageNo = 0;
+        if (pageSize == null) pageSize = 50;
+
+        Page<SensorData> p = sensdatarep.findAll(
+            PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"))
+        );
+        for (SensorData sd : p) {
             l.add(SensorDataRestController.getSensorDataEntityModel(username, sd));
         }
         return l;
     }
 
     @GetMapping("/api/sensors/sensorid/{id}/sensordata") // -> admin ou meu
-    public List<EntityModel<Map<String, Object>>> sensordataBySensorId(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
+    public List<EntityModel<Map<String, Object>>> sensordataBySensorId(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id,
+    @RequestParam(required = false) Integer pageNo,
+    @RequestParam(required = false) Integer pageSize) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
 
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
@@ -139,7 +153,14 @@ public class SensorRestController {
         if (s==null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);    
 
-        for (SensorData sd : s.getSensorsData()) {
+        if (pageNo == null) pageNo = 0;
+        if (pageSize == null) pageSize = 50;
+
+        Page<SensorData> p = sensdatarep.findAll(
+            PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"))
+        );
+
+        for (SensorData sd : p) {
             l.add(SensorDataRestController.getSensorDataEntityModel(username, sd));
         }
         return l;
