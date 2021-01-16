@@ -30,9 +30,10 @@ def thread_function(sensor, dictt, connection=None, channel=None):
     # connection = pika.BlockingConnection(pika.ConnectionParameters('192.168.160.211'))
     # channel = connection.channel()
 
+    # offset = random.uniform(0, 7)
     offset = random.uniform(0, 7)
     time.sleep(offset)
-    period = random.uniform(1, 7)
+    period = random.uniform(32, 87)
     while True:
         if sensor['type'] == 'co2':
             data = gen.fake_co2(sensor['sensor_id'])
