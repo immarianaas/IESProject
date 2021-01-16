@@ -1,6 +1,9 @@
 package ua.ies.project.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,6 +18,9 @@ import ua.ies.project.model.Role;
 import ua.ies.project.model.Sensor;
 import ua.ies.project.model.SensorData;
 import ua.ies.project.model.User;
+import ua.ies.project.repository.BodyTemperatureRepository;
+import ua.ies.project.repository.Co2Repository;
+import ua.ies.project.repository.PeopleCounterRepository;
 import ua.ies.project.repository.SensorDataRepository;
 import ua.ies.project.repository.SensorRepository;
 import ua.ies.project.repository.UserRepository;
@@ -64,18 +70,29 @@ public class SensorDataRestController {
             );
     }
 
+    @Autowired
+    Co2Repository co2rep;
+
+    @Autowired
+    BodyTemperatureRepository btemprep;
+
+    @Autowired
+    PeopleCounterRepository pcounterrep;
+
     @GetMapping("/api/sensordata/{id}") // -> admin ou meu
     public EntityModel<Map<String, Object>> sensordataById(@CurrentSecurityContext(expression="authentication.name") String username, @PathVariable Long id) {
         if (!(checkIfAdmin(username)) && !(checkIfMine(username, id))) throw new AccessDeniedException("403 returned");
         SensorData sd;
         try {
             sd = sensdatarep.getOne(id);
+
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);    
         }
         return getSensorDataEntityModel(username, sd);
     }
 
+    /*
     @GetMapping("/api/sensordata/all") // -> admin
     public List<EntityModel<Map<String, Object>>> allSensordata(@CurrentSecurityContext(expression="authentication.name") String username) {
         if (!checkIfAdmin(username)) throw new AccessDeniedException("403 returned");
@@ -83,6 +100,30 @@ public class SensorDataRestController {
         List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
 
         for (SensorData sd : sensdatarep.findAll()) {
+            l.add(getSensorDataEntityModel(username, sd));
+        }
+        return l;
+    }
+    */
+
+    @GetMapping("/api/sensordata/all") // -> admin
+    public List<EntityModel<Map<String, Object>>> allSensordata(@CurrentSecurityContext(expression="authentication.name") String username,
+    @RequestParam(required = false) Integer pageNo,
+    @RequestParam(required = false) Integer pageSize
+    ) {
+        if (!checkIfAdmin(username)) throw new AccessDeniedException("403 returned");
+        
+        List<EntityModel<Map<String, Object>>> l = new ArrayList<EntityModel<Map<String, Object>>>();
+
+        if (pageNo == null) pageNo = 0;
+        if (pageSize == null) pageSize = 50;
+
+        Page<SensorData> p = sensdatarep.findAll(
+            PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"))
+        );
+
+
+        for (SensorData sd : p) {
             l.add(getSensorDataEntityModel(username, sd));
         }
         return l;
@@ -124,7 +165,18 @@ public class SensorDataRestController {
         // -- verificacoes aqui apenas (n nas 2 funcoes em cima)
         if (!(checkIfAdmin(username)) && !(checkIfSensorIsMine(username, s.getId()))) throw new AccessDeniedException("403 returned");
 
-        SensorData sd = sensdatarep.findBySensorIdOrderByTimestampDesc(s.getSensorId()).get(0);
+        SensorData sd = null;
+        try {
+            Page<SensorData> p = sensdatarep.findBySensorId( s.getId(),
+                PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "timestamp"))
+            );
+            sd = p.get().findFirst().get();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        // SensorData sd = sensdatarep.findBySensorIdOrderByTimestampDesc(s.getSensorId()).get(0);
+        // return getSensorDataEntityModel(username, sd);
         return getSensorDataEntityModel(username, sd);
     }
 
@@ -136,6 +188,7 @@ public class SensorDataRestController {
         @RequestParam(required = false) String end,
         @RequestParam(required = false) String type,
         @RequestParam(required = false) Boolean warningsOnly
+
         ) {
             if (!(checkIfAdmin(username)) && !(checkIfSensorIsMine(username, id))) throw new AccessDeniedException("403 returned");
 

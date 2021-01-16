@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,6 +68,12 @@ public class WebController {
         if (u == null) return "redirect:/login";
         model.addAttribute("listBuildings", u.getBuildings());
         
+        /*
+        Page<SensorData> p = sensdatarep.findAll(
+            PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"))
+        );
+        */
+
         //buildings and rooms of user
         // User u1 = userRepository.findByUsername(username);
         System.out.println(u.getUsername());
@@ -117,8 +126,16 @@ public class WebController {
 
     private Object[] getLastValueRecieved(Sensor s) {
         SensorData sd;
+
+
+
         try {
-            sd = sensdatarep.findBySensorIdOrderByTimestampDesc(s.getId()).get(0);
+            // sd = sensdatarep.findBySensorIdOrderByTimestampDesc(s.getId()).get(0);
+            Page<SensorData> p = sensdatarep.findBySensorId( s.getId(),
+            PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "timestamp"))
+            );
+            sd = p.get().findFirst().get();
+    
         } catch (Exception e) { return null; }
 
         if (sd instanceof Co2) {

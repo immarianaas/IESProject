@@ -89,6 +89,22 @@
 
         <!----BUILDING INFO----------------------------------------------------------------------------------------------------->
 
+        <p> isto em baixo para mudar nao funciona,
+            se conseguires meter ele a passar para a funcao do controller
+            estes dados como argumentos, entao vai dar
+        </p>
+        <div>
+        <label for="noItemsInPage">items to show</label>
+        <input id="noPages" type="number">
+        </div>
+        <div>
+        <label for="pageToShow">page to show</label>
+
+            <input id="pageToShow" type="number">
+        </div>
+        <a th:href="@{/moreInfoSensor/{id}(id=${sensor.id})}"><button>pls help</button></a>
+        <!-- onclick="console.log(document.getElementById('noItemsInPage').value)" -->
+        <!--@{/saveUpdatedRoom/{id}(id=${room.id})}-->
         
         <table style="width: 65%; margin-left: 36px;" class=" table-striped table-bordered table-hover">
             <thead>

@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,16 +93,42 @@ public class SensorController {
     return "dashboard";
     }
 
+    /*
+    Page<SensorData> p = sensdatarep.findBySensorId( s.getId(),
+    PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "timestamp"))
+    );
+    sd = p.get().findFirst().get();
+    */
 
     @GetMapping("/moreInfoSensor/{id}")
-    public String moreInfoSensor(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username){
+    public String moreInfoSensor(@PathVariable ( value = "id") long id, Model model, @CurrentSecurityContext(expression="authentication.name") String username,
+            
+    @RequestParam(required = false) Integer pageNo,
+    @RequestParam(required = false) Integer pageSize
+    ){
         
-        User ux = userRepository.findByUsername(username);
+        // User ux = userRepository.findByUsername(username);
         model.addAttribute("sensorInfoID", id);
         Sensor s = sensorRepository.findById(id).get(); 
 
-        List<Object> allSensorsData = new ArrayList<>();
+        // List<Object> allSensorsData = new ArrayList<>();
 
+        if (pageNo == null) pageNo = 0;
+        if (pageSize == null) pageSize = 50;
+
+        Page<SensorData> p = sensorDataRepository.findBySensorId( s.getId(),
+        PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, "timestamp"))
+        );
+
+        model.addAttribute("sensor", s);
+        model.addAttribute("sensorType", s.getType());
+        if (s.getType().equals("CO2"))
+            model.addAttribute("sensorMaxValue", s.getRoom().getMaxLevelCo2());
+        else if (s.getType().equals("PEOPLE_COUNTER"))
+            model.addAttribute("sensorMaxValue", s.getRoom().getMaxOccupation());
+        else if (s.getType().equals("BODY_TEMPERATURE"))
+            model.addAttribute("sensorMaxValue", s.getRoom().getMaxTemperature());
+        /*
         if(s.getType().equals("CO2")){
             model.addAttribute("sensorType", "CO2");
             model.addAttribute("sensorMaxValue", s.getRoom().getMaxLevelCo2());
@@ -115,60 +144,16 @@ public class SensorController {
             model.addAttribute("sensorMaxValue", s.getRoom().getMaxTemperature());
             allSensorsData.addAll(s.getSensorsData());            
         }
-
+        
         List<Object> allSensorsData_first50Elements = new ArrayList<>();
         for(int i = 0; i<=50; i++){
             allSensorsData_first50Elements.add(allSensorsData.get(i));
             
         }
-        model.addAttribute("sensorInfo", allSensorsData_first50Elements);
+        */
+        // model.addAttribute("sensorInfo", allSensorsData_first50Elements);
+        model.addAttribute("sensorInfo", p);
 
-
-
-
-
-        /*
-			Set<Building> buildings =  ux.getBuildings();
-			Set<Room> allRooms = new HashSet<>();
-			for(Building b : buildings){
-					Set<Room> rooms = b.getRooms();
-					allRooms.addAll(rooms);
-				
-			}
-            Set<SensorData> allSensorsData = new HashSet<>();
-            Map<SensorData, Room> infoSensor_ = new HashMap<>();
-			Set<Room> rooms = allRooms;
-			if(rooms.size() != 0){
-				for(Room r : rooms){
-					Set<Sensor> sensors = r.getSensors();
-					if(sensors.size() != 0){
-						for(Sensor s : sensors){
-                                if(s.getId() == id){
-                                    allSensorsData.addAll(s.getSensorsData());
-                                }
-                                if(s.getType().equals("CO2")){
-
-                                }
-                                if(s.getType().equals("PEOPLE_COUNTER")){
-                                    
-                                }
-                                if(s.getType().equals("BODY_TEMPERATURE")){
-                                    
-                                }
-						    }
-					    }
-				    }
-                }
-            
-            int i = 0;
-            for(SensorData s : allSensorsData) {
-                System.out.println(s.toString());
-                i++;
-            }
-            model.addAttribute("sensorInfo", allSensorsData);
-
-
-            */
         return "sensorInfo";
             }
     
