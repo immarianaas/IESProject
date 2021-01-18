@@ -4,7 +4,7 @@
 
 ### Project abstract:
 
-title and brief description of the projet features
+**Smart Building** é um sistema que permite a monitorização de determinadas características de um estabelecimento que é frequentado por várias pessoas, como estabelecimentos comerciais, de saúde ou da prestação de outros serviços. Este é um sistema que visa, por exemplo, auxiliar o bom cumprimento das normas de segurança que devem ser postas em prática para a mitigação da transmissão do vírus Covid-19. 
 
 
 
@@ -24,8 +24,9 @@ title and brief description of the projet features
 
 ### Project bookmarks:
 
-* documentação: https://app.swaggerhub.com/apis-docs/marianasps/ies-project/1.0.0
+* documentação da API: https://app.swaggerhub.com/apis-docs/marianasps/ies-project/1.0.0
 
 * project managment: https://www.notion.so/Projeto-IES-52e4bd601cd540a3be5ab6bb3c586fe9
 
 * relatório: https://docs.google.com/document/d/1Af_r418LNgigEB2g1XdCrRuQbWzGK7ZDH9mrDSDqgFw/edit?usp=sharing
+

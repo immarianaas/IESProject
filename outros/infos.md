@@ -29,7 +29,7 @@ docker run --name mk-phpmyadmin -v phpmyadmin-volume:/etc/phpmyadmin/config.user
 * correr o projeto:
 
 ```bash
-sudo docker run 3f90d376e186 -p 0.0.0.0:8090:8090
+sudo docker run -p 8090:8090 ies/project 
 ```
 
 
